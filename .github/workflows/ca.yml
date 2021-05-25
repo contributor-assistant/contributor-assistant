@@ -1,4 +1,4 @@
-# To get a Slack Webhook URL, follow instruction here: https://api.slack.com/messaging/webhooks
+
 name: "Contributor Assistant"
 
 on:
@@ -21,5 +21,20 @@ jobs:
         with:
          deno-version: v1.x
          run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/generate-pr-check-list.ts ${{ github.repository }}
-      
+
+      - name: notify via chat client
+        uses: denolib/setup-deno@v2
+        with:
+         deno-version: v1.x
+         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/notify-via-chat-client.ts ${{ github.repository }}
+
+      - name: reward contributor
+        uses: denolib/setup-deno@v2
+        with:
+         deno-version: v1.x
+         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/reward-contributor.ts ${{ github.repository }}
+
+
+# Background Infos 
+# To get a Slack Webhook URL, follow instruction here: https://api.slack.com/messaging/webhooks
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/context-and-expression-syntax-for-github-actions#github-context
