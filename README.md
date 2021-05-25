@@ -1,1 +1,1 @@
-# contributor-assistant
+# Contributor Assistant
