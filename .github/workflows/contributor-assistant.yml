@@ -1,0 +1,24 @@
+name: "Contributor Assistant"
+on:
+  pull_request_target:
+    types: [opened,closed,synchronize]
+
+jobs:
+  ContributorAssistant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Contributor Assistant"
+        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the Contributor Document and I hereby agree to it.') || github.event_name == 'pull_request_target'
+        # Beta Release
+        run: deno run --allow-net https://github.com/cla-assistant/contributor-assistant/blob/main/src/cla-functions/request-signature.ts ${{ github.repository }}
+        # uses: cla-assistant/github-action@v2.1.3-beta
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # the below token should have repo scope and must be manually added by you in the repository's secret
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
+        with:
+          path-to-signatures: 'signatures/version1/contributor-agreements.json'
+          path-to-document: 'https://github.com/michael-spengler/collaboration-documents/blob/main/contributor-document.md' # e.g. a CLA, DCO, Contributor Guidelines or a general contributor document
+          # branch should not be protected
+          branch: 'main'
+          allowlist: user1,bot*
