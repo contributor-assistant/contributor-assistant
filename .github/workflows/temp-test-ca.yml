@@ -1,19 +1,36 @@
 # To get a Slack Webhook URL, follow instruction here: https://api.slack.com/messaging/webhooks
 
-name: "Notification regarding New Pull Request via Slack"
-
+name: "Contributor Assistant"
 on:
-  pull_request_target: 
-    types: [opened] 
-
+  pull_request_target:
+    types: [opened,closed,synchronize]
 jobs:
-  notifyViaSlack:
+  Contributor Assistant:
     runs-on: ubuntu-latest
 
     steps:
+      - name: ask for signature
       - uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/test-pr-handling.ts ${{ github.repository }}
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ github.repository }}
+
+      - name: generate check list
+      - uses: denolib/setup-deno@v2
+        with:
+         deno-version: v1.x
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/generate-pr-check-list.ts ${{ github.repository }}
+
+      - name: notify via chat client
+      - uses: denolib/setup-deno@v2
+        with:
+         deno-version: v1.x
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/notify-via-chat-client.ts ${{ github.repository }}
+
+      - name: reward contributor
+      - uses: denolib/setup-deno@v2
+        with:
+         deno-version: v1.x
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/reward-contributor.ts ${{ github.repository }}
 
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/context-and-expression-syntax-for-github-actions#github-context
