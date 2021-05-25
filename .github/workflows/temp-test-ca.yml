@@ -32,5 +32,8 @@ jobs:
         with:
          deno-version: v1.x
       - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/reward-contributor.ts ${{ github.repository }}
-
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # the below token should have repo scope and must be manually added by you in the repository's secret
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/context-and-expression-syntax-for-github-actions#github-context
