@@ -14,6 +14,6 @@ jobs:
       - uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-      - run: deno run --allow-net https://github.com/cla-assistant/contributor-assistant/blob/main/src/cla-functions/request-signature.ts ${{ github.repository }}
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/test-pr-handling.ts ${{ github.repository }}
 
 # https://docs.github.com/en/free-pro-team@latest/actions/reference/context-and-expression-syntax-for-github-actions#github-context
