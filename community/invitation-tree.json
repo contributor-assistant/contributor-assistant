@@ -13,7 +13,13 @@
             "communityMemberGHUser": "michael-spengler",
             "walletAddress": "0xA63CD0d627c34Ce3958c4a82E6bB12F7b9C1c324",
             "invitees": [
-
+                {
+                    "communityMemberGHUser": "divyanshbajpaj",
+                    "walletAddress": "tbd",
+                    "invitees": [
+                        
+                    ]
+                },
             ]
         },
         {
