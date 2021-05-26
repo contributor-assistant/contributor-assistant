@@ -1,0 +1,27 @@
+{
+    "communityMemberGHUser": "cac-community",
+    "walletAddress": "tbd",
+    "invitees": [
+        {
+            "communityMemberGHUser": "doraschletz",
+            "walletAddress": "tbd",
+            "invitees": [
+
+            ]
+        },
+        {
+            "communityMemberGHUser": "michael-spengler",
+            "walletAddress": "0xA63CD0d627c34Ce3958c4a82E6bB12F7b9C1c324",
+            "invitees": [
+
+            ]
+        },
+        {
+            "communityMemberGHUser": "kostkaro",
+            "walletAddress": "tbd",
+            "invitees": [
+
+            ]
+        }      
+    ]
+}
