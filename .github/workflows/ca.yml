@@ -14,26 +14,26 @@ jobs:
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ github.repository }}
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ github.repository }}
 #         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }} demo to show how to access secrets
 
       - name: generate check list
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/generate-pr-check-list.ts ${{ github.repository }}
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/generate-pr-check-list.ts ${{ github.repository }}
 
       - name: notify via chat client
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/notify-via-chat-client.ts ${{ github.repository }}
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/notify-via-chat-client.ts ${{ github.repository }}
 
       - name: reward contributor
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/reward-contributor.ts ${{ github.repository }}
+      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/reward-contributor.ts ${{ github.repository }}
 
 
 # Background Infos 
