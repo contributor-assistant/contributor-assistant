@@ -14,7 +14,7 @@ jobs:
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ github.repository }}
+         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ github.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
 
       - name: generate check list
         uses: denolib/setup-deno@v2
