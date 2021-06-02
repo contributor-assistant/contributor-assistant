@@ -33,7 +33,7 @@ jobs:
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/generate-pr-check-list.ts ${{ github.repository }}
+      - run: deno run --allow-net ./src/pr-quality-functions/generate-pr-check-list.ts ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }} ${{ github.event.pull_request.number }}
 
       - name: notify via chat client
         uses: denolib/setup-deno@v2
