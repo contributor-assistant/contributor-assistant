@@ -40,6 +40,8 @@ async function getContent(repo: string, path: string): Promise<string> {
 
     const base64Content = (await Request.get(url, defaultOptions)).content
 
+    console.log(base64Content)
+    
     const content = window.atob(base64Content)
 
     return content
