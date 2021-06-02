@@ -4,17 +4,29 @@ name: "Contributor Assistant"
 on:
   pull_request_target:
     types: [opened,closed,synchronize]
+    
 
 jobs:
   Contributor-Assistant:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+      - name: Checkout my-organization/awesome-action
+        uses: actions/checkout@v2
+        with:
+          repository: cla-assistant/contributor-assistant
+          ref: refs/heads/main
+          # GitHub's personal access token with access to `my-organization/awesome-action`
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
+          persist-credentials: false
+          # path: ./.github/actions/awesome-action
+          
       - name: ask for signature
         uses: denolib/setup-deno@v2
         with:
          deno-version: v1.x
-      - run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ github.repository }}
+      - run: deno run --allow-net ./src/cla-functions/request-signature.ts ${{ github.repository }}
 #         run: deno run --allow-net https://raw.githubusercontent.com/michael-spengler/collaboration-documents/main/temporary-tests/ask-for-signature.ts ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }} demo to show how to access secrets
 
       - name: generate check list
