@@ -4,4 +4,4 @@
 
 **Not required, but recommended :)**
 - [ ] I am a member of the [Contributor Assistant Community](https://t.me/joinchat/5kLsF25XyJUxYjUy)
-- [ ] I am represented in the [Contributor Assistant Community Invitation Tree](https://github.com/cla-assistant/contributor-assistant/blob/main/community/invitation-tree.json) 
+- [ ] I am represented in the [Contributor Assistant Community Invitation Tree](https://github.com/cla-assistant/contributor-assistant/blob/main/community/invitation-tree.json)
