@@ -1,24 +1,40 @@
 {
     "communityMemberGHUser": "cac-community",
     "walletAddress": "tbd",
+    "joinedOn": "2021-05-27T12:56:58.573Z",
+    "score": "?",
     "invitees": [
         {
             "communityMemberGHUser": "doraschletz",
             "walletAddress": "tbd",
+            "joinedOn": "2021-05-27T12:56:58.573Z",
+            "score": "?",
             "invitees": [
 
             ]
         },
         {
             "communityMemberGHUser": "michael-spengler",
-            "walletAddress": "0xA63CD0d627c34Ce3958c4a82E6bB12F7b9C1c324",
+            "walletAddress": "",
+            "joinedOn": "2021-05-27T12:56:58.573Z",
+            "score": "?",
             "invitees": [
-
+                {
+                    "communityMemberGHUser": "divyanshbajpaj",
+                    "walletAddress": "tbd",
+                    "joinedOn": "2021-05-27T12:56:58.573Z",
+                    "score": "?",    
+                    "invitees": [
+                        
+                    ]
+                },
             ]
         },
         {
             "communityMemberGHUser": "kostkaro",
             "walletAddress": "tbd",
+            "joinedOn": "2021-05-27T12:56:58.573Z",
+            "score": "?",
             "invitees": [
 
             ]

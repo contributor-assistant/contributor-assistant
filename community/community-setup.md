@@ -22,3 +22,15 @@ Inviting a friend and successful open source contributor can be done in the foll
 3. As soon as the amount is transferred and as soon everything is ready the PR (see step 1) can be merged
 
 
+## Considerations
+
+### Wallet Balance
+
+### Score
+You can improve your score by:
+tbd
+
+Your score will be reduced whenever...
+tbd
+
+
