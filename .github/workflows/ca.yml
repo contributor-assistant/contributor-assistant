@@ -3,7 +3,7 @@ name: "Contributor Assistant"
 
 on:
   pull_request_target:
-    types: [opened,closed,synchronize]
+    types: [opened,reopened,closed,synchronize]
     
 
 jobs:
