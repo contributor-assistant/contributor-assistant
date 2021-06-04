@@ -29,5 +29,5 @@ runs:
         deno_install="$HOME/.deno/bin"
         echo $deno_install >> $GITHUB_PATH
       shell: bash
-    - run: deno run --allow-net ${{ github.action_path }}/request-signature.ts ${{ inputs.branch }}
+    - run: deno run --allow-net ./src/cla/request-signature.ts ${{ inputs.branch }}
       shell: bash
