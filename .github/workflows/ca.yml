@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Checkout my-organization/awesome-action
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2 # this is not needed if the called action is in a different repository
         with:
           repository: cla-assistant/contributor-assistant
           ref: refs/heads/main
