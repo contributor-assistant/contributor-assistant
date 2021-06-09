@@ -1,8 +1,7 @@
 import { action, context } from "../utils.ts";
 import { getCommitters } from "./graphql.ts";
-import { ExitCode } from "./exit.ts";
 import { checkAllowList } from "./allowList.ts";
-import { setupOptions } from "./options.ts";
+import { options } from "./options.ts";
 import {
   ClafileContentAndSha,
   CommitterMap,
@@ -13,30 +12,9 @@ import {
 import { createFile, getFileContent, updateFile } from "./persistence.ts";
 import prCommentSetup from "./pr/pullRequestComment.ts"
 import { reRunLastWorkFlowIfRequired } from "./pullRerunRunner.ts";;
-import type { CLAOptions } from "./options.ts";
 import type { RestEndpointMethodTypes } from "../deps.ts";
 
-export async function setup(options: CLAOptions) {
-  action.info("Contributor Assistant: CLA process started");
-
-  options.githubToken ??= Deno.env.get("GITHUB_TOKEN") ?? "";
-  options.personalAccessToken ??= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
-
-  if (options.githubToken === "") {
-    action.fatal(
-      "Missing github token. Please provide one as an environment variable.",
-      ExitCode.MissingGithubToken,
-    );
-  }
-  if (options.personalAccessToken === "") {
-    action.fatal(
-      "Missing personal access token (https://github.com/settings/tokens/new). Please provide one as an environment variable.",
-      ExitCode.MissingPersonalAccessToken,
-    );
-  }
-
-  setupOptions(options);
-
+export async function setup() {
   let committerMap = getInitialCommittersMap()
 
   let committers = await getCommitters();
@@ -89,7 +67,7 @@ async function getCLAFileContentandSHA(
     action.fatal("No content", -1);
   } else {
     const sha = result.data.sha;
-    const claFileContent = JSON.parse(btoa(result.data.content));
+    const claFileContent = JSON.parse(atob(result.data.content));
     return { claFileContent, sha };
   }
 }

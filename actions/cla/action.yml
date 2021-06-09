@@ -7,15 +7,12 @@ branding:
 inputs:
   signatures-path:
     description: "Give a path for storing signatures in a json file "
-    default: "./signatures/cla.json"
     required: false
   branch:
     description: "provide a branch where all the signatures are stored"
-    default: "main"
     required: false
   allowlist:
     description: "users in the allow list don't have to sign the CLA document"
-    default: ""
     required: false
   # WIP
 runs:
@@ -29,5 +26,5 @@ runs:
         deno_install="$HOME/.deno/bin"
         echo $deno_install >> $GITHUB_PATH
       shell: bash
-    - run: deno run --allow-net --allow-env ./src/cla/cli.ts --branch ${{ inputs.branch }}
+    - run: deno run -Aq ${{ github.action_path }}/../../src/cla-functions/cli.ts --branch ${{ inputs.branch }}
       shell: bash

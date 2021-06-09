@@ -1,13 +1,47 @@
-import { join } from "../deps.ts";
-import { context, graphql, octokit } from "../utils.ts";
+import { context, personalOctokit } from "../utils.ts";
 import { CommittersDetails } from "./interfaces.ts";
 
-export async function getCommitters(): Promise<CommittersDetails[]> {
-  const query = await graphql.read(
-    join(import.meta.url, "./getCommitters.gql"),
-  );
+const query = `
+query($owner:String! $name:String! $number:Int! $cursor:String!) {
+  repository(owner: $owner, name: $name) {
+      pullRequest(number: $number) {
+          commits(first: 100, after: $cursor) {
+              totalCount
+              edges {
+                  node {
+                      commit {
+                          author {
+                              email
+                              name
+                              user {
+                                  id
+                                  databaseId
+                                  login
+                              }
+                          }
+                          committer {
+                              name
+                              user {
+                                  id
+                                  databaseId
+                                  login
+                              }
+                          }
+                      }
+                  }
+                  cursor
+              }
+              pageInfo {
+                  endCursor
+                  hasNextPage
+              }
+          }
+      }
+  }
+}`
 
-  const response: any = await octokit.graphql(query, {
+export async function getCommitters(): Promise<CommittersDetails[]> {
+  const response: any = await personalOctokit.graphql(query.replace(/( |\t)/g, ""), {
     owner: context.repo.owner,
     name: context.repo.repo,
     number: context.issue.number,
