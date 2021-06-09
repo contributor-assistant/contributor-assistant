@@ -1,32 +1,18 @@
-import * as action from "../utils/action.ts";
-import { initOctokit } from "../utils/octokit.ts";
+import { action, context, pr } from "../utils.ts";
+import { ExitCode } from "./exit.ts";
+import { setup } from "./setup.ts";
+import type { CLAOptions } from "./options.ts";
 
-enum ExitCode {
-  Success,
-  MissingGithubToken,
-  MissingPersonalAccessToken,
-}
-
-export async function setup(githubToken: string, personalAccessToken: string) {
+export default async function cla(options: CLAOptions) {
   action.info("Contributor Assistant: CLA process started");
 
-  if (githubToken === "") {
-    action.fatal(
-      ExitCode.MissingGithubToken,
-      "Missing github token.",
-      "Please provide one as an environment variable.",
-    );
+  try { 
+    if (context.payload.action === 'closed' && options.lockPullRequestAfterMerge) {
+      return pr.lock()
+    } else {
+      await setup(options);
+    }
+  } catch (error) {
+    action.fatal(String(error.message), ExitCode.FatalError)
   }
-
-  if (personalAccessToken === "") {
-    action.fatal(
-      ExitCode.MissingPersonalAccessToken,
-      "Missing personal access token.",
-      "Please provide one as an environment variable.",
-    );
-  }
-
-  initOctokit(githubToken);
-
-  // WIP
 }

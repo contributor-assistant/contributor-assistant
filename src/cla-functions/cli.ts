@@ -1,12 +1,10 @@
 import { parseFlags } from "../cli-deps.ts";
-import { setCallStatus } from "../utils/action.ts";
-import { setup } from "./mod.ts";
-
-setCallStatus("CLI");
+import cla from "./mod.ts";
 
 const flags = parseFlags(Deno.args);
 
-setup(
-  Deno.env.get("GITHUB_TOKEN") ?? `${flags.githubToken}`,
-  Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? `${flags.personalAccessToken}`,
-);
+cla({
+  githubToken: flags.githubToken ?? "",
+  personalAccessToken: flags.personalAccessToken ?? "",
+  ...flags, // TODO: sanitize inputs
+});

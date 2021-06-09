@@ -1,9 +1,11 @@
 import { join } from "../deps.ts";
-import { octokit } from "../utils/octokit.ts";
-import { readQuery } from "../utils/graphql.ts";
+import { context, graphql, octokit } from "../utils.ts";
+import { CommittersDetails } from "./interfaces.ts";
 
-export default async function getCommitters() /* : Promise<CommittersDetails[]> */ {
-  const query = await readQuery(join(import.meta.url, "./getCommitters.gql"));
+export async function getCommitters(): Promise<CommittersDetails[]> {
+  const query = await graphql.read(
+    join(import.meta.url, "./getCommitters.gql"),
+  );
 
   const response: any = await octokit.graphql(query, {
     owner: context.repo.owner,
@@ -12,10 +14,10 @@ export default async function getCommitters() /* : Promise<CommittersDetails[]> 
     cursor: "",
   });
 
-  let committers: CommittersDetails[] = [];
+  const committers: CommittersDetails[] = [];
   let filteredCommitters: CommittersDetails[] = [];
 
-  response.repository.pullRequest.commits.edges.forEach((edge) => {
+  response.repository.pullRequest.commits.edges.forEach((edge: any) => {
     const committer = extractUserFromCommit(edge.node.commit);
     let user = {
       name: committer.login || committer.name,
@@ -34,4 +36,9 @@ export default async function getCommitters() /* : Promise<CommittersDetails[]> 
     return committer.id !== 41898282;
   });
   return filteredCommitters;
+}
+
+function extractUserFromCommit(commit: any): any {
+  return commit.author.user || commit.committer.user || commit.author ||
+    commit.committer;
 }
