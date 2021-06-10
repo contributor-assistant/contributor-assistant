@@ -1,4 +1,5 @@
-export async function read(path: string): Promise<string> {
-  const query = await Deno.readTextFile(path);
-  return query.replace(/( |\t)/g, "");
+export function gql(strings: TemplateStringsArray, ...expr: string[]) {
+  return `${strings[0]}${
+    expr.reduce((acc, current, i) => `${acc} ${current} ${strings[i + 1]} `, "")
+  }`.replace(/\s+/g, " ");
 }

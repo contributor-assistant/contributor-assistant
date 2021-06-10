@@ -1,78 +1,128 @@
-import { context, personalOctokit } from "../utils.ts";
-import { CommittersDetails } from "./interfaces.ts";
+import { gql } from "../utils.ts";
 
-const query = `
-query($owner:String! $name:String! $number:Int! $cursor:String!) {
-  repository(owner: $owner, name: $name) {
-      pullRequest(number: $number) {
-          commits(first: 100, after: $cursor) {
-              totalCount
-              edges {
-                  node {
-                      commit {
-                          author {
-                              email
-                              name
-                              user {
-                                  id
-                                  databaseId
-                                  login
-                              }
-                          }
-                          committer {
-                              name
-                              user {
-                                  id
-                                  databaseId
-                                  login
-                              }
-                          }
-                      }
-                  }
-                  cursor
-              }
-              pageInfo {
-                  endCursor
-                  hasNextPage
-              }
-          }
-      }
+export interface User {
+  databaseId: number;
+}
+
+export interface GitActor {
+  name: string;
+  email: string;
+  user: User | null;
+}
+
+const gitActorFragment = gql`
+fragment gitActor on GitActor {
+  name
+  email
+  user {
+    databaseId
   }
-}`
+}`;
 
-export async function getCommitters(): Promise<CommittersDetails[]> {
-  const response: any = await personalOctokit.graphql(query.replace(/( |\t)/g, ""), {
-    owner: context.repo.owner,
-    name: context.repo.repo,
-    number: context.issue.number,
-    cursor: "",
-  });
+interface PageInfo {
+  endCursor: string;
+  hasNextPage: boolean;
+}
 
-  const committers: CommittersDetails[] = [];
-  let filteredCommitters: CommittersDetails[] = [];
+const pageInfoFragment = gql`
+fragment pageInfo on Commit {
+  pageInfo {
+    endCursor
+    hasNextPage
+  }
+}`;
 
-  response.repository.pullRequest.commits.edges.forEach((edge: any) => {
-    const committer = extractUserFromCommit(edge.node.commit);
-    let user = {
-      name: committer.login || committer.name,
-      id: committer.databaseId || "",
-      pullRequestNo: context.issue.number,
-    };
-    if (
-      committers.length === 0 || committers.map((c) => {
-          return c.name;
-        }).indexOf(user.name) < 0
-    ) {
-      committers.push(user);
+interface CoAuthors {
+  nodes: GitActor[];
+  pageInfo: PageInfo;
+}
+
+const coAuthorsFragment = gql`
+fragment coAuthors on Commit {
+  authors(first: $authorCount, after: $authorCursor) {
+    nodes {
+      ...gitActor
     }
-  });
-  filteredCommitters = committers.filter((committer) => {
-    return committer.id !== 41898282;
-  });
-  return filteredCommitters;
+    ...pageInfo
+  }
+}
+${gitActorFragment}
+${pageInfoFragment}`;
+
+export interface AuthorsResponse {
+  repository: {
+    pullRequest: {
+      commits: {
+        edges: {
+          cursor: string;
+          node: {
+            commit: {
+              author: GitActor;
+              authors: CoAuthors;
+            };
+          };
+        }[];
+        pageInfo: PageInfo;
+      };
+    };
+  };
 }
 
-function extractUserFromCommit(commit: any): any {
-  return commit.author.user || commit.committer.user || commit.author ||
-    commit.committer;
+export const authorsQuery = gql`
+query getAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor: String = "", $authorCursor: String = "", $commitCount: Int = 100, $authorCount: Int = 10) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $number) {
+      commits(first: $commitCount, after: $commitCursor) {
+        edges {
+          cursor
+          node {
+            commit {
+              author {
+                ...gitActor
+              }
+              ...coAuthors
+            }
+          }
+        }
+        ...pageInfo
+      }
+    }
+  }
 }
+${gitActorFragment}
+${coAuthorsFragment}
+${pageInfoFragment}`;
+
+export interface CoAuthorsResponse {
+  repository: {
+    pullRequest: {
+      commits: {
+        edges: {
+          node: {
+            commit: {
+              authors: CoAuthors;
+            };
+          };
+        }[];
+      };
+    };
+  };
+}
+
+export const coAuthorsQuery = gql`
+query getCoAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor: String!, $authorCount: Int = 100) {
+  repository(owner: $owner, name: $name) {
+    pullRequest(number: $number) {
+      commits(first: 1, after: $commitCursor) {
+        edges {
+          node {
+            commit {
+              ...coAuthors
+            }
+          }
+        }
+      }
+    }
+  }
+}
+${coAuthorsFragment}`;

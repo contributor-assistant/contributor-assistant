@@ -1,7 +1,8 @@
 /* ------ logging ------ */
 
-export function debug(message: string) {
+export function debug(message: string, object?: unknown) {
   issue("debug", message);
+  if (object !== undefined) issue("debug", Deno.inspect(object));
 }
 
 export function info(message: string) {

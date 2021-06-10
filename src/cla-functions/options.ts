@@ -28,7 +28,7 @@ export type ParsedCLAOptions = Omit<
   "githubToken" | "personalAccessToken"
 >;
 export let options: ParsedCLAOptions;
-export let remoteRepo: boolean;
+export let isRemoteRepo: boolean;
 
 export async function setupOptions(opts: CLAOptions) {
   opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
@@ -54,16 +54,16 @@ export async function setupOptions(opts: CLAOptions) {
     if (opts.remoteRepoName === undefined) {
       action.fatal("Please provide a repository name.", -1);
     }
-    remoteRepo = true;
+    isRemoteRepo = true;
   }
 
   opts.lockPullRequestAfterMerge ??= false;
   opts.allowList ??= [];
   opts.remoteRepoName ??= context.repo.repo;
   opts.remoteOrgName ??= context.repo.owner;
-  opts.signaturesPath ??= "signatures/cla.json";
+  opts.signaturesPath ??= ".github/contributor-assistant/cla.json";
   if (opts.branch === undefined) {
-    const repo = await (remoteRepo ? personalOctokit : octokit).repos.get({
+    const repo = await (isRemoteRepo ? personalOctokit : octokit).repos.get({
       repo: opts.remoteRepoName,
       owner: opts.remoteOrgName,
     });
