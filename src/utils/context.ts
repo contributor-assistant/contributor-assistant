@@ -1,6 +1,6 @@
 // Originally pulled from https://github.com/JasonEtco/actions-toolkit/blob/main/src/context.ts
 import { existsSync } from "../deps.ts";
-import { readJsonSync } from "./json.ts";
+import * as json from "./json.ts";
 import {WebhookPayload} from './ctx_interfaces.ts'
 import { warning } from "./action.ts";
 
@@ -31,7 +31,7 @@ export class Context {
     const event_path = Deno.env.get("GITHUB_EVENT_PATH");
     if (event_path !== undefined) {
       if (existsSync(event_path)) {
-        this.payload = readJsonSync(event_path);
+        this.payload = json.readSync(event_path);
       } else {
         warning(`GITHUB_EVENT_PATH ${event_path} does not exist`)
       }

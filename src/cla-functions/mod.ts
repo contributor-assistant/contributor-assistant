@@ -1,24 +1,26 @@
 import { action, context, pr } from "../utils.ts";
-import { ExitCode } from "./exit.ts";
-import { setup } from "./setup.ts";
 import { options, setupOptions } from "./options.ts";
 import type { CLAOptions } from "./options.ts";
+import { setup } from "./setup.ts";
 
 export default async function cla(rawOptions: CLAOptions) {
   action.info("Contributor Assistant: CLA process started");
 
-  await setupOptions(rawOptions);
+  setupOptions(rawOptions);
 
   try {
     if (
-      context.payload.action === "closed" && options.lockPullRequestAfterMerge
+      context.payload.action === "closed" && options.lockPRAfterMerge
     ) {
-      return pr.lock();
+      action.info(
+        "Locking the Pull Request to safe guard the Pull Request CLA Signatures",
+      );
+      await pr.lock();
     } else {
       await setup();
     }
   } catch (error) {
     action.debug(String(error.stack));
-    action.fatal(String(error.message), ExitCode.FatalError);
+    action.fail(String(error.message));
   }
 }

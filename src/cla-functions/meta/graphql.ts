@@ -1,4 +1,4 @@
-import { gql } from "../utils.ts";
+import { gql } from "../../utils.ts";
 
 export interface User {
   databaseId: number;
@@ -24,14 +24,6 @@ interface PageInfo {
   hasNextPage: boolean;
 }
 
-const pageInfoFragment = gql`
-fragment pageInfo on Commit {
-  pageInfo {
-    endCursor
-    hasNextPage
-  }
-}`;
-
 interface CoAuthors {
   nodes: GitActor[];
   pageInfo: PageInfo;
@@ -43,11 +35,13 @@ fragment coAuthors on Commit {
     nodes {
       ...gitActor
     }
-    ...pageInfo
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
   }
 }
-${gitActorFragment}
-${pageInfoFragment}`;
+${gitActorFragment}`;
 
 export interface AuthorsResponse {
   repository: {
@@ -84,14 +78,16 @@ query getAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor: 
             }
           }
         }
-        ...pageInfo
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
       }
     }
   }
 }
 ${gitActorFragment}
-${coAuthorsFragment}
-${pageInfoFragment}`;
+${coAuthorsFragment}`;
 
 export interface CoAuthorsResponse {
   repository: {

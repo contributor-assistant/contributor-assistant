@@ -2,82 +2,94 @@ import {
   action,
   context,
   initOctokit,
-  octokit,
-  personalOctokit,
 } from "../utils.ts";
-import { ExitCode } from "./exit.ts";
+import type { DeepRequired } from "../utils.ts";
+
+export interface LocalStorage {
+  type: "local";
+  branch?: string;
+  path?: string;
+}
+
+export interface RemoteGithubStorage extends Omit<LocalStorage, "type"> {
+  type: "remote-github";
+  owner?: string;
+  repo: string;
+}
 
 export interface CLAOptions {
   githubToken: string;
   personalAccessToken: string;
-  lockPullRequestAfterMerge?: boolean;
-  allowList?: string[];
-  remoteRepoName?: string;
-  remoteOrgName?: string;
-  signaturesPath?: string;
-  branch?: string;
-  commitMessage?: string;
-  signedCommitMessage?: string;
-  allSignedPrComment?: string;
-  notSignedPrComment?: string;
-  prSignComment?: string;
+  CLAPath: string;
+  storage?: LocalStorage | RemoteGithubStorage;
+  message?: {
+    commit?: {
+      setup?: string;
+      signed?: string;
+    };
+    comment?: {
+      allSigned?: string;
+      notSigned?: string;
+      sign?: string;
+    };
+  };
+  ignoreList?: string[];
+  lockPRAfterMerge?: boolean;
 }
 
 export type ParsedCLAOptions = Omit<
-  Required<CLAOptions>,
+  DeepRequired<CLAOptions>,
   "githubToken" | "personalAccessToken"
 >;
 export let options: ParsedCLAOptions;
-export let isRemoteRepo: boolean;
 
-export async function setupOptions(opts: CLAOptions) {
+export function setupOptions(opts: CLAOptions) {
   opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
   opts.personalAccessToken ||= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
 
   action.debug("Raw options", opts);
 
   if (opts.githubToken === "") {
-    action.fatal(
+    action.fail(
       "Missing github token. Please provide one as an environment variable.",
-      ExitCode.MissingGithubToken,
     );
   }
   if (opts.personalAccessToken === "") {
-    action.fatal(
+    action.fail(
       "Missing personal access token (https://github.com/settings/tokens/new). Please provide one as an environment variable.",
-      ExitCode.MissingPersonalAccessToken,
     );
   }
+  if (opts.CLAPath === "") {
+    action.fail("Missing CLA path.");
+  }
   initOctokit(opts.githubToken, opts.personalAccessToken);
-  
-  if (opts.remoteOrgName !== undefined) {
-    if (opts.remoteRepoName === undefined) {
-      action.fatal("Please provide a repository name.", -1);
-    }
-    isRemoteRepo = true;
-  }
 
-  opts.lockPullRequestAfterMerge ??= false;
-  opts.allowList ??= [];
-  opts.remoteRepoName ??= context.repo.repo;
-  opts.remoteOrgName ??= context.repo.owner;
-  opts.signaturesPath ??= ".github/contributor-assistant/cla.json";
-  if (opts.branch === undefined) {
-    const repo = await (isRemoteRepo ? personalOctokit : octokit).repos.get({
-      repo: opts.remoteRepoName,
-      owner: opts.remoteOrgName,
-    });
-    opts.branch = repo.data.default_branch;
+  opts.storage ??= { type: "local" };
+  if (opts.storage.type === "remote-github") {
+    opts.storage.owner ??= context.repo.owner;
   }
-  opts.commitMessage ??= "Creating file for storing CLA Signatures";
-  opts.signedCommitMessage ??=
-    "@$contributorName has signed the CLA from Pull Request #$pullRequestNo";
-  opts.allSignedPrComment ??= "All contributors have signed the CLA  ✍️ ✅";
-  opts.notSignedPrComment ??=
-    "<br/>Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that $you sign our [Contributor License Agreement](${input.getPathToDocument()}) before we can accept your contribution. You can sign the CLA by just posting a Pull Request Comment same as the below format.<br/>";
-  opts.prSignComment ??=
-    "I have read the CLA Document and I hereby sign the CLA";
+  opts.storage.path ??= ".github/contributor-assistant/cla.json";
+  // storage.branch will defaults to the repository's default branch thanks to github API
+
+  opts.message = {
+    commit: {
+      setup: "Creating file for storing CLA Signatures",
+      signed:
+        "@${contributor-name} has signed the CLA from Pull Request #${pull-request-number}",
+      ...opts.message?.commit,
+    },
+    comment: {
+      allSigned: "All contributors have signed the CLA  ✍️ ✅",
+      notSigned:
+        "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} sign our [Contributor License Agreement](${cla-path}) before we can accept your contribution. You can sign the CLA by just posting a Pull Request Comment same as the below format.",
+      sign: "I have read the CLA Document and I hereby sign the CLA",
+      ...opts.message?.comment,
+    },
+  };
+
+  opts.ignoreList ??= [];
+  opts.lockPRAfterMerge ??= false;
 
   options = opts as ParsedCLAOptions;
-  action.debug("Parsed options", options)
+  action.debug("Parsed options", options);
 }

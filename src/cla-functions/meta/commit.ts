@@ -3,7 +3,7 @@ import {
   GH_ACTIONS_BOT_ID,
   personalOctokit,
   spliceArray,
-} from "../utils.ts";
+} from "../../utils.ts";
 import type { GitActor, User, AuthorsResponse, CoAuthorsResponse } from "./graphql.ts";
 import { authorsQuery, coAuthorsQuery } from "./graphql.ts";
 

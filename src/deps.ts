@@ -5,6 +5,7 @@ export {
   exists,
   existsSync,
 } from "https://x.nest.land/std@0.97.0/fs/exists.ts";
+export { parse as parseFlags } from "https://deno.land/std@0.97.0/flags/mod.ts";
 
 /* github toolkit */
 export { Octokit as Core } from "https://cdn.skypack.dev/@octokit/core@3.4.0?dts";

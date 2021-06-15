@@ -17,9 +17,9 @@ export function error(message: string) {
   issue("error", message);
 }
 
-export function fatal(message: string, exitCode: number): never {
+export function fail(message: string): never {
   error(message);
-  Deno.exit(exitCode);
+  Deno.exit(1);
 }
 
 const CMD_STRING = "::";
