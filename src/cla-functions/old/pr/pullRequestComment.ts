@@ -1,4 +1,4 @@
-import { octokit, context } from '../../utils.ts'
+import { octokit, context } from '../../../utils.ts'
 import signatureWithPRComment from './signatureComment.ts'
 import { commentContent } from './pullRequestCommentContent.ts'
 import {

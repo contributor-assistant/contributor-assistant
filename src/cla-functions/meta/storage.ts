@@ -6,26 +6,34 @@ import {
   personalOctokit,
 } from "../../utils.ts";
 import { options } from "../options.ts";
-import { defaultContent } from "./default.ts";
 import type { LocalStorage, RemoteGithubStorage } from "../options.ts";
 import type { CLAStorage } from "../types.ts";
+import { applicationType, storageVersion } from "./meta.ts";
+
+export const defaultContent: CLAStorage = {
+  type: applicationType,
+  version: storageVersion,
+  data: {
+    signatures: [],
+  }
+};
 
 export interface ghContent {
   content: CLAStorage;
   sha: string;
 }
 
-export function getStorage(): Promise<ghContent> {
+export function readStorage(): Promise<ghContent> {
   switch (options.storage.type) {
     case "local":
     case "remote-github":
-      return getGithubStorage(options.storage);
+      return readGithubStorage(options.storage);
     default:
       action.fail("Unknown storage type");
   }
 }
 
-async function getGithubStorage(
+async function readGithubStorage(
   storage: Required<LocalStorage | RemoteGithubStorage>,
 ): Promise<ghContent> {
   const kit = storage.type === "local" ? octokit : personalOctokit;

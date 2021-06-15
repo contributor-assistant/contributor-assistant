@@ -1,6 +1,7 @@
 import { octokit } from "./octokit.ts";
 import * as action from "./action.ts";
 import { context } from "./context.ts";
+import { RestEndpointMethodTypes } from "../deps.ts";
 
 export async function lock() {
   const prNumber = context.issue.number;
@@ -26,7 +27,9 @@ export async function createComment(body: string) {
       `Error occurred when creating a pull request (#${prNumber}) comment: ${error.message}`,
     );
   });
-  action.debug(`Successfully created a pull request (#${prNumber}) comment: ${body}`);
+  action.debug(
+    `Successfully created a pull request (#${prNumber}) comment: ${body}`,
+  );
 }
 
 export async function updateComment(id: number, body: string) {
@@ -40,19 +43,32 @@ export async function updateComment(id: number, body: string) {
       `Error occurred when updating the pull request (#${prNumber}) comment #${id}: ${error.message}`,
     );
   });
-  action.debug(`Successfully updated the pull request (#${prNumber}) comment #${id}: ${body}`);
+  action.debug(
+    `Successfully updated the pull request (#${prNumber}) comment #${id}: ${body}`,
+  );
 }
 
-export async function listComments() {
+export type Comments = RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"]
+
+export async function listComments(): Promise<Comments> {
+  const comments: Comments = [];
   const prNumber = context.issue.number;
-  return octokit.issues.listComments({
-    ...context.repo,
-    issue_number: prNumber,
-  }).catch((error) => {
+  const iterator = octokit.paginate.iterator(
+    octokit.issues.listComments,
+    {
+      ...context.repo,
+      issue_number: prNumber,
+      per_page:100
+    }
+  )
+  try {
+    for await (const response of iterator) {
+      comments.push(...response.data)
+    }
+    return comments;
+  } catch (error) {
     throw new Error(
       `Error occurred when fetching pull request (#${prNumber}) comments: ${error.message}`,
     );
-  });
+  }
 }
-
-

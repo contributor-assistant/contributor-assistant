@@ -1,5 +1,5 @@
-import { context, octokit } from "../../utils.ts";
-import { options } from "../options.ts";
+import { context, octokit } from "../../../utils.ts";
+import { options } from "../../options.ts";
 import {
   CommitterMap,
   CommittersDetails,
