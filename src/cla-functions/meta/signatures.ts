@@ -4,6 +4,7 @@ import { options } from "../options.ts";
 
 export function getSignatureStatus(authors: Author[], data: CLAData): SignatureStatus {
   return {
+    newSignatories: false,
     signed: data.signatures.filter((signature) =>
       signature.prNumber === context.payload.pull_request?.number
     ),
@@ -28,7 +29,7 @@ function normalize(text: string): string {
 }
 
 export function updateSignatures(comments: pr.Comments, status: SignatureStatus, data: CLAData) {
-  const signatureText = normalize(options.message.comment.sign);
+  const signatureText = normalize(options.message.comment.signature);
   const signed = comments.filter((comment) =>
     normalize(comment.body ?? "") === signatureText
   );
@@ -44,6 +45,7 @@ export function updateSignatures(comments: pr.Comments, status: SignatureStatus,
   for (const comment of signed) {
     for (const coAuthor of status.unsigned) {
       if (hasCoAuthored(comment.user?.id)(coAuthor)) {
+        status.newSignatories = true;
         data.signatures.push({
           ...coAuthor,
           prNumber: context.issue.number,
@@ -54,6 +56,7 @@ export function updateSignatures(comments: pr.Comments, status: SignatureStatus,
 
     const author = status.unsigned.find(isCommentAuthor(comment));
     if (author !== undefined) {
+      status.newSignatories = true;
       spliceArray(status.unsigned, isCommentAuthor(comment));
       data.signatures.push({
         ...author,

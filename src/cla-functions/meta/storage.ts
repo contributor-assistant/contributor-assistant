@@ -15,15 +15,17 @@ export const defaultContent: CLAStorage = {
   version: storageVersion,
   data: {
     signatures: [],
-  }
+  },
 };
 
-export interface ghContent {
+export interface ghStorage {
   content: CLAStorage;
   sha: string;
 }
 
-export function readStorage(): Promise<ghContent> {
+export type StorageContent = ghStorage;
+
+export function readStorage(): Promise<StorageContent> {
   switch (options.storage.type) {
     case "local":
     case "remote-github":
@@ -35,7 +37,7 @@ export function readStorage(): Promise<ghContent> {
 
 async function readGithubStorage(
   storage: Required<LocalStorage | RemoteGithubStorage>,
-): Promise<ghContent> {
+): Promise<ghStorage> {
   const kit = storage.type === "local" ? octokit : personalOctokit;
   const fileLocation = storage.type === "local"
     ? {
@@ -80,4 +82,36 @@ async function readGithubStorage(
       );
     }
   }
+}
+
+export function writeStorage(storage: StorageContent) {
+  switch (options.storage.type) {
+    case "local":
+    case "remote-github":
+      return writeGithubStorage(storage, options.storage);
+    default:
+      action.fail("Unknown storage type");
+  }
+}
+
+async function writeGithubStorage(
+  file: ghStorage,
+  storage: Required<LocalStorage | RemoteGithubStorage>,
+) {
+  const kit = storage.type === "local" ? octokit : personalOctokit;
+  const fileLocation = storage.type === "local"
+    ? {
+      ...context.repo,
+      path: storage.path,
+      branch: storage.branch,
+    }
+    : storage;
+  await kit.repos.createOrUpdateFileContents({
+    ...fileLocation,
+    message: options.message.commit.signed,
+    content: json.toBase64(file.content),
+    sha: file.sha,
+  }).catch((err) =>
+    action.fail(`Could not update the JSON file: ${err.message}`)
+  );
 }

@@ -8,6 +8,7 @@ export type AuthorSignature = Author & {
 };
 
 export interface SignatureStatus {
+  newSignatories: boolean;
   signed: AuthorSignature[];
   unsigned: Author[];
   unknown: Author[];

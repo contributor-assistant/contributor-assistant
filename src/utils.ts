@@ -6,5 +6,5 @@ export * from "./utils/context.ts";
 export * from "./utils/octokit.ts";
 export * from "./utils/const.ts";
 export * from "./utils/snippets.ts";
-export * from "./utils/file.ts";
+export * from "./utils/storage.ts";
 export * from "./utils/types.ts";

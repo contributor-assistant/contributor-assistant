@@ -1,13 +1,15 @@
 import { filterIgnored } from "./meta/ignoreList.ts";
 import { getCommitters } from "./meta/commit.ts";
-import { checkStorageContent, pr } from "../utils.ts";
-import { defaultContent, readStorage } from "./meta/storage.ts";
+import { action, checkStorageContent, pr, context } from "../utils.ts";
+import { defaultContent, readStorage, writeStorage } from "./meta/storage.ts";
 import { getSignatureStatus, updateSignatures } from "./meta/signatures.ts";
 import { commentPR } from "./meta/comment.ts";
+import { options } from "./options.ts";
 
 export async function setup() {
-  let { content, sha } = await readStorage();
-  content = checkStorageContent(content, defaultContent);
+  const storage = await readStorage();
+  const { content } = storage;
+  checkStorageContent(content, defaultContent);
 
   const committers = filterIgnored(await getCommitters());
 
@@ -16,6 +18,18 @@ export async function setup() {
   const comments = await pr.listComments();
   updateSignatures(comments, status, content.data);
 
-  commentPR(comments, status)
-  // writeStorage()
+  commentPR(comments, status, content.data);
+
+  if (status.newSignatories) {
+    writeStorage(storage);
+  }
+
+  if (status.unsigned.length === 0) {
+    action.info(options.message.comment.allSigned);
+    return reRunLastWorkFlowIfRequired();
+  } else {
+    action.fail(
+      `Committers of Pull Request #${context.issue.number} have to sign the CLA 📝`,
+    );
+  }
 }

@@ -29,8 +29,8 @@ export interface CLAOptions {
     };
     comment?: {
       allSigned?: string;
-      notSigned?: string;
-      sign?: string;
+      header?: string;
+      signature?: string;
     };
   };
   ignoreList?: string[];
@@ -80,9 +80,9 @@ export function setupOptions(opts: CLAOptions) {
     },
     comment: {
       allSigned: "All contributors have signed the CLA  ✍️ ✅",
-      notSigned:
-        "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} sign our [Contributor License Agreement](${cla-path}) before we can accept your contribution. You can sign the CLA by just posting a Pull Request Comment same as the below format.",
-      sign: "I have read the CLA Document and I hereby sign the CLA",
+      header:
+        "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} signature our [Contributor License Agreement](${cla-path}) before we can accept your contribution. You can signature the CLA by just posting a Pull Request Comment same as the below format.",
+      signature: "I have read the CLA Document and I hereby signature the CLA",
       ...opts.message?.comment,
     },
   };

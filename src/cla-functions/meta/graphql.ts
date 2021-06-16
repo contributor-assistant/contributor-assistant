@@ -2,6 +2,7 @@ import { gql } from "../../utils.ts";
 
 export interface User {
   databaseId: number;
+  login: string
 }
 
 export interface GitActor {
@@ -16,6 +17,7 @@ fragment gitActor on GitActor {
   email
   user {
     databaseId
+    login
   }
 }`;
 
