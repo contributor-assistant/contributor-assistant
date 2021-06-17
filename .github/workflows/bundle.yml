@@ -2,8 +2,7 @@ name: Bundle
 
 on:
   workflow_run:
-    workflows: [Test]
-    branches: [main, refactors]
+    workflows: ["Test"]
     types:
       - completed
 
