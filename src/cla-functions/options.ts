@@ -65,7 +65,7 @@ export let options: ParsedCLAOptions;
 
 function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
   for (const key in obj) {
-    // @ts-ignore
+    // @ts-ignore: deno type bug with the string comparaison
     if (obj[key] === undefined || obj[key] === "") {
       delete obj[key];
     }
@@ -119,7 +119,7 @@ export function setupOptions(opts: CLAOptions) {
       summary:
         "**${signed}** out of **${total}** committers have signed the CLA.",
       footer:
-        "<sub>You can reTrigger this bot by commenting **${reTrigger}** in this Pull Request</sub>",
+        "<sub>You can re-trigger this bot by commenting **${re-trigger}** in this Pull Request</sub>",
       newSignature: "*(new signature required)*",
       coAuthorWarning:
         "*You have co-authored a commit with the following people, who are not registered on Github. By signing, you also sign on their behalf.*",

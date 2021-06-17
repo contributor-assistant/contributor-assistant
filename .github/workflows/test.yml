@@ -7,29 +7,15 @@ on:
     - cron: "0 9 * * *"
 
 jobs:
-  stable:
+  test:
     name: Deno Stable
 
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
-    steps:
-      - name: Setup repo
-        uses: actions/checkout@v2
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: "1.11.1"
-
-      - name: Run tests
-        run: deno test --allow-net --allow-env
-
-  nightly:
-    name: Deno Canary
-
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    strategy:
+      matrix:
+        deno: ["1.11.1", "v1.x", "canary"]
 
     steps:
       - name: Setup repo
@@ -38,7 +24,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: canary
+          deno-version: ${{ matrix.deno }}
 
       - name: Run tests
         run: deno test --allow-net --allow-env

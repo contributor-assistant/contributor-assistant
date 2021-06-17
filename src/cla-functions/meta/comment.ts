@@ -120,5 +120,5 @@ function createBody(status: SignatureStatus, data: CLAData): string {
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return body + text.footer.replace("${reTrigger}", input.reTrigger);
+  return body + text.footer.replace("${re-trigger}", input.reTrigger);
 }

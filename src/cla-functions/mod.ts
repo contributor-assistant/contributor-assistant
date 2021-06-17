@@ -17,8 +17,10 @@ export default async function cla(rawOptions: CLAOptions) {
         "Locking the Pull Request to safe guard the Pull Request CLA Signatures",
       );
       await pr.lock();
-    } else if (reRunRequired()) {
-      await reRun();
+    } else if (context.eventName === "issue_comment") {
+      if (reRunRequired()) {
+        await reRun();
+      }
     } else {
       await setup();
     }

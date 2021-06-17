@@ -2,7 +2,6 @@ import { action, context, normalizeText, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 
 export function reRunRequired(): boolean {
-  if (context.eventName !== "issue_comment") return false;
   const body = normalizeText(context.payload.comment?.body ?? "");
   return !!body.match(normalizeText(options.message.input.signature)) ||
     body === normalizeText(options.message.input.reTrigger);
