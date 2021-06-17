@@ -15,6 +15,18 @@ const flags = parseFlags(Deno.args, {
     "inputSignature",
     "inputReTrigger",
   ],
+  default: {
+    githubToken: "",
+    personalAccessToken: "",
+    CLAPath: "",
+    storageRemoteRepo: "",
+    storageRemoteOwner: "",
+    storageBranch: "",
+    storagePath: "",
+    ignoreList: "",
+    inputSignature: "",
+    inputReTrigger: "",
+  },
 });
 
 action.debug(Deno.inspect(flags));

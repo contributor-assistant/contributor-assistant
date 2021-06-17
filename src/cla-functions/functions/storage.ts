@@ -8,7 +8,7 @@ import {
 import { options } from "../options.ts";
 import type { LocalStorage, RemoteGithubStorage } from "../options.ts";
 import type { CLAStorage } from "../types.ts";
-import { applicationType, storageVersion } from "./meta.ts";
+import { applicationType, storageVersion } from "../meta.ts";
 
 export const defaultContent: CLAStorage = {
   type: applicationType,

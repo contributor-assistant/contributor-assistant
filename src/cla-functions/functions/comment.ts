@@ -1,6 +1,6 @@
 import { Author, CLAData, SignatureStatus } from "../types.ts";
 import { action, pr } from "../../utils.ts";
-import { applicationType } from "./meta.ts";
+import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
 
 const commentAnchor = `<!-- ${applicationType} comment anchor -->`;
