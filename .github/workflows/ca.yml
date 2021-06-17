@@ -21,8 +21,4 @@ jobs:
           persist-credentials: false
           
       - name: ask for signature
-        uses: ./src/cla
-
-# Background Infos 
-# To get a Slack Webhook URL, follow instruction here: https://api.slack.com/messaging/webhooks
-# https://docs.github.com/en/free-pro-team@latest/actions/reference/context-and-expression-syntax-for-github-actions#github-context
+        uses: ./actions/cla
