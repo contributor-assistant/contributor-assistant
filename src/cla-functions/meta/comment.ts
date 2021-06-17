@@ -5,7 +5,7 @@ import { options } from "../options.ts";
 
 const commentAnchor = `<!-- ${applicationType} comment anchor -->`;
 
-export function commentPR(
+export async function commentPR(
   comments: pr.Comments,
   status: SignatureStatus,
   data: CLAData,
@@ -15,12 +15,12 @@ export function commentPR(
   );
   if (botComment === undefined) {
     if (status.unsigned.length > 0 || status.unknown.length > 0) {
-      pr.createComment(createBody(status, data));
+      await pr.createComment(createBody(status, data));
     } else {
       action.info("no comment");
     }
   } else {
-    pr.updateComment(botComment.id, createBody(status, data));
+    await pr.updateComment(botComment.id, createBody(status, data));
   }
 }
 

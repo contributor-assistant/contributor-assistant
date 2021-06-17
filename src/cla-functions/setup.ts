@@ -18,10 +18,10 @@ export async function setup() {
   const comments = await pr.listComments();
   updateSignatures(comments, status, content.data);
 
-  commentPR(comments, status, content.data);
+  await commentPR(comments, status, content.data);
 
   if (status.newSignatories) {
-    writeStorage(storage);
+    await writeStorage(storage);
   }
 
   if (status.unsigned.length === 0) {

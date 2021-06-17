@@ -88,7 +88,6 @@ query getAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor: 
     }
   }
 }
-${gitActorFragment}
 ${coAuthorsFragment}`;
 
 export interface CoAuthorsResponse {
