@@ -32,7 +32,7 @@ export function updateSignatures(
   status: SignatureStatus,
   data: CLAData,
 ) {
-  const signatureText = normalizeText(options.message.comment.signature);
+  const signatureText = normalizeText(options.message.input.signature);
   const signed = comments.filter((comment) =>
     normalizeText(comment.body ?? "").match(signatureText)
   );

@@ -6,10 +6,10 @@ branding:
   color: blue
 inputs:
   GITHUB_TOKEN:
-    description: "GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}."
+    description: "GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets."
     required: false
   PERSONAL_ACCESS_TOKEN: 
-    description: "A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}."
+    description: "A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets."
     required: false
   cla-path:
     description: The document which shall be signed by the contributor(s). It can be any file e.g. inside the repository or it can be a gist.
@@ -50,7 +50,7 @@ runs:
       shell: bash
       # INPUT_* environment variables are missing in composite actions https://github.com/actions/runner/issues/665
     - run: |
-        deno run -q --allow-net --allow-env ${{ github.action_path }}/../../src/cla-functions/cli.ts \
+        deno run -Aq ${{ github.action_path }}/../../src/cla-functions/cli.ts \
           --github-token ${{ inputs.GITHUB_TOKEN }} \
           --personal-access-token ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
           --cla-path ${{ inputs.cla-path }} \

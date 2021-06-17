@@ -69,7 +69,7 @@ async function readGithubStorage(
         content: json.toBase64(content),
       }).catch((error) =>
         action.fail(
-          `Error occurred when creating the signed contributors file: ${error
+          `Error occurred when creating the signature file: ${error
             .message ||
             error}. Make sure the branch where signatures are stored is NOT protected.`,
         )

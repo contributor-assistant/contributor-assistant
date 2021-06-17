@@ -63,6 +63,16 @@ export type ParsedCLAOptions = Omit<
 >;
 export let options: ParsedCLAOptions;
 
+function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
+  for (const key in obj) {
+    // @ts-ignore
+    if (obj[key] === undefined || obj[key] === "") {
+      delete obj[key];
+    }
+  }
+  return obj;
+}
+
 export function setupOptions(opts: CLAOptions) {
   opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
   opts.personalAccessToken ||= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
@@ -88,8 +98,10 @@ export function setupOptions(opts: CLAOptions) {
   if (opts.storage.type === "remote-github") {
     opts.storage.owner ??= context.repo.owner;
   }
-  opts.storage.path ??= ".github/contributor-assistant/cla.json";
+  opts.storage.path ||= ".github/contributor-assistant/cla.json";
+
   // storage.branch will defaults to the repository's default branch thanks to github API
+  opts.storage.branch ||= undefined;
 
   opts.ignoreList ??= [];
   opts.lockPRAfterMerge ??= true;
@@ -98,7 +110,7 @@ export function setupOptions(opts: CLAOptions) {
     commit: {
       setup: "Creating file for storing CLA signatures",
       signed: "New CLA signatures on pull request #${pull-request-number}",
-      ...opts.message?.commit,
+      ...removeEmpty(opts.message?.commit),
     },
     comment: {
       allSigned: "All contributors have signed the CLA  ✍️ ✅",
@@ -114,12 +126,12 @@ export function setupOptions(opts: CLAOptions) {
       unknownAccount: "*unknown account*",
       unknownWarning:
         "Some commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
-      ...opts.message?.comment,
+      ...removeEmpty(opts.message?.comment),
     },
     input: {
       signature: "I have read the CLA Document and I hereby sign the CLA",
       reTrigger: "recheck",
-      ...opts.message?.input,
+      ...removeEmpty(opts.message?.input),
     },
   };
 
