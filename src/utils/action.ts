@@ -63,7 +63,9 @@ export async function workflowRuns(
   branch: string,
   workflowId: number,
   event: string,
-): Promise<RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["response"]["data"]> {
+): Promise<
+  RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["response"]["data"]
+> {
   const runs = await octokit.actions.listWorkflowRuns({
     ...context.repo,
     branch,
@@ -74,7 +76,7 @@ export async function workflowRuns(
       `Error occurred when fetching action workflow runs: ${error.message}`,
     );
   });
-  return runs.data
+  return runs.data;
 }
 
 export async function reRun(runId: number) {
@@ -91,7 +93,9 @@ export async function reRun(runId: number) {
 
 export async function getWorkflow(
   runId: number,
-): Promise<RestEndpointMethodTypes["actions"]["getWorkflowRun"]["response"]["data"]> {
+): Promise<
+  RestEndpointMethodTypes["actions"]["getWorkflowRun"]["response"]["data"]
+> {
   const run = await octokit.actions.getWorkflowRun({
     ...context.repo,
     run_id: runId,
@@ -100,5 +104,5 @@ export async function getWorkflow(
       `Error occurred when fetching workflow run ${runId}: ${error.message}`,
     );
   });
-  return run.data
+  return run.data;
 }

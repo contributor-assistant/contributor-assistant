@@ -6,6 +6,6 @@ export let octokit = new Octokit();
 export let personalOctokit = new Octokit();
 
 export function initOctokit(githubToken: string, personalAccessToken: string) {
-  octokit.auth(githubToken);
-  personalOctokit.auth(personalAccessToken);
+  octokit = new Octokit({ auth: githubToken });
+  personalOctokit = new Octokit({ auth: personalAccessToken });
 }

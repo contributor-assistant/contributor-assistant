@@ -19,5 +19,5 @@ export interface CLAData {
 }
 
 export interface CLAStorage extends Storage {
-  data: CLAData
+  data: CLAData;
 }

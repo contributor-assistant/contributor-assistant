@@ -1,8 +1,11 @@
 import type { Author, CLAData, SignatureStatus } from "../types.ts";
-import { context, pr, spliceArray, normalizeText } from "../../utils.ts";
+import { context, normalizeText, pr, spliceArray } from "../../utils.ts";
 import { options } from "../options.ts";
 
-export function getSignatureStatus(authors: Author[], data: CLAData): SignatureStatus {
+export function getSignatureStatus(
+  authors: Author[],
+  data: CLAData,
+): SignatureStatus {
   return {
     newSignatories: false,
     signed: data.signatures.filter((signature) =>
@@ -24,7 +27,11 @@ export function getSignatureStatus(authors: Author[], data: CLAData): SignatureS
   };
 }
 
-export function updateSignatures(comments: pr.Comments, status: SignatureStatus, data: CLAData) {
+export function updateSignatures(
+  comments: pr.Comments,
+  status: SignatureStatus,
+  data: CLAData,
+) {
   const signatureText = normalizeText(options.message.comment.signature);
   const signed = comments.filter((comment) =>
     normalizeText(comment.body ?? "").match(signatureText)

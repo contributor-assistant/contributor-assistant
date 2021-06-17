@@ -4,7 +4,12 @@ import {
   personalOctokit,
   spliceArray,
 } from "../../utils.ts";
-import type { GitActor, User, AuthorsResponse, CoAuthorsResponse } from "./graphql.ts";
+import type {
+  AuthorsResponse,
+  CoAuthorsResponse,
+  GitActor,
+  User,
+} from "./graphql.ts";
 import { authorsQuery, coAuthorsQuery } from "./graphql.ts";
 
 export type Author =

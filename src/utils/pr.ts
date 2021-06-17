@@ -62,7 +62,8 @@ export async function updateComment(id: number, body: string) {
   );
 }
 
-export type Comments = RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"]
+export type Comments =
+  RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"];
 
 export async function listComments(): Promise<Comments> {
   const comments: Comments = [];
@@ -72,12 +73,12 @@ export async function listComments(): Promise<Comments> {
     {
       ...context.repo,
       issue_number: prNumber,
-      per_page:100
-    }
-  )
+      per_page: 100,
+    },
+  );
   try {
     for await (const response of iterator) {
-      comments.push(...response.data)
+      comments.push(...response.data);
     }
     return comments;
   } catch (error) {

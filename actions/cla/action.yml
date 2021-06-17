@@ -1,30 +1,65 @@
-name: "Contributor assistant | CLA"
-description: "An action to handle the Contributor License Agreement (CLA)"
-author: "SAP"
+name: Contributor assistant | CLA
+description: An action to handle the Contributor License Agreement (CLA)
+author: SAP
 branding:
-  icon: "award"
+  icon: feather
   color: blue
 inputs:
-  signatures-path:
-    description: "Give a path for storing signatures in a json file "
+  GITHUB_TOKEN:
+    description: "GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}."
     required: false
-  branch:
-    description: "provide a branch where all the signatures are stored"
+  PERSONAL_ACCESS_TOKEN: 
+    description: "A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}."
     required: false
-  allowlist:
-    description: "users in the allow list don't have to sign the CLA document"
+  cla-path:
+    description: The document which shall be signed by the contributor(s). It can be any file e.g. inside the repository or it can be a gist.
+    required: true
+  storage-path:
+    description: The path where the signatures will be stored.
     required: false
-  # WIP
+  storage-branch:
+    description: The branch where the signatures will be stored.
+    required: false
+  storage-remote-repo:
+    description: The name of another repository to store the signatures.
+    required: false
+  storage-remote-owner:
+    description: The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.
+    required: false
+  ignore-list:
+    description: A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. The separator between the patterns is a comma.
+    required: false
+  lock-pr-after-merge:
+    description: Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Defaults to true.
+    required: false
+  input-signature:
+    description: The signature to be committed in order to sign the CLA.
+    required: false
+  input-re-trigger:
+    description: The keyword to re-trigger signature checks.
+    required: false
+
 runs:
-  using: "composite"
+  using: composite
   steps:
     - run: |
-        version="1.10.3"
-        curl -fsSL https://deno.land/x/dvm/install.sh | sh
-        source "$HOME/.bash_profile"
-        dvm install $version
-        deno_install="$HOME/.deno/bin"
-        echo $deno_install >> $GITHUB_PATH
+        curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.11.1
+        DENO_INSTALL="$HOME/.deno"
+        echo "DENO_INSTALL=$DENO_INSTALL" >> GITHUB_ENV
+        echo "$DENO_INSTALL/bin" >> $GITHUB_PATH
       shell: bash
-    - run: deno run -Aq ${{ github.action_path }}/../../src/cla-functions/cli.ts --branch ${{ inputs.branch }}
+      # INPUT_* environment variables are missing in composite actions https://github.com/actions/runner/issues/665
+    - run: |
+        deno run -q --allow-net --allow-env ${{ github.action_path }}/../../src/cla-functions/cli.ts \
+          --github-token ${{ inputs.GITHUB_TOKEN }} \
+          --personal-access-token ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
+          --cla-path ${{ inputs.cla-path }} \
+          --storage-path ${{ inputs.storage-path }} \
+          --storage-branch ${{ inputs.storage-branch }} \
+          --storage-remote-repo ${{ inputs.storage-remote-repo }} \
+          --storage-remote-owner ${{ inputs.storage-remote-owner }} \
+          --ignore-list ${{ inputs.ignore-list }} \
+          --lock-pr-after-merge ${{ inputs.lock-pr-after-merge }} \
+          --input-signature ${{ inputs.input-signature }} \
+          --input-re-trigger ${{ inputs.input-re-trigger }}
       shell: bash

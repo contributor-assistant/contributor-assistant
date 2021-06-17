@@ -5,7 +5,7 @@ import { options } from "../options.ts";
 
 const commentAnchor = `<!-- ${applicationType} comment anchor -->`;
 
-export async function commentPR(
+export function commentPR(
   comments: pr.Comments,
   status: SignatureStatus,
   data: CLAData,
@@ -33,21 +33,25 @@ interface unsignedByAuthor {
 function createBody(status: SignatureStatus, data: CLAData): string {
   let body = `${commentAnchor}\n## Contributor Assistant | CLA\n`;
   const text = options.message.comment;
+  const input = options.message.input;
   if (status.unsigned.length === 0 && status.unknown.length === 0) {
     return body + text.allSigned;
   }
 
   const committerCount = status.signed.length + status.unsigned.length;
   body += `${
-    text.header.replace("$you", committerCount > 1 ? "you all" : "you")
+    text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
+      .replace("${cla-path}", options.CLAPath)
   }
   - - -
-  **${text.signature}**
+  **${input.signature}**
   - - -
   `;
 
   if (committerCount > 1) {
-    `**${status.signed.length}** out of **${committerCount}** unsigned have signed the CLA.\n`;
+    body += `${text.summary}\n`
+      .replace("${signed}", status.signed.length.toString())
+      .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
       body += `:white_check_mark: `;
       if (committer.user !== null) {
@@ -70,7 +74,6 @@ function createBody(status: SignatureStatus, data: CLAData): string {
       if (committer.user === null) {
         const commit = unsigned.get(committer.coAuthoredWith!);
         if (commit === undefined) {
-          action.warning("undefined commit");
           const author = data.signatures.find((author) =>
             author.user !== null &&
             author.user.databaseId === committer.coAuthoredWith
@@ -94,13 +97,12 @@ function createBody(status: SignatureStatus, data: CLAData): string {
       if (needReSign) {
         body += `:arrows_counterclockwise: @${
           author.user!.login
-        } *(new signature required)*`;
+        } ${text.newSignature}`;
       } else {
         body += `:x: @${author.user!.login} `;
       }
       if (coAuthors.size > 0) {
-        body +=
-          "*You have co-authored a commit with the following people, who are not registered on Github. By signing, you also sign on their behalf.*\n";
+        body += `${text.coAuthorWarning}\n`;
         for (const coAuthor of coAuthors) {
           body +=
             `    :heavy_multiplication_x: ${coAuthor.name} (${coAuthor.email})\n`;
@@ -110,14 +112,13 @@ function createBody(status: SignatureStatus, data: CLAData): string {
       }
     }
   }
-  
+
   if (status.unknown.length > 0) {
     for (const committer of status.unknown) {
-      body += `:grey_question: ${committer.name} (${committer.email}) *unknown account*\n`
+      body += `:grey_question: ${committer.name} (${committer.email}) \n`;
     }
-    body += `\nSome commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).\n`
+    body += `\n${text.unknownWarning}\n`;
   }
 
-  return body +
-    `<sub>You can retrigger this bot by commenting **${text.retrigger}** in this Pull Request</sub>`;
+  return body + text.footer.replace("${reTrigger}", input.reTrigger);
 }

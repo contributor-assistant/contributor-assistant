@@ -1,6 +1,6 @@
 /** Formats and converts to base-64 */
 export function toBase64(object: unknown) {
-  return btoa(`${JSON.stringify(object, null, 2)}\n`)
+  return btoa(`${JSON.stringify(object, null, 2)}\n`);
 }
 
 /** Reads a JSON file and then parses it into an object */

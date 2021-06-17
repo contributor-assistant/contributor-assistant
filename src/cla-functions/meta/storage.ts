@@ -108,7 +108,8 @@ async function writeGithubStorage(
     : storage;
   await kit.repos.createOrUpdateFileContents({
     ...fileLocation,
-    message: options.message.commit.signed,
+    message: options.message.commit.signed
+      .replace("${pull-request-number}", context.issue.number.toString()),
     content: json.toBase64(file.content),
     sha: file.sha,
   }).catch((err) =>

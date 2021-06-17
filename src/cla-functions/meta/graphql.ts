@@ -2,7 +2,7 @@ import { gql } from "../../utils.ts";
 
 export interface User {
   databaseId: number;
-  login: string
+  login: string;
 }
 
 export interface GitActor {

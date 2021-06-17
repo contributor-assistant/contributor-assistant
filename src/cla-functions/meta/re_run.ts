@@ -1,4 +1,4 @@
-import { context, normalizeText, pr, action } from "../../utils.ts";
+import { action, context, normalizeText, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 
 export function reRunRequired(): boolean {
@@ -11,7 +11,11 @@ export function reRunRequired(): boolean {
 export async function reRun() {
   const branch = await pr.branch();
   const workflowId = await action.workflowId();
-  const runs = await action.workflowRuns(branch, workflowId, "pull_request_target");
+  const runs = await action.workflowRuns(
+    branch,
+    workflowId,
+    "pull_request_target",
+  );
 
   if (runs.total_count > 0) {
     const runId = runs.workflow_runs[0].id;

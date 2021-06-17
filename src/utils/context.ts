@@ -28,12 +28,12 @@ export class Context {
    */
   constructor() {
     this.payload = {};
-    const event_path = Deno.env.get("GITHUB_EVENT_PATH");
-    if (event_path !== undefined) {
-      if (existsSync(event_path)) {
-        this.payload = json.readSync(event_path);
+    const eventPath = Deno.env.get("GITHUB_EVENT_PATH");
+    if (eventPath !== undefined) {
+      if (existsSync(eventPath)) {
+        this.payload = json.readSync(eventPath);
       } else {
-        warning(`GITHUB_EVENT_PATH ${event_path} does not exist`);
+        warning(`GITHUB_EVENT_PATH ${eventPath} does not exist`);
       }
     }
     this.eventName = Deno.env.get("GITHUB_EVENT_NAME") as string;
