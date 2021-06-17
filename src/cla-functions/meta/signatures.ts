@@ -1,5 +1,5 @@
 import type { Author, CLAData, SignatureStatus } from "../types.ts";
-import { context, pr, spliceArray } from "../../utils.ts";
+import { context, pr, spliceArray, normalizeText } from "../../utils.ts";
 import { options } from "../options.ts";
 
 export function getSignatureStatus(authors: Author[], data: CLAData): SignatureStatus {
@@ -24,14 +24,10 @@ export function getSignatureStatus(authors: Author[], data: CLAData): SignatureS
   };
 }
 
-function normalize(text: string): string {
-  return text.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
 export function updateSignatures(comments: pr.Comments, status: SignatureStatus, data: CLAData) {
-  const signatureText = normalize(options.message.comment.signature);
+  const signatureText = normalizeText(options.message.comment.signature);
   const signed = comments.filter((comment) =>
-    normalize(comment.body ?? "") === signatureText
+    normalizeText(comment.body ?? "").match(signatureText)
   );
 
   const isCommentAuthor = (comment: pr.Comments[number]) =>

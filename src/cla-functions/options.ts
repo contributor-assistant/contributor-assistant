@@ -31,6 +31,7 @@ export interface CLAOptions {
       allSigned?: string;
       header?: string;
       signature?: string;
+      retrigger?: string;
     };
   };
   ignoreList?: string[];
@@ -83,6 +84,7 @@ export function setupOptions(opts: CLAOptions) {
       header:
         "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} signature our [Contributor License Agreement](${cla-path}) before we can accept your contribution. You can signature the CLA by just posting a Pull Request Comment same as the below format.",
       signature: "I have read the CLA Document and I hereby signature the CLA",
+      retrigger: "recheck",
       ...opts.message?.comment,
     },
   };

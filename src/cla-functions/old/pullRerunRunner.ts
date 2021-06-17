@@ -1,4 +1,4 @@
-import { action, context, octokit, personalOctokit } from "../utils.ts";
+import { action, context, octokit, personalOctokit } from "../../utils.ts";
 
 // Note: why this  re-run of the last failed CLA workflow status check is explained this issue https://github.com/cla-assistant/github-action/issues/39
 export async function reRunLastWorkFlowIfRequired() {
@@ -76,7 +76,7 @@ async function reRunWorkflow(run: number): Promise<any> {
 }
 
 async function checkIfLastWorkFlowFailed(run: number): Promise<boolean> {
-  const response: any = await octokit.actions.getWorkflowRun({
+  const response = await octokit.actions.getWorkflowRun({
     owner: context.repo.owner,
     repo: context.repo.repo,
     run_id: run,

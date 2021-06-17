@@ -16,6 +16,20 @@ export async function lock() {
   action.info(`Successfully locked the pull request #${prNumber}`);
 }
 
+export async function branch(): Promise<string> {
+  const prNumber = context.issue.number;
+  const pr = await octokit.pulls.get({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    pull_number: prNumber,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when fetching pull request (#${prNumber}) branch: ${error.message}`,
+    );
+  });
+  return pr.data.head.ref;
+}
+
 export async function createComment(body: string) {
   const prNumber = context.issue.number;
   await octokit.issues.createComment({

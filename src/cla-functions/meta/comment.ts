@@ -119,5 +119,5 @@ function createBody(status: SignatureStatus, data: CLAData): string {
   }
 
   return body +
-    "<sub>You can retrigger this bot by commenting **recheck** in this Pull Request</sub>";
+    `<sub>You can retrigger this bot by commenting **${text.retrigger}** in this Pull Request</sub>`;
 }

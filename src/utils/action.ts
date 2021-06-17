@@ -1,3 +1,7 @@
+import { octokit, personalOctokit } from "./octokit.ts";
+import { context } from "./context.ts";
+import type { RestEndpointMethodTypes } from "../deps.ts";
+
 /* ------ logging ------ */
 
 export function debug(message: string, object?: unknown) {
@@ -34,4 +38,67 @@ function escapeData(s: string): string {
     .replace(/%/g, "%25")
     .replace(/\r/g, "%0D")
     .replace(/\n/g, "%0A");
+}
+
+/* ------ octokit ------ */
+
+export async function workflowId(): Promise<number> {
+  const workflowList = await octokit.actions.listRepoWorkflows(context.repo)
+    .catch((error) => {
+      throw new Error(
+        `Error occurred when fetching action workflow id: ${error.message}`,
+      );
+    });
+
+  const workflow = workflowList.data.workflows
+    .find((w) => w.name === context.workflow);
+
+  if (workflow === undefined) {
+    throw new Error("Unable to locate this workflow's ID in this repository");
+  }
+  return workflow.id;
+}
+
+export async function workflowRuns(
+  branch: string,
+  workflowId: number,
+  event: string,
+): Promise<RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["response"]["data"]> {
+  const runs = await octokit.actions.listWorkflowRuns({
+    ...context.repo,
+    branch,
+    workflow_id: workflowId,
+    event,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when fetching action workflow runs: ${error.message}`,
+    );
+  });
+  return runs.data
+}
+
+export async function reRun(runId: number) {
+  // Personal Access token with repo scope is required to access this api - https://github.community/t/bug-rerun-workflow-api-not-working/126742
+  await personalOctokit.actions.reRunWorkflow({
+    ...context.repo,
+    run_id: runId,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred while re-running run ${runId}: ${error.message}`,
+    );
+  });
+}
+
+export async function getWorkflow(
+  runId: number,
+): Promise<RestEndpointMethodTypes["actions"]["getWorkflowRun"]["response"]["data"]> {
+  const run = await octokit.actions.getWorkflowRun({
+    ...context.repo,
+    run_id: runId,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when fetching workflow run ${runId}: ${error.message}`,
+    );
+  });
+  return run.data
 }

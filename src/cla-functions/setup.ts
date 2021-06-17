@@ -1,6 +1,6 @@
-import { filterIgnored } from "./meta/ignoreList.ts";
+import { filterIgnored } from "./meta/ignore_list.ts";
 import { getCommitters } from "./meta/commit.ts";
-import { action, checkStorageContent, pr, context } from "../utils.ts";
+import { action, checkStorageContent, context, pr } from "../utils.ts";
 import { defaultContent, readStorage, writeStorage } from "./meta/storage.ts";
 import { getSignatureStatus, updateSignatures } from "./meta/signatures.ts";
 import { commentPR } from "./meta/comment.ts";
@@ -26,7 +26,6 @@ export async function setup() {
 
   if (status.unsigned.length === 0) {
     action.info(options.message.comment.allSigned);
-    return reRunLastWorkFlowIfRequired();
   } else {
     action.fail(
       `Committers of Pull Request #${context.issue.number} have to sign the CLA 📝`,
