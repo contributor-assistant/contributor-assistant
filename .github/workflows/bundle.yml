@@ -3,9 +3,10 @@ name: Bundle
 on:
   workflow_run:
     workflows: [Test]
-    branches: [main]
+    branches: [main, refactors]
     types:
       - completed
+
 jobs:
   bundle:
     name: Bundle action files
