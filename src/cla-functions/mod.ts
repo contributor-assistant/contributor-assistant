@@ -1,20 +1,14 @@
-import {
-  getSignatureStatus,
-  updateSignatures,
-} from "./functions/signatures.ts";
-import {
-  defaultContent,
-  readStorage,
-  writeStorage,
-} from "./functions/storage.ts";
-import { reRun, reRunRequired } from "./functions/re_run.ts";
-import { filterIgnored } from "./functions/ignore_list.ts";
-import { getCommitters } from "./functions/commit.ts";
-import { commentPR } from "./functions/comment.ts";
+import { getSignatureStatus, updateSignatures } from "./core/signatures.ts";
+import { defaultContent, readStorage, writeStorage } from "./core/storage.ts";
+import { reRun, reRunRequired } from "./core/re_run.ts";
+import { filterIgnored } from "./core/ignore_list.ts";
+import { getCommitters } from "./core/commit.ts";
+import { commentPR } from "./core/comment.ts";
 import { action, checkStorageContent, context, pr } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
 import type { CLAOptions } from "./options.ts";
 
+/** The entry point for the CLA Assistant */
 export default async function cla(rawOptions: CLAOptions) {
   action.info("Contributor Assistant: CLA process started");
 
@@ -41,7 +35,8 @@ export default async function cla(rawOptions: CLAOptions) {
   }
 }
 
-export async function run() {
+/** Fetch committers, update signatures, notify the result in a PR comment */
+async function run() {
   const storage = await readStorage();
   const { content } = storage;
   checkStorageContent(content, defaultContent);

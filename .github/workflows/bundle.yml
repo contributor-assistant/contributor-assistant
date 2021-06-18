@@ -17,16 +17,29 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        #with:
+        #  ref: releases
         with:
-          ref: releases
+          repository: cla-assistant/contributor-assistant
+          ref: refs/heads/releases
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
+          persist-credentials: false
       
       - name: Pull from main
-        run: git pull origin main
+        run: |
+          git fetch origin main
+          git reset --hard FETCH_HEAD
+          git clean -df
 
-      - name: Node.js setup
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
           version: 14.x
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
 
       - name: Install esbuild
         run: npm install esbuild -g
@@ -40,4 +53,4 @@ jobs:
           git config user.email github-actions@github.com
           git add actions/*
           git commit -m "nightly bundle"
-          git push
+          git push -f

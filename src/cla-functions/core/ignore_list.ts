@@ -8,7 +8,9 @@ function escapeRegExp(string: string) {
     : string;
 }
 
+/** "*" si treated as wildcard. */
 export function filterIgnored(committers: Author[]): Author[] {
+  // TODO(@oagnexon): refactor & add more patterns
   return committers.filter((committer) =>
     !options.ignoreList.some((pattern) => {
       pattern = pattern.trim();

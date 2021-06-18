@@ -1,12 +1,15 @@
 import { action, context, normalizeText, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 
+/** re-run only if "recheck" or the signature are in comments */
 export function reRunRequired(): boolean {
   const body = normalizeText(context.payload.comment?.body ?? "");
   return !!body.match(normalizeText(options.message.input.signature)) ||
     body === normalizeText(options.message.input.reTrigger);
 }
 
+/** A re-run is needed to change the status of the workflow triggered by "pull_request_target"
+ * https://github.com/cla-assistant/github-action/issues/39 */
 export async function reRun() {
   const branch = await pr.branch();
   const workflowId = await action.workflowId();

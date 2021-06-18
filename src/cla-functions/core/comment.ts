@@ -1,9 +1,9 @@
-import { Author, CLAData, SignatureStatus } from "../types.ts";
-import { action, pr } from "../../utils.ts";
+import { Author, CLAData, SignatureStatus } from "./types.ts";
+import { action, generateCommentAnchor, pr } from "../../utils.ts";
 import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
 
-const commentAnchor = `<!-- ${applicationType} comment anchor -->`;
+const commentAnchor = generateCommentAnchor(applicationType);
 
 export async function commentPR(
   comments: pr.Comments,
@@ -17,7 +17,7 @@ export async function commentPR(
     if (status.unsigned.length > 0 || status.unknown.length > 0) {
       await pr.createComment(createBody(status, data));
     } else {
-      action.info("no comment");
+      action.info("Everyone has already signed the CLA.");
     }
   } else {
     await pr.updateComment(botComment.id, createBody(status, data));

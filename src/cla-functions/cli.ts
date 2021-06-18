@@ -2,6 +2,8 @@ import { parseFlags } from "../deps.ts";
 import { action } from "../utils.ts";
 import cla from "./mod.ts";
 
+/** This file is the entry point for the action */
+
 const flags = parseFlags(Deno.args, {
   string: [
     "githubToken",
@@ -29,7 +31,7 @@ const flags = parseFlags(Deno.args, {
   },
 });
 
-action.debug(Deno.inspect(flags));
+action.debug("Flags", flags);
 
 cla({
   githubToken: flags.githubToken,
@@ -58,6 +60,7 @@ cla({
   },
 });
 
+/** Boolean parser: github actions inputs cannot have a boolean value */
 function parseBoolean(flag: unknown): boolean | undefined {
   switch (flag) {
     case "true":

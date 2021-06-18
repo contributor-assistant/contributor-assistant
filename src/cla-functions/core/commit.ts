@@ -21,6 +21,9 @@ export type Author =
     coAuthoredWith?: number;
   });
 
+/** Get authors and co-authors of a commit.
+ * If a contributor does not have a Github account, they are linked with
+ * and existing account, if possible. */
 export async function getCommitters(): Promise<Author[]> {
   const committers: Author[] = [];
 
@@ -32,6 +35,7 @@ export async function getCommitters(): Promise<Author[]> {
 
   let commitCursor = "";
   let commitHasNextPage = false;
+  // loop through authors
   do {
     const response: AuthorsResponse = await personalOctokit.graphql(
       authorsQuery,
@@ -53,6 +57,7 @@ export async function getCommitters(): Promise<Author[]> {
       } = edge;
       if (author.user?.databaseId === GH_ACTIONS_BOT_ID) continue;
       let authorHasNextPage = false;
+      // loop through co-authors
       while (authorHasNextPage) {
         const response: CoAuthorsResponse = await personalOctokit.graphql(
           coAuthorsQuery,
@@ -72,6 +77,7 @@ export async function getCommitters(): Promise<Author[]> {
   return committers;
 }
 
+/** Check for duplicates and link unknown accounts when possible. */
 function pushAuthor(
   author: GitActor,
   coAuthors: GitActor[],

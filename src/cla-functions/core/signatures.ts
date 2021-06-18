@@ -1,7 +1,8 @@
-import type { Author, CLAData, SignatureStatus } from "../types.ts";
+import type { Author, CLAData, SignatureStatus } from "./types.ts";
 import { context, normalizeText, pr, spliceArray } from "../../utils.ts";
 import { options } from "../options.ts";
 
+/** Filter committers with their signature status */
 export function getSignatureStatus(
   authors: Author[],
   data: CLAData,
@@ -27,6 +28,7 @@ export function getSignatureStatus(
   };
 }
 
+/** Browse comments and add new signatories to the storage file. */
 export function updateSignatures(
   comments: pr.Comments,
   status: SignatureStatus,
@@ -47,6 +49,8 @@ export function updateSignatures(
 
   for (const comment of signed) {
     for (const coAuthor of status.unsigned) {
+      // if some committers don't have a Github account but co-authored with
+      // the author of the comment, they sign on their behalf.
       if (hasCoAuthored(comment.user?.id)(coAuthor)) {
         status.newSignatories = true;
         data.signatures.push({
@@ -57,6 +61,7 @@ export function updateSignatures(
     }
     spliceArray(status.unsigned, hasCoAuthored(comment.user?.id));
 
+    // has the comment author signed the CLA ?
     const author = status.unsigned.find(isCommentAuthor(comment));
     if (author !== undefined) {
       status.newSignatories = true;

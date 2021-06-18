@@ -50,7 +50,7 @@ runs:
       shell: bash
       # INPUT_* environment variables are missing in composite actions https://github.com/actions/runner/issues/665
     - run: |
-        deno run -Aq ${{ github.action_path }}/../../src/cla-functions/cli.ts \
+        deno run -Aq ${{ github.action_path }}/bundle.js \
           --github-token ${{ inputs.GITHUB_TOKEN }} \
           --personal-access-token ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
           --cla-path ${{ inputs.cla-path }} \
