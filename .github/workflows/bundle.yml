@@ -16,9 +16,21 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+        with:
+          ref: releases
+        run: git pull origin main
 
       - name: Install esbuild
-        run: npm install esbuild
+        uses: actions/setup-node@v1
+        run: npm install esbuild -g
 
       - name: Run bundler
         run: deno bundle src/cla-functions/cli.ts | esbuild --minify > actions/cla/bundle.js
+      
+      - name: Push to releases branch
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add actions/*
+          git commit -m "nightly bundle"
+          git push
