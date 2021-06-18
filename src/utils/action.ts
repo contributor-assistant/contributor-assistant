@@ -80,7 +80,7 @@ export async function workflowRuns(
 }
 
 export async function reRun(runId: number) {
-  // Personal Access token with repo scope is required to access this api 
+  // Personal Access token with repo scope is required to access this api
   // https://github.community/t/bug-rerun-workflow-api-not-working/126742
   await personalOctokit.actions.reRunWorkflow({
     ...context.repo,

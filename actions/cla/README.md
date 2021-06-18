@@ -19,5 +19,4 @@ jobs:
           PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           cla-path: 'https://github.com/cla-assistant/github-action/blob/master/SAPCLA.md'
-
 ```
