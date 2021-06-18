@@ -51,7 +51,7 @@ cla({
       path: flags.storagePath,
     },
   ignoreList: flags.ignoreList.split(/\s,\s/),
-  lockPRAfterMerge: parseBoolean(flags.lockPrAfterMerge),
+  lockPRAfterMerge: parseBoolean(flags.lockPRAfterMerge),
   message: {
     input: {
       signature: flags.inputSignature,

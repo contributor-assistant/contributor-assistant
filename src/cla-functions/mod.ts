@@ -47,6 +47,7 @@ async function run() {
 
   const comments = await pr.listComments();
   updateSignatures(comments, status, content.data);
+  action.debug("Signature status", status);
 
   await commentPR(comments, status, content.data);
 

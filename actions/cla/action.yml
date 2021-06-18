@@ -51,15 +51,15 @@ runs:
       # INPUT_* environment variables are missing in composite actions https://github.com/actions/runner/issues/665
     - run: |
         deno run -Aq ${{ github.action_path }}/bundle.js \
-          --github-token ${{ inputs.GITHUB_TOKEN }} \
-          --personal-access-token ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
-          --cla-path ${{ inputs.cla-path }} \
-          --storage-path ${{ inputs.storage-path }} \
-          --storage-branch ${{ inputs.storage-branch }} \
-          --storage-remote-repo ${{ inputs.storage-remote-repo }} \
-          --storage-remote-owner ${{ inputs.storage-remote-owner }} \
-          --ignore-list ${{ inputs.ignore-list }} \
-          --lock-pr-after-merge ${{ inputs.lock-pr-after-merge }} \
-          --input-signature ${{ inputs.input-signature }} \
-          --input-re-trigger ${{ inputs.input-re-trigger }}
+          --githubToken ${{ inputs.GITHUB_TOKEN }} \
+          --personalAccessToken ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
+          --CLAPath ${{ inputs.cla-path }} \
+          --storagePath ${{ inputs.storage-path }} \
+          --storageBranch ${{ inputs.storage-branch }} \
+          --storageRemoteRepo ${{ inputs.storage-remote-repo }} \
+          --storageRemoteOwner ${{ inputs.storage-remote-owner }} \
+          --ignoreList ${{ inputs.ignore-list }} \
+          --lockPRAfterMerge ${{ inputs.lock-pr-after-merge }} \
+          --inputSignature ${{ inputs.input-signature }} \
+          --inputReTrigger ${{ inputs.input-re-trigger }}
       shell: bash

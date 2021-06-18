@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          version: 14.x
+          node-version: 14.x
 
       - name: Setup Deno
         uses: denoland/setup-deno@v1

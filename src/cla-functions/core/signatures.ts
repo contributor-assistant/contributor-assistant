@@ -36,7 +36,7 @@ export function updateSignatures(
 ) {
   const signatureText = normalizeText(options.message.input.signature);
   const signed = comments.filter((comment) =>
-    normalizeText(comment.body ?? "").match(signatureText)
+    normalizeText(comment.body ?? "").startsWith(signatureText)
   );
 
   const isCommentAuthor = (comment: pr.Comments[number]) =>
