@@ -20,8 +20,12 @@ jobs:
           ref: releases
         run: git pull origin main
 
-      - name: Install esbuild
+      - name: Node.js setup
         uses: actions/setup-node@v1
+        with:
+          version: 14.x
+
+      - name: Install esbuild
         run: npm install esbuild -g
 
       - name: Run bundler
