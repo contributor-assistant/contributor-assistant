@@ -3,7 +3,7 @@ name: Bundle
 on:
   workflow_run:
     workflows: ["Test"]
-    branch: [main]
+    branches: [main]
     types:
       - completed
 
