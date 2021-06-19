@@ -105,7 +105,7 @@ function createBody(status: SignatureStatus, data: CLAData): string {
         body += `${text.coAuthorWarning}\n`;
         for (const coAuthor of coAuthors) {
           body +=
-          ` - :heavy_multiplication_x: ${coAuthor.name} (${coAuthor.email})\n`;
+            ` - :heavy_multiplication_x: ${coAuthor.name} (${coAuthor.email})\n`;
         }
       }
       body += "\n";

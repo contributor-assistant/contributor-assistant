@@ -23,7 +23,7 @@ jobs:
           repository: cla-assistant/contributor-assistant
           ref: refs/heads/releases
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN_REPO_SCOPE }}
-          persist-credentials: false
+          persist-credentials: true
       
       - name: Pull from main
         run: |
