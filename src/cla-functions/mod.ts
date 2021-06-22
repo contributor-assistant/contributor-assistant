@@ -4,6 +4,7 @@ import { reRun, reRunRequired } from "./core/re_run.ts";
 import { filterIgnored } from "./core/ignore_list.ts";
 import { getCommitters } from "./core/commit.ts";
 import { commentPR } from "./core/comment.ts";
+import { hasIgnoreLabel, updateLabels } from "./core/labels.ts";
 import { action, checkStorageContent, context, pr } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
 import type { CLAOptions } from "./options.ts";
@@ -15,7 +16,11 @@ export default async function cla(rawOptions: CLAOptions) {
   setupOptions(rawOptions);
 
   try {
-    if (
+    if (await hasIgnoreLabel()) {
+      action.info(
+        `CLA process skipped due to the ${options.labels.ignore} label`,
+      );
+    } else if (
       context.payload.pull_request?.merged && options.lockPRAfterMerge
     ) {
       action.info(
@@ -55,6 +60,7 @@ async function run() {
     await writeStorage(storage);
   }
 
+  await updateLabels(status);
   if (status.unsigned.length === 0) {
     action.info(options.message.comment.allSigned);
   } else {

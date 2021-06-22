@@ -55,6 +55,11 @@ export interface CLAOptions {
       reTrigger?: string;
     };
   };
+  labels?: {
+    signed?: string;
+    unsigned?: string;
+    ignore?: string;
+  };
 }
 
 export type ParsedCLAOptions = Omit<
@@ -133,6 +138,13 @@ export function setupOptions(opts: CLAOptions) {
       reTrigger: "recheck",
       ...removeEmpty(opts.message?.input),
     },
+  };
+
+  options.labels = {
+    signed: "",
+    unsigned: "",
+    ignore: "",
+    ...removeEmpty(opts.labels),
   };
 
   options = opts as ParsedCLAOptions;
