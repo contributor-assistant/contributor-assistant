@@ -30,8 +30,9 @@ inputs:
     description: A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. The separator between the patterns is a comma.
     required: false
   lock-pr-after-merge:
-    description: Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Defaults to true.
+    description: Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Setting this parameter to false is not recommended.
     required: false
+    default: "true"
   input-signature:
     description: The signature to be committed in order to sign the CLA.
     required: false
