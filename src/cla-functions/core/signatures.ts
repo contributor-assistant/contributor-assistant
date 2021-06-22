@@ -1,4 +1,9 @@
-import type { Author, CLAData, SignatureStatus } from "./types.ts";
+import type {
+  Author,
+  AuthorSignature,
+  CLAData,
+  SignatureStatus,
+} from "./types.ts";
 import { context, normalizeText, pr, spliceArray } from "../../utils.ts";
 import { options } from "../options.ts";
 
@@ -8,7 +13,7 @@ export function getSignatureStatus(
   data: CLAData,
 ): SignatureStatus {
   return {
-    newSignatories: false,
+    update: false,
     signed: data.signatures.filter((signature) =>
       signature.prNumber === context.payload.pull_request?.number
     ),
@@ -35,9 +40,10 @@ export function updateSignatures(
   data: CLAData,
 ) {
   const signatureText = normalizeText(options.message.input.signature);
-  const signed = comments.filter((comment) =>
+  const signedComments = comments.filter((comment) =>
     normalizeText(comment.body ?? "").startsWith(signatureText)
   );
+  const signed = [...status.signed].filter((author) => author.user !== null);
 
   const isCommentAuthor = (comment: pr.Comments[number]) =>
     (author: Author) =>
@@ -46,13 +52,17 @@ export function updateSignatures(
     (coAuthor: Author) =>
       authorId !== undefined && coAuthor.user === null &&
       coAuthor.coAuthoredWith === authorId;
+  const hasCoAuthoredSigned = (authorId?: number) =>
+    (coAuthor: AuthorSignature) =>
+      coAuthor.prNumber === context.payload.pull_request?.number &&
+      hasCoAuthored(authorId)(coAuthor);
 
-  for (const comment of signed) {
+  for (const comment of signedComments) {
     for (const coAuthor of status.unsigned) {
       // if some committers don't have a Github account but co-authored with
       // the author of the comment, they sign on their behalf.
       if (hasCoAuthored(comment.user?.id)(coAuthor)) {
-        status.newSignatories = true;
+        status.update = true;
         data.signatures.push({
           ...coAuthor,
           prNumber: context.issue.number,
@@ -64,12 +74,31 @@ export function updateSignatures(
     // has the comment author signed the CLA ?
     const author = status.unsigned.find(isCommentAuthor(comment));
     if (author !== undefined) {
-      status.newSignatories = true;
+      status.update = true;
       spliceArray(status.unsigned, isCommentAuthor(comment));
       data.signatures.push({
         ...author,
         prNumber: context.issue.number,
       });
     }
+    spliceArray(signed, isCommentAuthor(comment));
+  }
+
+  // these people have previously signed the CLA but have removed their signature
+  for (const author of signed) {
+    status.update = true;
+    // remove signatory from storage file
+    spliceArray(
+      data.signatures,
+      (signatory) => signatory.user?.databaseId === author.user!.databaseId,
+    );
+    status.unsigned.push(author);
+    // remove coAuthors
+    for (const coAuthor of data.signatures) {
+      if (hasCoAuthoredSigned(author.user!.databaseId)(coAuthor)) {
+        status.unsigned.push(coAuthor);
+      }
+    }
+    spliceArray(data.signatures, hasCoAuthoredSigned(author.user!.databaseId));
   }
 }

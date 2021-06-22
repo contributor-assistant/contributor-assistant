@@ -3,8 +3,11 @@ import { options } from "../options.ts";
 
 /** re-run only if "recheck" or the signature are in comments */
 export function reRunRequired(): boolean {
+  const signatureText = normalizeText(options.message.input.signature);
   const body = normalizeText(context.payload.comment?.body ?? "");
-  return !!body.match(normalizeText(options.message.input.signature)) ||
+  // edited comment
+  const from = normalizeText(context.payload.changes?.body?.from ?? "");
+  return !!body.startsWith(signatureText) || !!from.startsWith(signatureText) ||
     body === normalizeText(options.message.input.reTrigger);
 }
 

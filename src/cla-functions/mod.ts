@@ -16,7 +16,7 @@ export default async function cla(rawOptions: CLAOptions) {
 
   try {
     if (
-      context.payload.action === "closed" && options.lockPRAfterMerge
+      context.payload.pull_request?.merged && options.lockPRAfterMerge
     ) {
       action.info(
         "Locking the Pull Request to safe guard the Pull Request CLA Signatures",
@@ -51,7 +51,7 @@ async function run() {
 
   await commentPR(comments, status, content.data);
 
-  if (status.newSignatories) {
+  if (status.update) {
     await writeStorage(storage);
   }
 
