@@ -3,13 +3,22 @@ import { options } from "../options.ts";
 import type { SignatureStatus } from "./types.ts";
 
 export async function updateLabels(status: SignatureStatus) {
+  const labels = await pr.getLabels();
+  const { signed, unsigned } = options.labels;
+
   if (status.unsigned.length === 0) {
-    if (options.labels.signed !== "") {
-      await pr.addLabels(options.labels.signed);
+    if (signed !== "" && !labels.includes(signed)) {
+      await pr.addLabels(signed);
+      if (unsigned !== "" && labels.includes(unsigned)) {
+        await pr.removeLabel(unsigned);
+      }
     }
   } else {
-    if (options.labels.unsigned !== "") {
-      await pr.addLabels(options.labels.unsigned);
+    if (unsigned !== "" && !labels.includes(unsigned)) {
+      await pr.addLabels(unsigned);
+      if (signed !== "" && labels.includes(signed)) {
+        await pr.removeLabel(signed);
+      }
     }
   }
 }

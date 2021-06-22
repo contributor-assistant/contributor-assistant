@@ -116,6 +116,19 @@ export async function addLabels(...labels: string[]) {
   });
 }
 
+export async function removeLabel(name: string) {
+  const prNumber = context.issue.number;
+  await octokit.issues.removeLabel({
+    ...context.repo,
+    issue_number: prNumber,
+    name,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when removing pull request (#${prNumber}) label: ${error.message}`,
+    );
+  });
+}
+
 export async function getLabels(): Promise<string[]> {
   const prNumber = context.issue.number;
   const labels: string[] = [];

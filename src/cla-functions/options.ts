@@ -130,7 +130,7 @@ export function setupOptions(opts: CLAOptions) {
         "*You have co-authored a commit with the following people, who are not registered on Github. By signing, you also sign on their behalf.*",
       unknownAccount: "*unknown account*",
       unknownWarning:
-        "Some commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
+        "⚠ Some commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
       ...removeEmpty(opts.message?.comment),
     },
     input: {
