@@ -38,6 +38,15 @@ inputs:
   input-re-trigger:
     description: The keyword to re-trigger signature checks.
     required: false
+  signed-label:
+    description: A label that will be applied once all committers have signed the CLA
+    required: false
+  unsigned-label:
+    description: A label that will be applied until all committers have signed the CLA
+    required: false
+  ignore-label:
+    description: Add this label to skip the CLA checks
+    required: false
 
 runs:
   using: composite
@@ -62,4 +71,7 @@ runs:
           --lockPRAfterMerge ${{ inputs.lock-pr-after-merge }} \
           --inputSignature ${{ inputs.input-signature }} \
           --inputReTrigger ${{ inputs.input-re-trigger }}
+          --signedLabel ${{ inputs.signed-label }}
+          --unsignedLabel ${{ inputs.unsigned-label }}
+          --ignoreLabel ${{ inputs.ignore-label }}
       shell: bash

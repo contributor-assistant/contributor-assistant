@@ -24,6 +24,16 @@ export async function commentPR(
   }
 }
 
+export async function uncommentPR() {
+  const comments = await pr.listComments();
+  const botComment = comments.find((comment) =>
+    comment.body?.match(commentAnchor)
+  );
+  if (botComment !== undefined) {
+    await pr.deleteComment(botComment.id);
+  }
+}
+
 interface unsignedByAuthor {
   author: Author;
   coAuthors: Set<Author>;

@@ -62,6 +62,21 @@ export async function updateComment(id: number, body: string) {
   );
 }
 
+export async function deleteComment(id: number) {
+  const prNumber = context.issue.number;
+  await octokit.issues.deleteComment({
+    ...context.repo,
+    comment_id: id,
+  }).catch((error) => {
+    throw new Error(
+      `Error occurred when deleting the pull request (#${prNumber}) comment #${id}: ${error.message}`,
+    );
+  });
+  action.debug(
+    `Successfully deleted the pull request (#${prNumber}) comment #${id}`,
+  );
+}
+
 export type Comments =
   RestEndpointMethodTypes["issues"]["listComments"]["response"]["data"];
 

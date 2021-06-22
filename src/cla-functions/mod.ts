@@ -3,7 +3,7 @@ import { defaultContent, readStorage, writeStorage } from "./core/storage.ts";
 import { reRun, reRunRequired } from "./core/re_run.ts";
 import { filterIgnored } from "./core/ignore_list.ts";
 import { getCommitters } from "./core/commit.ts";
-import { commentPR } from "./core/comment.ts";
+import { commentPR, uncommentPR } from "./core/comment.ts";
 import { hasIgnoreLabel, updateLabels } from "./core/labels.ts";
 import { action, checkStorageContent, context, pr } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
@@ -18,8 +18,9 @@ export default async function cla(rawOptions: CLAOptions) {
   try {
     if (await hasIgnoreLabel()) {
       action.info(
-        `CLA process skipped due to the ${options.labels.ignore} label`,
+        `CLA process skipped due to the "${options.labels.ignore}" label`,
       );
+      await uncommentPR();
     } else if (
       context.payload.pull_request?.merged && options.lockPRAfterMerge
     ) {
@@ -27,10 +28,8 @@ export default async function cla(rawOptions: CLAOptions) {
         "Locking the Pull Request to safe guard the Pull Request CLA Signatures",
       );
       await pr.lock();
-    } else if (context.eventName === "issue_comment") {
-      if (reRunRequired()) {
-        await reRun();
-      }
+    } else if (reRunRequired()) {
+      await reRun();
     } else {
       await run();
     }

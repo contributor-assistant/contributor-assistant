@@ -16,6 +16,9 @@ const flags = parseFlags(Deno.args, {
     "ignoreList",
     "inputSignature",
     "inputReTrigger",
+    "signedLabel",
+    "unsignedLabel",
+    "ignoreLabel",
   ],
   default: {
     githubToken: "",
@@ -28,6 +31,9 @@ const flags = parseFlags(Deno.args, {
     ignoreList: "",
     inputSignature: "",
     inputReTrigger: "",
+    signedLabel: "",
+    unsignedLabel: "",
+    ignoreLabel: "",
   },
 });
 
@@ -57,6 +63,11 @@ cla({
       signature: flags.inputSignature,
       reTrigger: flags.inputReTrigger,
     },
+  },
+  labels: {
+    signed: flags.signedLabel,
+    unsigned: flags.unsignedLabel,
+    ignore: flags.ignoreLabel,
   },
 });
 

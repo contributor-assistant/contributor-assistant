@@ -1,4 +1,4 @@
-import { pr } from "../../utils.ts";
+import { context, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 import type { SignatureStatus } from "./types.ts";
 
@@ -15,7 +15,13 @@ export async function updateLabels(status: SignatureStatus) {
 }
 
 export async function hasIgnoreLabel(): Promise<boolean> {
-  if (options.labels.ignore === "") return false;
+  if (options.labels.ignore === "" || ignoreLabelEvent()) return false;
   const labels = await pr.getLabels();
   return labels.includes(options.labels.ignore);
+}
+
+export function ignoreLabelEvent(): boolean {
+  return context.eventName === "pull_request_target" &&
+    ["labeled", "unlabeled"].includes(context.payload.action ?? "") &&
+    context.payload.label?.name === options.labels.ignore;
 }
