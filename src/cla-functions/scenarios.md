@@ -1,6 +1,7 @@
 # Test scenarios
 
-> Delete the signature file on steps with the symbol 🔁 if you don't have more than 2 users to test the action.
+> Delete the signature file on steps with the symbol 🔁 if you don't have more
+> than 2 users to test the action.
 
 ## Basic features
 
@@ -26,12 +27,14 @@
 
 ## Inputs
 
-1. Remove `GITHUB_TOKEN`, `PERSONAL_ACCESS_TOKEN`, and `cla-path` one after the other
+1. Remove `GITHUB_TOKEN`, `PERSONAL_ACCESS_TOKEN`, and `cla-path` one after the
+   other
 
 2. Create a PR with one user
    - Should fail with an explicit error message
 
-3. Put `GITHUB_TOKEN` and `PERSONAL_ACCESS_TOKEN` in the `with` object instead of `env`
+3. Put `GITHUB_TOKEN` and `PERSONAL_ACCESS_TOKEN` in the `with` object instead
+   of `env`
 
 4. Create a PR with one user
    - Should work as expected
@@ -39,7 +42,7 @@
 ## Edge cases
 
 1. 🔁 Create a PR with a co-authored commit
-   - *Basic features step 3 and 4*
+   - _Basic features step 3 and 4_
 
 2. 🔁 Create a PR with a co-authored commit (unknown user)
    - A comment is created, with some warnings
@@ -75,7 +78,7 @@
 2. Set `unsigned-label`
    - Label should be applied until everyone has signed the CLA
    - No label when signed
-  
+
 3. Set `signed-label`
    - Label should be applied when everyone has signed the CLA
    - No label until then
@@ -90,12 +93,13 @@
 
 ## Storage
 
-> Create a new PR at each step and it should work as for the *Basic features* step 1 and 2.
+> Create a new PR at each step and it should work as for the _Basic features_
+> step 1 and 2.
 
 1. Set `storage-path`
 
 2. Set `storage-branch`
-   
+
 3. Set `storage-remote-repo` (same user)
 
 4. Set `storage-remote-repo` and `storage-remote-owner`
