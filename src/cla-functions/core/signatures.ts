@@ -43,7 +43,9 @@ export function updateSignatures(
   const signedComments = comments.filter((comment) =>
     normalizeText(comment.body ?? "").startsWith(signatureText)
   );
-  const signatureChecklist = [...status.signed].filter((author) => author.user !== null);
+  const signatureChecklist = [...status.signed].filter((author) =>
+    author.user !== null
+  );
 
   const isCommentAuthor = (comment: pr.Comments[number]) =>
     (author: Author) =>
@@ -66,7 +68,7 @@ export function updateSignatures(
         const signatory = {
           ...coAuthor,
           prNumber: context.issue.number,
-        }
+        };
         data.signatures.push(signatory);
         status.signed.push(signatory);
       }
@@ -80,9 +82,9 @@ export function updateSignatures(
       const signatory = {
         ...author,
         prNumber: context.issue.number,
-      }
+      };
       data.signatures.push(signatory);
-      status.signed.push(signatory)
+      status.signed.push(signatory);
       spliceArray(status.unsigned, isCommentAuthor(comment));
     }
 
