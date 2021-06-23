@@ -30,12 +30,9 @@ export async function reRun() {
   if (runs.total_count > 0) {
     const runId = runs.workflow_runs[0].id;
 
-    const lastWorkflow = await action.getWorkflow(runId);
-    if (lastWorkflow.conclusion === "failure") {
-      action.debug(`Rerunning build runId ${runId}`);
-      await action.reRun(runId).catch((error) =>
-        action.error(`Error occurred when re-running the workflow: ${error}`)
-      );
-    }
+    action.info(`Re-running build run ${runId}`);
+    await action.reRun(runId).catch((error) =>
+      action.error(`Error occurred when re-running the workflow: ${error}`)
+    );
   }
 }

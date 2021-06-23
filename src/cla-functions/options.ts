@@ -140,7 +140,7 @@ export function setupOptions(opts: CLAOptions) {
     },
   };
 
-  options.labels = {
+  opts.labels = {
     signed: "",
     unsigned: "",
     ignore: "",

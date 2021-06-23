@@ -43,7 +43,7 @@ export function updateSignatures(
   const signedComments = comments.filter((comment) =>
     normalizeText(comment.body ?? "").startsWith(signatureText)
   );
-  const signed = [...status.signed].filter((author) => author.user !== null);
+  const signatureChecklist = [...status.signed].filter((author) => author.user !== null);
 
   const isCommentAuthor = (comment: pr.Comments[number]) =>
     (author: Author) =>
@@ -63,10 +63,12 @@ export function updateSignatures(
       // the author of the comment, they sign on their behalf.
       if (hasCoAuthored(comment.user?.id)(coAuthor)) {
         status.update = true;
-        data.signatures.push({
+        const signatory = {
           ...coAuthor,
           prNumber: context.issue.number,
-        });
+        }
+        data.signatures.push(signatory);
+        status.signed.push(signatory);
       }
     }
     spliceArray(status.unsigned, hasCoAuthored(comment.user?.id));
@@ -75,21 +77,29 @@ export function updateSignatures(
     const author = status.unsigned.find(isCommentAuthor(comment));
     if (author !== undefined) {
       status.update = true;
-      spliceArray(status.unsigned, isCommentAuthor(comment));
-      data.signatures.push({
+      const signatory = {
         ...author,
         prNumber: context.issue.number,
-      });
+      }
+      data.signatures.push(signatory);
+      status.signed.push(signatory)
+      spliceArray(status.unsigned, isCommentAuthor(comment));
     }
-    spliceArray(signed, isCommentAuthor(comment));
+
+    // check for edited or removed comments
+    spliceArray(signatureChecklist, isCommentAuthor(comment));
   }
 
   // these people have previously signed the CLA but have removed their signature
-  for (const author of signed) {
+  for (const author of signatureChecklist) {
     status.update = true;
     // remove signatory from storage file
     spliceArray(
       data.signatures,
+      (signatory) => signatory.user?.databaseId === author.user!.databaseId,
+    );
+    spliceArray(
+      status.signed,
       (signatory) => signatory.user?.databaseId === author.user!.databaseId,
     );
     status.unsigned.push(author);
@@ -100,5 +110,6 @@ export function updateSignatures(
       }
     }
     spliceArray(data.signatures, hasCoAuthoredSigned(author.user!.databaseId));
+    spliceArray(status.signed, hasCoAuthoredSigned(author.user!.databaseId));
   }
 }

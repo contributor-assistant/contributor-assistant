@@ -71,8 +71,8 @@ runs:
           --ignoreList ${{ inputs.ignore-list }} \
           --lockPRAfterMerge ${{ inputs.lock-pr-after-merge }} \
           --inputSignature ${{ inputs.input-signature }} \
-          --inputReTrigger ${{ inputs.input-re-trigger }}
-          --signedLabel ${{ inputs.signed-label }}
-          --unsignedLabel ${{ inputs.unsigned-label }}
+          --inputReTrigger ${{ inputs.input-re-trigger }} \
+          --signedLabel ${{ inputs.signed-label }} \
+          --unsignedLabel ${{ inputs.unsigned-label }} \
           --ignoreLabel ${{ inputs.ignore-label }}
       shell: bash
