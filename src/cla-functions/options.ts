@@ -143,7 +143,7 @@ export function setupOptions(opts: CLAOptions) {
   opts.labels = {
     signed: "",
     unsigned: "",
-    ignore: "",
+    ignore: "*",
     ...removeEmpty(opts.labels),
   };
 
