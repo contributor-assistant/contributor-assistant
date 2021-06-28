@@ -6,7 +6,12 @@ export type { User, GitActor };
 export interface AuthorSignature {
   user: User;
   issueNumber: number;
+  date: number;
   customFields: unknown[];
+}
+
+export interface SupersededSignature extends AuthorSignature {
+  endDate: number
 }
 
 export interface SignatureStatus {
@@ -16,12 +21,19 @@ export interface SignatureStatus {
   unknown: GitActor[];
 }
 
-export interface CLAData {
+export interface SignatureData {
+  documentSHA: string;
   signatures: AuthorSignature[];
+  superseded: SupersededSignature[];
+  invalidated: {
+    endDate: number
+    documentSHA: string;
+    signatures: AuthorSignature[];
+  }[]
 }
 
-export interface CLAStorage extends Storage {
-  data: CLAData;
+export interface SignatureStorage extends Storage {
+  data: SignatureData;
 }
 
 export interface Form {
