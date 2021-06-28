@@ -7,19 +7,22 @@ import {
 } from "../../utils.ts";
 import { options } from "../options.ts";
 import type { LocalStorage, RemoteGithubStorage } from "../options.ts";
-import type { CLAStorage } from "./types.ts";
+import type { SignatureStorage } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
-export const defaultContent: CLAStorage = {
+export const defaultContent: SignatureStorage = {
   type: applicationType,
   version: storageVersion,
   data: {
+    documentSHA: "", // TODO
     signatures: [],
+    superseded: [],
+    invalidated: [],
   },
 };
 
 export interface ghStorage {
-  content: CLAStorage;
+  content: SignatureStorage;
   sha: string;
 }
 
@@ -108,8 +111,10 @@ async function writeGithubStorage(
     : storage;
   await kit.repos.createOrUpdateFileContents({
     ...fileLocation,
-    message: options.message.commit.signed
-      .replace("${pull-request-number}", context.issue.number.toString()),
+    message: `${
+      options.message.commit.signed
+        .replace("${signatory}", context.payload.issue!.user.login)
+    }. Closes #${context.issue.number}`,
     content: json.toBase64(file.content),
     sha: file.sha,
   }).catch((err) =>

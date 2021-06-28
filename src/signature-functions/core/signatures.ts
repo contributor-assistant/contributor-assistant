@@ -1,16 +1,9 @@
-import type {
-  AuthorSignature,
-  CLAData,
-  GitActor,
-  SignatureStatus,
-} from "./types.ts";
-import { context, normalizeText, pr, spliceArray } from "../../utils.ts";
-import { options } from "../options.ts";
+import type { GitActor, SignatureData, SignatureStatus } from "./types.ts";
 
 /** Filter committers with their signature status */
 export function getSignatureStatus(
   authors: GitActor[],
-  data: CLAData,
+  data: SignatureData,
 ): SignatureStatus {
   const status: SignatureStatus = {
     update: false,
