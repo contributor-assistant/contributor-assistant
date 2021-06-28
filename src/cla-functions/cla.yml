@@ -1,0 +1,47 @@
+name: Contributor License Agreement
+description: Sign the Contributor License Agreement
+title: "[CLA]: "
+labels: [CLA]
+body:
+- type: markdown
+  attributes:
+    value: |
+      Thank you for your submission, we really appreciate it.
+- type: input
+  id: name
+  attributes:
+    label: Full Name
+    placeholder: ex. John Doe
+  validations:
+    required: false
+- type: input
+  id: email
+  attributes:
+    label: Email
+    description: How can we get in touch with you if we need more info?
+    placeholder: ex. email@example.com
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Age
+    description: Age in years
+    placeholder: "21"
+  validations:
+    required: false
+- type: checkboxes
+  attributes:
+    label: Signature
+    description: Like many open-source projects, we ask that you to sign our Contributor License Agreement before we can accept your contribution.
+    options:
+    - label: I have read the CLA Document and I hereby sign the CLA
+      required: true
+- type: dropdown
+  attributes:
+    label: How do you sign ?
+    description: On whose behalf do you sign?
+    options:
+    - I am signing on behalf of myself.
+    - I am signing on behalf of my employer.
+  validations:
+    required: true
