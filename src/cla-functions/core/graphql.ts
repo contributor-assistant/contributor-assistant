@@ -11,39 +11,33 @@ export interface GitActor {
   user: User | null;
 }
 
-const gitActorFragment = gql`
-fragment gitActor on GitActor {
-  name
-  email
-  user {
-    databaseId
-    login
-  }
-}`;
-
 interface PageInfo {
   endCursor: string;
   hasNextPage: boolean;
 }
 
-interface CoAuthors {
+interface Authors {
   nodes: GitActor[];
   pageInfo: PageInfo;
 }
 
-const coAuthorsFragment = gql`
-fragment coAuthors on Commit {
+const authorsFragment = gql`
+fragment authors on Commit {
   authors(first: $authorCount, after: $authorCursor) {
     nodes {
-      ...gitActor
+      name
+      email
+      user {
+        databaseId
+        login
+      }
     }
     pageInfo {
       endCursor
       hasNextPage
     }
   }
-}
-${gitActorFragment}`;
+}`;
 
 export interface AuthorsResponse {
   repository: {
@@ -53,8 +47,7 @@ export interface AuthorsResponse {
           cursor: string;
           node: {
             commit: {
-              author: GitActor;
-              authors: CoAuthors;
+              authors: Authors;
             };
           };
         }[];
@@ -73,10 +66,7 @@ query getAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor: 
           cursor
           node {
             commit {
-              author {
-                ...gitActor
-              }
-              ...coAuthors
+              ...authors
             }
           }
         }
@@ -88,7 +78,7 @@ query getAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor: 
     }
   }
 }
-${coAuthorsFragment}`;
+${authorsFragment}`;
 
 export interface CoAuthorsResponse {
   repository: {
@@ -97,7 +87,7 @@ export interface CoAuthorsResponse {
         edges: {
           node: {
             commit: {
-              authors: CoAuthors;
+              authors: Authors;
             };
           };
         }[];
@@ -114,7 +104,7 @@ query getCoAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor
         edges {
           node {
             commit {
-              ...coAuthors
+              ...authors
             }
           }
         }
@@ -122,4 +112,4 @@ query getCoAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor
     }
   }
 }
-${coAuthorsFragment}`;
+${authorsFragment}`;

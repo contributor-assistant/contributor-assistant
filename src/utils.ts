@@ -1,4 +1,5 @@
 export * as action from "./utils/action.ts";
+export * as github from "./utils/github.ts";
 export * as json from "./utils/json.ts";
 export * as pr from "./utils/pr.ts";
 export * from "./utils/graphql.ts";

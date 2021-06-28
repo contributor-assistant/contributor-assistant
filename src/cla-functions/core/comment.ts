@@ -1,26 +1,23 @@
-import { Author, CLAData, SignatureStatus } from "./types.ts";
-import { action, generateCommentAnchor, pr } from "../../utils.ts";
+import { SignatureStatus } from "./types.ts";
+import { action, generateCommentAnchor, pr, context } from "../../utils.ts";
 import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
 
 const commentAnchor = generateCommentAnchor(applicationType);
 
-export async function commentPR(
-  comments: pr.Comments,
-  status: SignatureStatus,
-  data: CLAData,
-) {
+export async function commentPR(status: SignatureStatus) {
+  const comments = await pr.listComments();
   const botComment = comments.find((comment) =>
     comment.body?.match(commentAnchor)
   );
   if (botComment === undefined) {
     if (status.unsigned.length > 0 || status.unknown.length > 0) {
-      await pr.createComment(createBody(status, data));
+      await pr.createComment(createBody(status));
     } else {
       action.info("Everyone has already signed the CLA.");
     }
   } else {
-    await pr.updateComment(botComment.id, createBody(status, data));
+    await pr.updateComment(botComment.id, createBody(status));
   }
 }
 
@@ -34,13 +31,7 @@ export async function uncommentPR() {
   }
 }
 
-interface unsignedByAuthor {
-  author: Author;
-  coAuthors: Set<Author>;
-  needReSign?: boolean;
-}
-
-function createBody(status: SignatureStatus, data: CLAData): string {
+function createBody(status: SignatureStatus): string {
   let body = `${commentAnchor}\n## Contributor Assistant | CLA\n`;
   const text = options.message.comment;
   const input = options.message.input;
@@ -53,78 +44,22 @@ function createBody(status: SignatureStatus, data: CLAData): string {
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
       .replace("${cla-path}", options.CLAPath)
   }
-  - - -
-  **${input.signature}**
-  - - -
+  [Sign here](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new?template=cla.yml&labels=CLA&title=License+Signature)
   `;
 
-  let unknownCoAuthors = false;
   if (committerCount > 1) {
     body += `${text.summary}\n`
       .replace("${signed}", status.signed.length.toString())
       .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
-      body += `:white_check_mark: `;
-      if (committer.user !== null) {
-        body += `@${committer.user.login}\n`;
-      } else {
-        body += `${committer.name} (${committer.email})\n`;
-      }
-    }
-
-    const unsigned = new Map<number, unsignedByAuthor>();
-    for (const committer of status.unsigned) {
-      if (committer.user !== null) {
-        unsigned.set(committer.user.databaseId, {
-          author: committer,
-          coAuthors: new Set(),
-        });
-      }
+      body += `:white_check_mark: @${committer.user!.login}\n`;
     }
     for (const committer of status.unsigned) {
-      if (committer.user === null) {
-        const commit = unsigned.get(committer.coAuthoredWith!);
-        if (commit === undefined) {
-          const author = data.signatures.find((author) =>
-            author.user !== null &&
-            author.user.databaseId === committer.coAuthoredWith
-          );
-          if (author === undefined) {
-            action.warning("No author was found for this coAuthor.");
-          } else {
-            unsigned.set(author.user!.databaseId, {
-              author,
-              coAuthors: new Set([committer]),
-              needReSign: true,
-            });
-          }
-        } else {
-          const { coAuthors } = commit;
-          coAuthors.add(committer);
-        }
-      }
-    }
-    for (const [_, { author, coAuthors, needReSign }] of unsigned) {
-      if (needReSign) {
-        body += `:arrows_counterclockwise: @${
-          author.user!.login
-        } ${text.newSignature}`;
-      } else {
-        body += `:x: @${author.user!.login} `;
-      }
-      if (coAuthors.size > 0) {
-        unknownCoAuthors = true;
-        body += `${text.coAuthorWarning}\n`;
-        for (const coAuthor of coAuthors) {
-          body +=
-            ` - :heavy_multiplication_x: ${coAuthor.name} (${coAuthor.email})\n`;
-        }
-      }
-      body += "\n";
+      body += `:x: @${committer.user!.login}\n`;
     }
   }
 
-  if (status.unknown.length > 0 || unknownCoAuthors) {
+  if (status.unknown.length > 0) {
     for (const committer of status.unknown) {
       body += `:grey_question: ${committer.name} (${committer.email}) \n`;
     }

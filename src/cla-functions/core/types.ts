@@ -1,17 +1,19 @@
-import type { Author } from "./commit.ts";
 import type { Storage } from "../../utils.ts";
+import type { User, GitActor } from "./graphql.ts";
 
-export type { Author } from "./commit.ts";
+export type { User, GitActor };
 
-export type AuthorSignature = Author & {
-  prNumber: number;
-};
+export interface AuthorSignature {
+  user: User;
+  issueNumber: number;
+  customFields: unknown[];
+}
 
 export interface SignatureStatus {
   update: boolean;
-  signed: AuthorSignature[];
-  unsigned: Author[];
-  unknown: Author[];
+  signed: GitActor[];
+  unsigned: GitActor[];
+  unknown: GitActor[];
 }
 
 export interface CLAData {
