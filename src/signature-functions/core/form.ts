@@ -1,7 +1,20 @@
-import { action, context, github, octokit, spliceArray, checkStorageContent, issue } from "../../utils.ts";
+import {
+  action,
+  checkStorageContent,
+  context,
+  github,
+  issue,
+  octokit,
+  spliceArray,
+} from "../../utils.ts";
 import { marked, parseYaml } from "../../deps.ts";
-import { writeStorage, readStorage, defaultContent } from "./storage.ts";
+import {
+  defaultSignatureContent,
+  readSignatureStorage,
+  writeSignatureStorage,
+} from "./storage.ts";
 import type { Form } from "./types.ts";
+import { readReRunStorage } from "./re_run.ts";
 
 export function isForm(): boolean {
   const labels: { name: string }[] = context.payload.issue!.labels;
@@ -12,7 +25,7 @@ export function isForm(): boolean {
 export async function processForm() {
   const lock = issue.lock();
   const body = context.payload.issue!.body ?? "";
-  const { content } = await github.getContent(octokit, {
+  const { content } = await github.getFile(octokit, {
     ...context.repo,
     path: ".github/ISSUE_TEMPLATE/cla.yml",
   });
@@ -39,34 +52,42 @@ export async function processForm() {
 
   spliceArray(metadata, isSignature);
 
-  const storage = await readStorage();
-  checkStorageContent(storage.content, defaultContent);
+  const storage = await readSignatureStorage();
+  checkStorageContent(storage.content, defaultSignatureContent);
+  const databaseId: number = context.payload.issue!.user.id;
 
   storage.content.data.signatures.push({
     user: {
-      databaseId: context.payload.issue!.user.id,
+      databaseId,
       login: context.payload.issue!.user.login,
     },
-    issueNumber: context.issue.number,
+    issue: context.issue.number,
     date: Date.now(),
     customFields: metadata,
-  })
+  });
 
-  await writeStorage(storage);
-  await lock;
+  const writeSignature = writeSignatureStorage(storage);
+  const { content: reRunContent } = await readReRunStorage();
 
-  // TODO: re_run linked PR
+  const reRuns: Promise<void>[] = [];
+
+  for (const run of reRunContent) {
+    if (run.unsigned.includes(databaseId)) {
+      reRuns.push(action.reRun(run.workflow));
+    }
+  }
+  await Promise.all([...reRuns, lock, writeSignature]);
 }
 
 interface QA {
-  type: "q/a"
+  type: "q/a";
   id?: string;
   question: string;
   answer: string;
 }
 
 interface ItemList {
-  type: "items"
+  type: "items";
   id?: string;
   items: {
     value: string;
@@ -78,7 +99,10 @@ export type CustomField = QA | ItemList;
 
 const noResponse = "_No response_";
 
-export function parseIssue(form: Form, issue: marked.TokensList): CustomField[] {
+export function parseIssue(
+  form: Form,
+  issue: marked.TokensList,
+): CustomField[] {
   const iterator = issue.values();
   let token = iterator.next();
 

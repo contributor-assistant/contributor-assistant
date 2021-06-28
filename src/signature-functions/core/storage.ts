@@ -1,6 +1,7 @@
 import {
   action,
   context,
+  github,
   json,
   octokit,
   personalOctokit,
@@ -10,7 +11,7 @@ import type { LocalStorage, RemoteGithubStorage } from "../options.ts";
 import type { SignatureStorage } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
-export const defaultContent: SignatureStorage = {
+export const defaultSignatureContent: SignatureStorage = {
   type: applicationType,
   version: storageVersion,
   data: {
@@ -28,19 +29,24 @@ export interface ghStorage {
 
 export type StorageContent = ghStorage;
 
-export function readStorage(): Promise<StorageContent> {
+export async function readSignatureStorage(): Promise<StorageContent> {
   switch (options.storage.type) {
     case "local":
     case "remote-github":
-      return readGithubStorage(options.storage);
+      const { content, sha } = await readGithubStorage(
+        options.storage,
+        JSON.stringify(defaultSignatureContent),
+      );
+      return { content: JSON.parse(content), sha };
     default:
       action.fail("Unknown storage type");
   }
 }
 
-async function readGithubStorage(
+export async function readGithubStorage(
   storage: Required<LocalStorage | RemoteGithubStorage>,
-): Promise<ghStorage> {
+  defaultContent: string,
+): Promise<github.Content> {
   const kit = storage.type === "local" ? octokit : personalOctokit;
   const fileLocation = storage.type === "local"
     ? {
@@ -50,34 +56,13 @@ async function readGithubStorage(
     }
     : storage;
   try {
-    const res = await kit.repos.getContent({
-      ...fileLocation,
-      ref: fileLocation.branch,
-    });
-    if (Array.isArray(res.data)) {
-      action.fail("File path is a directory");
-    } else if (!("content" in res.data)) {
-      action.fail("No content");
-    } else {
-      const sha = res.data.sha;
-      const content = JSON.parse(atob(res.data.content));
-      return { content, sha };
-    }
+    return github.getFile(kit, fileLocation);
   } catch (error) {
     if (error.status === 404) {
-      const content = defaultContent;
-      const res = await kit.repos.createOrUpdateFileContents({
-        ...fileLocation,
+      return github.createOrUpdateFile(kit, fileLocation, {
         message: options.message.commit.setup,
-        content: json.toBase64(content),
-      }).catch((error) =>
-        action.fail(
-          `Error occurred when creating the signature file: ${error
-            .message ||
-            error}. Make sure the branch where signatures are stored is NOT protected.`,
-        )
-      );
-      return { content, sha: res.data.content.sha };
+        content: defaultContent,
+      });
     } else {
       action.fail(
         `Could not retrieve repository contents: ${error.message}. Status: ${error
@@ -87,18 +72,21 @@ async function readGithubStorage(
   }
 }
 
-export function writeStorage(storage: StorageContent) {
+export function writeSignatureStorage(storage: StorageContent) {
   switch (options.storage.type) {
     case "local":
     case "remote-github":
-      return writeGithubStorage(storage, options.storage);
+      return writeGithubStorage({
+        content: JSON.stringify(storage.content),
+        sha: storage.sha,
+      }, options.storage);
     default:
       action.fail("Unknown storage type");
   }
 }
 
-async function writeGithubStorage(
-  file: ghStorage,
+export async function writeGithubStorage(
+  file: github.Content,
   storage: Required<LocalStorage | RemoteGithubStorage>,
 ) {
   const kit = storage.type === "local" ? octokit : personalOctokit;
@@ -109,15 +97,11 @@ async function writeGithubStorage(
       branch: storage.branch,
     }
     : storage;
-  await kit.repos.createOrUpdateFileContents({
-    ...fileLocation,
+  await github.createOrUpdateFile(kit, fileLocation, {
     message: `${
       options.message.commit.signed
         .replace("${signatory}", context.payload.issue!.user.login)
     }. Closes #${context.issue.number}`,
     content: json.toBase64(file.content),
-    sha: file.sha,
-  }).catch((err) =>
-    action.fail(`Could not update the JSON file: ${err.message}`)
-  );
+  }, file.sha);
 }

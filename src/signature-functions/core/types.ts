@@ -1,21 +1,20 @@
 import type { Storage } from "../../utils.ts";
-import type { User, GitActor } from "./graphql.ts";
+import type { GitActor, User } from "./graphql.ts";
 
-export type { User, GitActor };
+export type { GitActor, User };
 
 export interface AuthorSignature {
   user: User;
-  issueNumber: number;
+  issue: number;
   date: number;
   customFields: unknown[];
 }
 
 export interface SupersededSignature extends AuthorSignature {
-  endDate: number
+  endDate: number;
 }
 
 export interface SignatureStatus {
-  update: boolean;
   signed: GitActor[];
   unsigned: GitActor[];
   unknown: GitActor[];
@@ -26,14 +25,25 @@ export interface SignatureData {
   signatures: AuthorSignature[];
   superseded: SupersededSignature[];
   invalidated: {
-    endDate: number
+    endDate: number;
     documentSHA: string;
     signatures: AuthorSignature[];
-  }[]
+  }[];
 }
+
+export type ReRunData = {
+  pullRequest: number;
+  workflow: number;
+  /** author IDs */ 
+  unsigned: number[];
+}[];
 
 export interface SignatureStorage extends Storage {
   data: SignatureData;
+}
+
+export interface ReRunStorage extends Storage {
+  data: ReRunData;
 }
 
 export interface Form {

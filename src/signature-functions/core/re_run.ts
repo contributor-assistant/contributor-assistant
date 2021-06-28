@@ -1,6 +1,9 @@
 import { action, context, normalizeText, pr } from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
+import { readGithubStorage, writeGithubStorage } from "./storage.ts";
+import type { ReRunData } from "./types.ts";
+import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
  * - "recheck" or the signature are in comments
@@ -35,4 +38,34 @@ export async function reRun() {
       action.error(`Error occurred when re-running the workflow: ${error}`)
     );
   }
+}
+
+export const defaultReRunContent = {
+  type: `${applicationType}/re-run`,
+  version: storageVersion,
+  data: [],
+};
+
+export interface ReRunContent {
+  content: ReRunData;
+  sha: string;
+}
+
+export async function readReRunStorage(): Promise<ReRunContent> {
+  const { content, sha } = await readGithubStorage({
+    type: "local",
+    ...options.reRun,
+  }, JSON.stringify(defaultReRunContent));
+
+  return { content: JSON.parse(content), sha };
+}
+
+export async function writeReRunStorage(file: ReRunContent) {
+  await writeGithubStorage({
+    content: JSON.stringify(file.content),
+    sha: file.sha,
+  }, {
+    type: "local",
+    ...options.reRun,
+  });
 }

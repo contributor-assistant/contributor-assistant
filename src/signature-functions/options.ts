@@ -26,10 +26,15 @@ export interface CLAOptions {
   CLAPath: string;
   /** The storage medium for the file holding the signatures. */
   storage?: LocalStorage | RemoteGithubStorage;
+  /** A cache for the workflows */
+  reRun: {
+    /** The branch where the re-run data will be stored. */
+    branch?: string;
+    /** The path where the re-run data will be stored. */
+    path?: string;
+  };
   /** A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. */
   ignoreList?: string[];
-  /** Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Defaults to true. */
-  lockPRAfterMerge?: boolean;
   message?: {
     commit?: {
       /** Commit message when creating the storage file. */
@@ -42,9 +47,6 @@ export interface CLAOptions {
       allSigned?: string;
       header?: string;
       summary?: string;
-      newSignature?: string;
-      coAuthorWarning?: string;
-      unknownAccount?: string;
       unknownWarning?: string;
       footer?: string;
     };
@@ -103,13 +105,17 @@ export function setupOptions(opts: CLAOptions) {
   if (opts.storage.type === "remote-github") {
     opts.storage.owner ??= context.repo.owner;
   }
-  opts.storage.path ||= ".github/contributor-assistant/cla.json";
+  opts.storage.path ||= ".github/contributor-assistant/signatures.json";
 
   // storage.branch will defaults to the repository's default branch thanks to github API
   opts.storage.branch ||= undefined;
 
+  opts.reRun = {
+    path: ".github/contributor-assistant/signatures-re-run.json",
+    ...removeEmpty(opts.reRun),
+  };
+
   opts.ignoreList ??= [];
-  opts.lockPRAfterMerge ??= true;
 
   opts.message = {
     commit: {
@@ -125,10 +131,6 @@ export function setupOptions(opts: CLAOptions) {
         "**${signed}** out of **${total}** committers have signed the CLA.",
       footer:
         "<sub>You can re-trigger this bot by commenting `${re-trigger}` in this Pull Request</sub>",
-      newSignature: "*(new signature required)*",
-      coAuthorWarning:
-        "*You have co-authored a commit with the following people, who are not registered on Github. By signing, you also sign on their behalf.*",
-      unknownAccount: "*unknown account*",
       unknownWarning:
         "⚠ Some commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
       ...removeEmpty(opts.message?.comment),

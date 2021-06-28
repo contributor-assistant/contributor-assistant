@@ -6,7 +6,6 @@ export function getSignatureStatus(
   data: SignatureData,
 ): SignatureStatus {
   const status: SignatureStatus = {
-    update: false,
     signed: [],
     unsigned: [],
     unknown: [],
