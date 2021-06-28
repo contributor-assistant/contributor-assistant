@@ -119,7 +119,7 @@ export function setupOptions(opts: CLAOptions) {
 
   opts.message = {
     commit: {
-      setup: "Creating file for storing CLA signatures",
+      setup: "Creating file to store signatures",
       signed: "@${signatory} has signed the CLA",
       ...removeEmpty(opts.message?.commit),
     },

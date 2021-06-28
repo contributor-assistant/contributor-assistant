@@ -43,7 +43,7 @@ export async function createOrUpdateFile(
   const res = await kit.repos.createOrUpdateFileContents({
     ...location,
     message: params.message,
-    content: btoa(params.message),
+    content: btoa(params.content),
     sha,
   }).catch((error) => {
     throw new Error(

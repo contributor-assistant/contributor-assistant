@@ -68,15 +68,21 @@ async function run() {
       run.pullRequest === context.issue.number;
 
     if (status.unsigned.length === 0) {
-      spliceArray(storage.content, isCurrentWorkflow);
+      spliceArray(storage.content.data, isCurrentWorkflow);
     } else {
-      const run = storage.content.find(isCurrentWorkflow) ?? {
-        pullRequest: context.issue.number,
-        workflow: context.runId,
-        unsigned: status.unsigned,
-      };
-      run.unsigned = status.unsigned;
+      const run = storage.content.data.find(isCurrentWorkflow);
+      if (run === undefined) {
+        storage.content.data.push({
+          pullRequest: context.issue.number,
+          workflow: context.runId,
+          unsigned: status.unsigned.map((author) => author.user!.databaseId),
+        });
+      } else {
+        run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
+      }
     }
+
+    action.debug("re-run data",storage)
 
     return writeReRunStorage(storage);
   });

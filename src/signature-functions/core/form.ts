@@ -71,7 +71,7 @@ export async function processForm() {
 
   const reRuns: Promise<void>[] = [];
 
-  for (const run of reRunContent) {
+  for (const run of reRunContent.data) {
     if (run.unsigned.includes(databaseId)) {
       reRuns.push(action.reRun(run.workflow));
     }

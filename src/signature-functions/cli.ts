@@ -56,8 +56,11 @@ cla({
       branch: flags.storageBranch,
       path: flags.storagePath,
     },
+  reRun: {
+    branch: flags.reRunBranch,
+    path: flags.reRunPath /// TODO: move to storage object
+  },
   ignoreList: flags.ignoreList.split(/\s,\s/),
-  lockPRAfterMerge: parseBoolean(flags.lockPRAfterMerge),
   message: {
     input: {
       signature: flags.inputSignature,

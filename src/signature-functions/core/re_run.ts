@@ -2,7 +2,7 @@ import { action, context, normalizeText, pr } from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
 import { readGithubStorage, writeGithubStorage } from "./storage.ts";
-import type { ReRunData } from "./types.ts";
+import type { ReRunStorage } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
@@ -47,7 +47,7 @@ export const defaultReRunContent = {
 };
 
 export interface ReRunContent {
-  content: ReRunData;
+  content: ReRunStorage;
   sha: string;
 }
 
@@ -55,7 +55,7 @@ export async function readReRunStorage(): Promise<ReRunContent> {
   const { content, sha } = await readGithubStorage({
     type: "local",
     ...options.reRun,
-  }, JSON.stringify(defaultReRunContent));
+  }, JSON.stringify(defaultReRunContent), "Creating re-run storage");
 
   return { content: JSON.parse(content), sha };
 }
@@ -67,5 +67,5 @@ export async function writeReRunStorage(file: ReRunContent) {
   }, {
     type: "local",
     ...options.reRun,
-  });
+  }, "Updating re-run storage");
 }
