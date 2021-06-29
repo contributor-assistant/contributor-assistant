@@ -1,5 +1,5 @@
 import { SignatureStatus } from "./types.ts";
-import { action, generateCommentAnchor, pr, context } from "../../utils.ts";
+import { action, context, generateCommentAnchor, pr } from "../../utils.ts";
 import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
 
@@ -42,7 +42,7 @@ function createBody(status: SignatureStatus): string {
   const committerCount = status.signed.length + status.unsigned.length;
   body += `${
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
-      .replace("${cla-path}", options.CLAPath)
+      .replace("${cla-path}", options.documentPath)
   }
   [Sign here](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new?template=cla.yml&labels=CLA&title=License+Signature)
   `;

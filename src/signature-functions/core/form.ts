@@ -1,20 +1,20 @@
 import {
   action,
-  checkStorageContent,
   context,
   github,
   issue,
   octokit,
   spliceArray,
+  storage,
 } from "../../utils.ts";
 import { marked, parseYaml } from "../../deps.ts";
+import { readReRunStorage } from "./re_run.ts";
 import {
   defaultSignatureContent,
   readSignatureStorage,
   writeSignatureStorage,
-} from "./storage.ts";
+} from "./signatures.ts";
 import type { Form } from "./types.ts";
-import { readReRunStorage } from "./re_run.ts";
 
 export function isForm(): boolean {
   const labels: { name: string }[] = context.payload.issue!.labels;
@@ -52,11 +52,11 @@ export async function processForm() {
 
   spliceArray(metadata, isSignature);
 
-  const storage = await readSignatureStorage();
-  checkStorageContent(storage.content, defaultSignatureContent);
+  const file = await readSignatureStorage();
+  storage.checkContent(file.content, defaultSignatureContent);
   const databaseId: number = context.payload.issue!.user.id;
 
-  storage.content.data.signatures.push({
+  file.content.data.signatures.push({
     user: {
       databaseId,
       login: context.payload.issue!.user.login,
@@ -66,7 +66,7 @@ export async function processForm() {
     customFields: metadata,
   });
 
-  const writeSignature = writeSignatureStorage(storage);
+  const writeSignature = writeSignatureStorage(file);
   const { content: reRunContent } = await readReRunStorage();
 
   const reRuns: Promise<void>[] = [];

@@ -1,3 +1,4 @@
+export * as storage from "./utils/storage.ts";
 export * as action from "./utils/action.ts";
 export * as github from "./utils/github.ts";
 export * as issue from "./utils/issue.ts";
@@ -7,5 +8,4 @@ export * from "./utils/context.ts";
 export * from "./utils/octokit.ts";
 export * from "./utils/const.ts";
 export * from "./utils/misc.ts";
-export * from "./utils/storage.ts";
 export * from "./utils/types.ts";

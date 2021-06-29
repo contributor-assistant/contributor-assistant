@@ -1,33 +1,15 @@
-import { getSignatureStatus } from "./core/signatures.ts";
-import {
-  defaultSignatureContent,
-  readSignatureStorage,
-} from "./core/storage.ts";
-import {
-  readReRunStorage,
-  reRun,
-  reRunRequired,
-  writeReRunStorage,
-} from "./core/re_run.ts";
-import { filterIgnored } from "./core/ignore_list.ts";
-import { getCommitters } from "./core/committers.ts";
-import { commentPR, uncommentPR } from "./core/comment.ts";
-import { hasIgnoreLabel, updateLabels } from "./core/labels.ts";
-import {
-  action,
-  checkStorageContent,
-  context,
-  pr,
-  spliceArray,
-} from "../utils.ts";
+import { reRun, reRunRequired } from "./core/re_run.ts";
+import { uncommentPR } from "./core/comment.ts";
+import { hasIgnoreLabel } from "./core/labels.ts";
+import { action, context } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
-import type { CLAOptions } from "./options.ts";
-import type { ReRunData } from "./core/types.ts";
 import { isForm, processForm } from "./core/form.ts";
+import { updatePR } from "./core/pull_request.ts";
+import type { Options } from "./options.ts";
 
-/** The entry point for the CLA Assistant */
-export default async function cla(rawOptions: CLAOptions) {
-  action.info("Contributor Assistant: CLA process started");
+/** The entry point for the Signature Assistant */
+export default async function main(rawOptions: Options) {
+  action.info("Contributor Assistant: Signature process started");
 
   setupOptions(rawOptions);
 
@@ -38,65 +20,16 @@ export default async function cla(rawOptions: CLAOptions) {
       }
     } else if (await hasIgnoreLabel()) {
       action.info(
-        `CLA process skipped due to the "${options.labels.ignore}" label`,
+        `Signature process skipped due to the "${options.labels.ignore}" label`,
       );
       await uncommentPR();
     } else if (reRunRequired()) {
       await reRun();
     } else {
-      await run();
+      await updatePR();
     }
   } catch (error) {
     action.debug(String(error.stack));
     action.fail(String(error.message));
-  }
-}
-
-/** Fetch committers, update signatures, notify the result in a PR comment */
-async function run() {
-  const [{ content }, committers] = await Promise.all([
-    readSignatureStorage(),
-    getCommitters(),
-  ]);
-  checkStorageContent(content, defaultSignatureContent); // TODO
-
-  const status = getSignatureStatus(filterIgnored(committers), content.data);
-  action.debug("Signature status", status);
-
-  const updateReRun = readReRunStorage().then((storage) => {
-    const isCurrentWorkflow = (run: ReRunData[number]) =>
-      run.pullRequest === context.issue.number;
-
-    if (status.unsigned.length === 0) {
-      spliceArray(storage.content.data, isCurrentWorkflow);
-    } else {
-      const run = storage.content.data.find(isCurrentWorkflow);
-      if (run === undefined) {
-        storage.content.data.push({
-          pullRequest: context.issue.number,
-          workflow: context.runId,
-          unsigned: status.unsigned.map((author) => author.user!.databaseId),
-        });
-      } else {
-        run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
-      }
-    }
-
-    action.debug("re-run data",storage)
-
-    return writeReRunStorage(storage);
-  });
-
-  await Promise.all([commentPR(status), updateLabels(status), updateReRun]);
-
-  if (
-    status.unsigned.length === 0 &&
-    (status.signed.length > 1 || status.unknown.length === 0)
-  ) {
-    action.info(options.message.comment.allSigned);
-  } else {
-    action.fail(
-      `Committers of Pull Request #${context.issue.number} have to sign the CLA 📝`,
-    );
   }
 }

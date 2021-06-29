@@ -1,8 +1,15 @@
-import { action, context, normalizeText, pr } from "../../utils.ts";
+import {
+  action,
+  context,
+  github,
+  normalizeText,
+  pr,
+  spliceArray,
+  storage,
+} from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
-import { readGithubStorage, writeGithubStorage } from "./storage.ts";
-import type { ReRunStorage } from "./types.ts";
+import type { ReRunData, ReRunStorage, SignatureStatus } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
@@ -46,26 +53,50 @@ export const defaultReRunContent = {
   data: [],
 };
 
-export interface ReRunContent {
-  content: ReRunStorage;
-  sha: string;
-}
+export type ReRunContent = github.Content<ReRunStorage>;
 
 export async function readReRunStorage(): Promise<ReRunContent> {
-  const { content, sha } = await readGithubStorage({
-    type: "local",
-    ...options.reRun,
-  }, JSON.stringify(defaultReRunContent), "Creating re-run storage");
+  const { content, sha } = await storage.readGithub(
+    {
+      type: "local",
+      ...options.reRun,
+    },
+    JSON.stringify(defaultReRunContent),
+    "Creating re-run storage",
+  );
 
   return { content: JSON.parse(content), sha };
 }
 
 export async function writeReRunStorage(file: ReRunContent) {
-  await writeGithubStorage({
+  await storage.writeGithub({
     content: JSON.stringify(file.content),
     sha: file.sha,
   }, {
     type: "local",
     ...options.reRun,
   }, "Updating re-run storage");
+}
+
+export async function updateReRun(status: SignatureStatus) {
+  const storage = await readReRunStorage();
+  const isCurrentWorkflow = (run: ReRunData[number]) =>
+    run.pullRequest === context.issue.number;
+
+  if (status.unsigned.length === 0) {
+    spliceArray(storage.content.data, isCurrentWorkflow);
+  } else {
+    const run = storage.content.data.find(isCurrentWorkflow);
+    if (run === undefined) {
+      storage.content.data.push({
+        pullRequest: context.issue.number,
+        workflow: context.runId,
+        unsigned: status.unsigned.map((author) => author.user!.databaseId),
+      });
+    } else {
+      run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
+    }
+  }
+
+  await writeReRunStorage(storage);
 }

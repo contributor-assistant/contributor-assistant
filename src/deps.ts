@@ -18,4 +18,4 @@ export type RestEndpointMethodTypes = Endpoint.RestEndpointMethodTypes;
 
 /* marked */
 import marked_ from "https://cdn.skypack.dev/marked@2.1.3?dts";
-export const marked = marked_
+export const marked = marked_;

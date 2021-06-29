@@ -1,6 +1,6 @@
 import { parseFlags } from "../deps.ts";
 import { action } from "../utils.ts";
-import cla from "./mod.ts";
+import main from "./mod.ts";
 
 /** This file is the entry point for the action */
 
@@ -39,13 +39,13 @@ const flags = parseFlags(Deno.args, {
 
 action.debug("Flags", flags);
 
-cla({
+main({
   githubToken: flags.githubToken,
   personalAccessToken: flags.personalAccessToken,
-  CLAPath: flags.CLAPath,
+  documentPath: flags.CLAPath,
   storage: flags.storageRemoteRepo.length > 0
     ? {
-      type: "remote-github",
+      type: "remote",
       repo: flags.storageRemoteRepo,
       owner: flags.storageRemoteOwner,
       branch: flags.storageBranch,
@@ -58,7 +58,7 @@ cla({
     },
   reRun: {
     branch: flags.reRunBranch,
-    path: flags.reRunPath /// TODO: move to storage object
+    path: flags.reRunPath, /// TODO: move to storage object
   },
   ignoreList: flags.ignoreList.split(/\s,\s/),
   message: {
@@ -75,7 +75,7 @@ cla({
 });
 
 /** Boolean parser: github actions inputs cannot have a boolean value */
-function parseBoolean(flag: unknown): boolean | undefined {
+function _parseBoolean(flag: unknown): boolean | undefined {
   switch (flag) {
     case "true":
       return true;

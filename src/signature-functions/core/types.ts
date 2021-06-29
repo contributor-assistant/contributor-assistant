@@ -1,4 +1,4 @@
-import type { Storage } from "../../utils.ts";
+import type { storage } from "../../utils.ts";
 import type { GitActor, User } from "./graphql.ts";
 
 export type { GitActor, User };
@@ -34,15 +34,15 @@ export interface SignatureData {
 export type ReRunData = {
   pullRequest: number;
   workflow: number;
-  /** author IDs */ 
+  /** author IDs */
   unsigned: number[];
 }[];
 
-export interface SignatureStorage extends Storage {
+export interface SignatureStorage extends storage.Storage {
   data: SignatureData;
 }
 
-export interface ReRunStorage extends Storage {
+export interface ReRunStorage extends storage.Storage {
   data: ReRunData;
 }
 

@@ -1,31 +1,15 @@
 import { action, context, initOctokit } from "../utils.ts";
-import type { DeepRequired } from "../utils.ts";
+import type { DeepRequired, storage } from "../utils.ts";
 
-export interface LocalStorage {
-  type: "local";
-  /** The branch where the signatures will be stored. */
-  branch?: string;
-  /** The path where the signatures will be stored. */
-  path?: string;
-}
-
-export interface RemoteGithubStorage extends Omit<LocalStorage, "type"> {
-  type: "remote-github";
-  /** The owner of the remote repository, can be an organization. Leave empty to default to this repository owner. */
-  owner?: string;
-  /** The name of another repository to store the signatures. */
-  repo: string;
-}
-
-export interface CLAOptions {
+export interface Options {
   /** GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}. */
   githubToken: string;
   /** A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}. */
   personalAccessToken: string;
   /** The document which shall be signed by the contributor(s). It can be any file e.g. inside the repository or it can be a gist. */
-  CLAPath: string;
+  documentPath: string;
   /** The storage medium for the file holding the signatures. */
-  storage?: LocalStorage | RemoteGithubStorage;
+  storage?: storage.Local | storage.Remote;
   /** A cache for the workflows */
   reRun: {
     /** The branch where the re-run data will be stored. */
@@ -65,7 +49,7 @@ export interface CLAOptions {
 }
 
 export type ParsedCLAOptions = Omit<
-  DeepRequired<CLAOptions>,
+  DeepRequired<Options>,
   "githubToken" | "personalAccessToken"
 >;
 export let options: ParsedCLAOptions;
@@ -80,7 +64,7 @@ function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
   return obj;
 }
 
-export function setupOptions(opts: CLAOptions) {
+export function setupOptions(opts: Options) {
   opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
   opts.personalAccessToken ||= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
 
@@ -96,13 +80,13 @@ export function setupOptions(opts: CLAOptions) {
       "Missing personal access token (https://github.com/settings/tokens/new). Please provide one as an environment variable.",
     );
   }
-  if (opts.CLAPath === "") {
-    action.fail("Missing CLA path.");
+  if (opts.documentPath === "") {
+    action.fail("Missing signature document path.");
   }
   initOctokit(opts.githubToken, opts.personalAccessToken);
 
   opts.storage ??= { type: "local" };
-  if (opts.storage.type === "remote-github") {
+  if (opts.storage.type === "remote") {
     opts.storage.owner ??= context.repo.owner;
   }
   opts.storage.path ||= ".github/contributor-assistant/signatures.json";
