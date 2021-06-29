@@ -17,7 +17,7 @@ export async function updatePR() {
     readSignatureStorage(),
     getCommitters(),
   ]);
-  storage.checkContent(content, defaultSignatureContent); // TODO
+  storage.checkContent(content, defaultSignatureContent);
 
   const status = getSignatureStatus(filterIgnored(committers), content.data);
   action.debug("Signature status", status);

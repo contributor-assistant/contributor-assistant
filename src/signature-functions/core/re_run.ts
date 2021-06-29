@@ -47,11 +47,35 @@ export async function reRun() {
   }
 }
 
-export const defaultReRunContent = {
+export const defaultReRunContent: ReRunStorage = {
   type: `${applicationType}/re-run`,
   version: storageVersion,
   data: [],
 };
+
+export async function updateReRun(status: SignatureStatus) {
+  const file = await readReRunStorage();
+  storage.checkContent(file.content, defaultReRunContent);
+  const isCurrentWorkflow = (run: ReRunData[number]) =>
+    run.pullRequest === context.issue.number;
+
+  if (status.unsigned.length === 0) {
+    spliceArray(file.content.data, isCurrentWorkflow);
+  } else {
+    const run = file.content.data.find(isCurrentWorkflow);
+    if (run === undefined) {
+      file.content.data.push({
+        pullRequest: context.issue.number,
+        workflow: context.runId,
+        unsigned: status.unsigned.map((author) => author.user!.databaseId),
+      });
+    } else {
+      run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
+    }
+  }
+
+  await writeReRunStorage(file);
+}
 
 export type ReRunContent = github.Content<ReRunStorage>;
 
@@ -68,7 +92,7 @@ export async function readReRunStorage(): Promise<ReRunContent> {
   return { content: JSON.parse(content), sha };
 }
 
-export async function writeReRunStorage(file: ReRunContent) {
+async function writeReRunStorage(file: ReRunContent) {
   await storage.writeGithub({
     content: JSON.stringify(file.content),
     sha: file.sha,
@@ -76,27 +100,4 @@ export async function writeReRunStorage(file: ReRunContent) {
     type: "local",
     ...options.reRun,
   }, "Updating re-run storage");
-}
-
-export async function updateReRun(status: SignatureStatus) {
-  const storage = await readReRunStorage();
-  const isCurrentWorkflow = (run: ReRunData[number]) =>
-    run.pullRequest === context.issue.number;
-
-  if (status.unsigned.length === 0) {
-    spliceArray(storage.content.data, isCurrentWorkflow);
-  } else {
-    const run = storage.content.data.find(isCurrentWorkflow);
-    if (run === undefined) {
-      storage.content.data.push({
-        pullRequest: context.issue.number,
-        workflow: context.runId,
-        unsigned: status.unsigned.map((author) => author.user!.databaseId),
-      });
-    } else {
-      run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
-    }
-  }
-
-  await writeReRunStorage(storage);
 }
