@@ -1,12 +1,13 @@
 /* standard modules */
-export { format as formatTime } from "https://x.nest.land/std@0.99.0/datetime/mod.ts";
-export { join } from "https://x.nest.land/std@0.99.0/path/mod.ts";
+export { format as formatTime } from "https://x.nest.land/std@0.100.0/datetime/mod.ts";
+export { join } from "https://x.nest.land/std@0.100.0/path/mod.ts";
 export {
   exists,
   existsSync,
-} from "https://x.nest.land/std@0.99.0/fs/exists.ts";
-export { parse as parseFlags } from "https://x.nest.land/std@0.99.0/flags/mod.ts";
-export { parse as parseYaml } from "https://x.nest.land/std@0.99.0/encoding/yaml.ts";
+} from "https://x.nest.land/std@0.100.0/fs/exists.ts";
+export { parse as parseFlags } from "https://x.nest.land/std@0.100.0/flags/mod.ts";
+export { parse as parseYaml } from "https://x.nest.land/std@0.100.0/encoding/yaml.ts";
+export { Sha256 } from "https://x.nest.land/std@0.100.0/hash/sha256.ts";
 
 /* github toolkit */
 export { Octokit as Core } from "https://cdn.skypack.dev/@octokit/core@3.4.0?dts";

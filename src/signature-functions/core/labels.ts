@@ -1,4 +1,4 @@
-import { context, pr } from "../../utils.ts";
+import { action, context, octokit, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 import type { SignatureStatus } from "./types.ts";
 
@@ -33,4 +33,18 @@ export function ignoreLabelEvent(): boolean {
   return context.eventName === "pull_request_target" &&
     ["labeled", "unlabeled"].includes(context.payload.action ?? "") &&
     context.payload.label?.name === options.labels.ignore;
+}
+
+export async function createSignatureLabel() {
+  await octokit.issues.createLabel({
+    ...context.repo,
+    name: options.labels.form,
+    description: "A document signature",
+  }).catch((error) => {
+    if (error.code !== "already_exists") {
+      action.fail(
+        `The "${options.labels.form}" label couldn't be added automatically. Please add it manually.`,
+      );
+    }
+  });
 }

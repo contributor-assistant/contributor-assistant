@@ -13,20 +13,16 @@ import type { ReRunData, ReRunStorage, SignatureStatus } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
- * - "recheck" or the signature are in comments
+ * - "recheck" is in comments
  * - ignore label has been updated */
 export function reRunRequired(): boolean {
   if (ignoreLabelEvent()) return true;
   if (context.eventName !== "issue_comment") return false;
-  const signatureText = normalizeText(options.message.input.signature);
   const body = normalizeText(context.payload.comment?.body ?? "");
-  // edited comment
-  const from = normalizeText(context.payload.changes?.body?.from ?? "");
-  return !!body.startsWith(signatureText) || !!from.startsWith(signatureText) ||
-    body === normalizeText(options.message.input.reTrigger);
+  return body === normalizeText(options.message.input.reTrigger);
 }
 
-/** A re-run is needed to change the status of the workflow triggered by "pull_request_target"
+/** A re-run is needed to change the status of the workflow triggered by "pull_request_target" or "issues"
  * https://github.com/cla-assistant/github-action/issues/39 */
 export async function reRun() {
   const branch = await pr.branch();
@@ -34,7 +30,7 @@ export async function reRun() {
   const runs = await action.workflowRuns(
     branch,
     workflowId,
-    "pull_request_target",
+    context.payload.issue === undefined ? "pull_request_target" : "issues",
   );
 
   if (runs.total_count > 0) {

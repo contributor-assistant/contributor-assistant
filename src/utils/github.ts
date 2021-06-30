@@ -1,4 +1,5 @@
 import type { octokit } from "./octokit.ts";
+import { Sha256 } from "../deps.ts";
 
 export type FileLocation = {
   owner: string;
@@ -52,5 +53,9 @@ export async function createOrUpdateFile(
       `Error occurred while creating ${location.path}: ${error.message}`,
     );
   });
-  return { content: params.content, sha: res.data.content.sha };
+  return {
+    content: params.content,
+    sha: res.data.content?.sha ??
+      new Sha256().update(params.content).toString(),
+  };
 }

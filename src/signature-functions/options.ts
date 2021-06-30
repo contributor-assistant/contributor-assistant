@@ -8,15 +8,14 @@ export interface Options {
   personalAccessToken: string;
   /** The document which shall be signed by the contributor(s). It can be any file e.g. inside the repository or it can be a gist. */
   documentPath: string;
-  /** The storage medium for the file holding the signatures. */
-  storage?: storage.Local | storage.Remote;
-  /** A cache for the workflows */
-  reRun: {
-    /** The branch where the re-run data will be stored. */
-    branch?: string;
-    /** The path where the re-run data will be stored. */
-    path?: string;
-  };
+  storage?: {
+    /** The storage medium for the file holding the signatures. */
+    signatures?: storage.Local | storage.Remote;
+    /** A cache for the re-run data */
+    reRun?: Omit<storage.Local, "type">,
+    /** The document form */
+    form?: Omit<storage.Local, "type">,
+  }
   /** A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. */
   ignoreList?: string[];
   message?: {
@@ -45,6 +44,7 @@ export interface Options {
     signed?: string;
     unsigned?: string;
     ignore?: string;
+    form?: string;
   };
 }
 
@@ -85,18 +85,23 @@ export function setupOptions(opts: Options) {
   }
   initOctokit(opts.githubToken, opts.personalAccessToken);
 
-  opts.storage ??= { type: "local" };
-  if (opts.storage.type === "remote") {
-    opts.storage.owner ??= context.repo.owner;
+  opts.storage ??={}
+  opts.storage.signatures ??= { type: "local" };
+  if (opts.storage.signatures.type === "remote") {
+    opts.storage.signatures.owner ??= context.repo.owner;
   }
-  opts.storage.path ||= ".github/contributor-assistant/signatures.json";
+  opts.storage.signatures.path ||= ".github/contributor-assistant/signatures.json";
 
   // storage.branch will defaults to the repository's default branch thanks to github API
-  opts.storage.branch ||= undefined;
+  opts.storage.signatures.branch ||= undefined;
 
-  opts.reRun = {
+  opts.storage.reRun = {
     path: ".github/contributor-assistant/signatures-re-run.json",
-    ...removeEmpty(opts.reRun),
+    ...removeEmpty(opts.storage.reRun),
+  };
+  opts.storage.form = {
+    path: ".github/ISSUE_TEMPLATE/cla.yml",
+    ...removeEmpty(opts.storage.form),
   };
 
   opts.ignoreList ??= [];
@@ -130,6 +135,7 @@ export function setupOptions(opts: Options) {
     signed: "",
     unsigned: "",
     ignore: "",
+    form: "signature form",
     ...removeEmpty(opts.labels),
   };
 

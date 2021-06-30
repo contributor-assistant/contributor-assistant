@@ -46,11 +46,11 @@ export const defaultSignatureContent: SignatureStorage = {
 export type SignatureContent = github.Content<SignatureStorage>;
 
 export async function readSignatureStorage(): Promise<SignatureContent> {
-  switch (options.storage.type) {
+  switch (options.storage.signatures.type) {
     case "local":
     case "remote": {
       const { content, sha } = await storage.readGithub(
-        options.storage,
+        options.storage.signatures,
         JSON.stringify(defaultSignatureContent),
         options.message.commit.setup,
       );
@@ -62,7 +62,7 @@ export async function readSignatureStorage(): Promise<SignatureContent> {
 }
 
 export function writeSignatureStorage(content: SignatureContent) {
-  switch (options.storage.type) {
+  switch (options.storage.signatures.type) {
     case "local":
     case "remote":
       return storage.writeGithub(
@@ -70,7 +70,7 @@ export function writeSignatureStorage(content: SignatureContent) {
           content: JSON.stringify(content.content),
           sha: content.sha,
         },
-        options.storage,
+        options.storage.signatures,
         `${
           options.message.commit.signed
             .replace("${signatory}", context.payload.issue!.user.login)

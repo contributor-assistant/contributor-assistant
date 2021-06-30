@@ -14,20 +14,21 @@ import {
   readSignatureStorage,
   writeSignatureStorage,
 } from "./signatures.ts";
+import { options } from "../options.ts";
 import type { Form } from "./types.ts";
 
 export function isForm(): boolean {
   const labels: { name: string }[] = context.payload.issue!.labels;
   return context.payload.action === "opened" &&
-    labels.some((label) => label.name === "CLA");
+    labels.some((label) => label.name === options.labels.form);
 }
 
 export async function processForm() {
-  const lock = issue.lock();
   const body = context.payload.issue!.body ?? "";
   const { content } = await github.getFile(octokit, {
     ...context.repo,
-    path: ".github/ISSUE_TEMPLATE/cla.yml",
+    path: options.storage.form.path,
+    ref: options.storage.form.branch,
   });
 
   const form = parseYaml(content) as Form;
@@ -71,12 +72,14 @@ export async function processForm() {
 
   const reRuns: Promise<void>[] = [];
 
+  await writeSignature;
   for (const run of reRunContent.data) {
     if (run.unsigned.includes(databaseId)) {
       reRuns.push(action.reRun(run.workflow));
     }
   }
-  await Promise.all([...reRuns, lock, writeSignature]);
+  await Promise.all([...reRuns]);
+  await issue.lock();
 }
 
 interface QA {
