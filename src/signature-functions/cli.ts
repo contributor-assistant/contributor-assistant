@@ -43,22 +43,28 @@ main({
   githubToken: flags.githubToken,
   personalAccessToken: flags.personalAccessToken,
   documentPath: flags.CLAPath,
-  storage: flags.storageRemoteRepo.length > 0
-    ? {
-      type: "remote",
-      repo: flags.storageRemoteRepo,
-      owner: flags.storageRemoteOwner,
-      branch: flags.storageBranch,
-      path: flags.storagePath,
-    }
-    : {
-      type: "local",
-      branch: flags.storageBranch,
-      path: flags.storagePath,
+  storage: {
+    signatures: flags.storageRemoteRepo.length > 0
+      ? {
+        type: "remote",
+        repo: flags.storageRemoteRepo,
+        owner: flags.storageRemoteOwner,
+        branch: flags.storageBranch,
+        path: flags.storagePath,
+      }
+      : {
+        type: "local",
+        branch: flags.storageBranch,
+        path: flags.storagePath,
+      },
+    reRun: {
+      branch: flags.reRunBranch,
+      path: flags.reRunPath,
     },
-  reRun: {
-    branch: flags.reRunBranch,
-    path: flags.reRunPath, /// TODO: move to storage object
+    form: {
+      branch: flags.formBranch,
+      path: flags.formPath,
+    },
   },
   ignoreList: flags.ignoreList.split(/\s,\s/),
   message: {

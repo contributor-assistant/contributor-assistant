@@ -44,7 +44,7 @@ function createBody(status: SignatureStatus): string {
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
       .replace("${cla-path}", options.documentPath)
   }
-  [Sign here](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new?template=cla.yml&labels=CLA&title=License+Signature)
+  [Sign here](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new?template=cla.yml&labels=signature+form&title=License+Signature)
   `;
 
   if (committerCount > 1) {
