@@ -12,10 +12,10 @@ export interface Options {
     /** The storage medium for the file holding the signatures. */
     signatures?: storage.Local | storage.Remote;
     /** A cache for the re-run data */
-    reRun?: Omit<storage.Local, "type">,
+    reRun?: Omit<storage.Local, "type">;
     /** The document form */
-    form?: Omit<storage.Local, "type">,
-  }
+    form?: Omit<storage.Local, "type">;
+  };
   /** A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. */
   ignoreList?: string[];
   message?: {
@@ -85,12 +85,13 @@ export function setupOptions(opts: Options) {
   }
   initOctokit(opts.githubToken, opts.personalAccessToken);
 
-  opts.storage ??={}
+  opts.storage ??= {};
   opts.storage.signatures ??= { type: "local" };
   if (opts.storage.signatures.type === "remote") {
     opts.storage.signatures.owner ??= context.repo.owner;
   }
-  opts.storage.signatures.path ||= ".github/contributor-assistant/signatures.json";
+  opts.storage.signatures.path ||=
+    ".github/contributor-assistant/signatures.json";
 
   // storage.branch will defaults to the repository's default branch thanks to github API
   opts.storage.signatures.branch ||= undefined;

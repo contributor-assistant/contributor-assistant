@@ -4,10 +4,9 @@ import {
   github,
   issue,
   octokit,
-  spliceArray,
   storage,
 } from "../../utils.ts";
-import { marked, parseYaml } from "../../deps.ts";
+import { marked, parseYaml, Sha256 } from "../../deps.ts";
 import { readReRunStorage } from "./re_run.ts";
 import {
   defaultSignatureContent,
@@ -33,29 +32,54 @@ export async function processForm() {
 
   const form = parseYaml(content) as Form;
   const markdown = marked.lexer(body);
-  const metadata = parseIssue(form, markdown);
+  const { fields, signature } = parseIssue(form, markdown);
 
-  const isSignature = (data: CustomField) => data.id === "signature";
-
-  const signature = metadata.find(isSignature);
-  if (signature === undefined) {
+  if (signature === null) {
     action.fail("No signature field found. Can't proceed.");
   }
 
-  if (signature.type === "items") {
-    if (!signature.items[0].checked) {
-      action.fail("The CLA has not been signed.");
+  if (Array.isArray(signature)) {
+    if (!signature[0]) {
+      action.fail("The document has not been signed.");
     }
   } else {
     // TODO: accept text signatures
     action.fail("Unimplemented");
   }
 
-  spliceArray(metadata, isSignature);
-
   const file = await readSignatureStorage();
   storage.checkContent(file.content, defaultSignatureContent);
   const databaseId: number = context.payload.issue!.user.id;
+
+  const signatureStorage = file.content.data;
+  const currentFormSHA = new Sha256().update(content).toString();
+
+  if (currentFormSHA !== signatureStorage.formSHA) {
+    if (signatureStorage.formSHA !== "") {
+      signatureStorage.invalidated.push({
+        form: signatureStorage.form,
+        formSHA: signatureStorage.formSHA,
+        endDate: Date.now(),
+        signatures: signatureStorage.signatures,
+      });
+    }
+    signatureStorage.signatures = [];
+    signatureStorage.form = form;
+    signatureStorage.formSHA = currentFormSHA;
+  }
+
+  const previousSignatureIndex = signatureStorage.signatures.findIndex((
+    signature,
+  ) => signature.user.databaseId === databaseId);
+
+  if (previousSignatureIndex !== -1) {
+    signatureStorage.superseded.push({
+      ...signatureStorage.signatures[previousSignatureIndex],
+      endDate: Date.now(),
+      formSHA: currentFormSHA,
+    });
+    signatureStorage.signatures.splice(previousSignatureIndex, 1);
+  }
 
   file.content.data.signatures.push({
     user: {
@@ -64,7 +88,7 @@ export async function processForm() {
     },
     issue: context.issue.number,
     date: Date.now(),
-    customFields: metadata,
+    fields,
   });
 
   const writeSignature = writeSignatureStorage(file);
@@ -82,34 +106,23 @@ export async function processForm() {
   await issue.lock();
 }
 
-interface QA {
-  type: "q/a";
-  id?: string;
-  question: string;
-  answer: string;
-}
+type TextField = string;
+type ItemList = boolean[];
+type Dropdown = number;
 
-interface ItemList {
-  type: "items";
-  id?: string;
-  items: {
-    value: string;
-    checked: boolean;
-  }[];
-}
-
-export type CustomField = QA | ItemList;
+export type CustomField = TextField | ItemList | Dropdown;
 
 const noResponse = "_No response_";
 
-export function parseIssue(
+function parseIssue(
   form: Form,
   issue: marked.TokensList,
-): CustomField[] {
+): { fields: CustomField[]; signature: CustomField | null } {
   const iterator = issue.values();
   let token = iterator.next();
 
-  const result: CustomField[] = [];
+  const fields: CustomField[] = [];
+  let signature: CustomField | null = null;
 
   for (const input of form.body) {
     if (input.type === "markdown") continue;
@@ -131,29 +144,28 @@ export function parseIssue(
       }
       const text = token.value.text;
       if (text !== noResponse) {
-        result.push({
-          type: "q/a",
-          id: input.id,
-          question: input.attributes.label,
-          answer: text,
-        });
+        switch (input.type) {
+          case "input":
+          case "textarea":
+            fields.push(text);
+            break;
+          case "dropdown":
+            fields.push(input.attributes.options.indexOf(text));
+            break;
+        }
       }
     } else if (token.value.type === "list") {
       if (input.type !== "checkboxes") break;
-      result.push({
-        type: "items",
-        id: input.id,
-        items: token.value.items.map((item) => ({
-          value: item.text,
-          checked: item.checked,
-        })),
-      });
+      fields.push(token.value.items.map((item) => item.checked));
     } else break;
+    if (input.id === "signature") {
+      signature = fields[fields.length - 1];
+    }
     token = iterator.next();
     if (token.done) break;
     if (token.value.type === "space") token = iterator.next();
   }
 
-  if (!token.done) throw new Error("Error while parsing issue form");
-  return result;
+  if (!token.done) throw new Error("Error while parsing issue form"); // TODO: explicit error
+  return { fields, signature };
 }

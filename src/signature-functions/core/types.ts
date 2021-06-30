@@ -7,11 +7,12 @@ export interface AuthorSignature {
   user: User;
   issue: number;
   date: number;
-  customFields: unknown[];
+  fields: unknown[];
 }
 
 export interface SupersededSignature extends AuthorSignature {
   endDate: number;
+  formSHA: string;
 }
 
 export interface SignatureStatus {
@@ -21,12 +22,14 @@ export interface SignatureStatus {
 }
 
 export interface SignatureData {
-  documentSHA: string;
+  form: Form;
+  formSHA: string;
   signatures: AuthorSignature[];
   superseded: SupersededSignature[];
   invalidated: {
+    form: Form;
+    formSHA: string;
     endDate: number;
-    documentSHA: string;
     signatures: AuthorSignature[];
   }[];
 }

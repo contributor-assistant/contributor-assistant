@@ -36,7 +36,8 @@ export const defaultSignatureContent: SignatureStorage = {
   type: applicationType,
   version: storageVersion,
   data: {
-    documentSHA: "", // TODO
+    formSHA: "",
+    form: { name: "", description: "", body: [] },
     signatures: [],
     superseded: [],
     invalidated: [],
