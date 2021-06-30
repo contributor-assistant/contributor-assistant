@@ -1,6 +1,6 @@
-/** Formats and converts to base-64 */
-export function toBase64(object: unknown) {
-  return btoa(`${JSON.stringify(object, null, 2)}\n`);
+/** Stringify a JSON object. Prettify only in development */
+export function stringify(object: unknown): string {
+  return JSON.stringify(object, null, DENO_ENV === "production" ? 0 : 2);
 }
 
 /** Reads a JSON file and then parses it into an object */

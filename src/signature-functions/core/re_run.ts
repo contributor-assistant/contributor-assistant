@@ -6,6 +6,7 @@ import {
   pr,
   spliceArray,
   storage,
+  json,
 } from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
@@ -79,9 +80,9 @@ export async function readReRunStorage(): Promise<ReRunContent> {
   const { content, sha } = await storage.readGithub(
     {
       type: "local",
-      ...options.reRun,
+      ...options.storage.reRun,
     },
-    JSON.stringify(defaultReRunContent),
+    json.stringify(defaultReRunContent),
     "Creating re-run storage",
   );
 
@@ -90,10 +91,10 @@ export async function readReRunStorage(): Promise<ReRunContent> {
 
 async function writeReRunStorage(file: ReRunContent) {
   await storage.writeGithub({
-    content: JSON.stringify(file.content),
+    content: json.stringify(file.content),
     sha: file.sha,
   }, {
     type: "local",
-    ...options.reRun,
+    ...options.storage.reRun,
   }, "Updating re-run storage");
 }

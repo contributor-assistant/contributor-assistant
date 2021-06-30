@@ -1,4 +1,4 @@
-import { action, context, github, storage } from "../../utils.ts";
+import { action, context, github, storage, json } from "../../utils.ts";
 import { options } from "../options.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
@@ -52,7 +52,7 @@ export async function readSignatureStorage(): Promise<SignatureContent> {
     case "remote": {
       const { content, sha } = await storage.readGithub(
         options.storage.signatures,
-        JSON.stringify(defaultSignatureContent),
+        json.stringify(defaultSignatureContent),
         options.message.commit.setup,
       );
       return { content: JSON.parse(content), sha };
@@ -68,7 +68,7 @@ export function writeSignatureStorage(content: SignatureContent) {
     case "remote":
       return storage.writeGithub(
         {
-          content: JSON.stringify(content.content),
+          content: json.stringify(content.content),
           sha: content.sha,
         },
         options.storage.signatures,
