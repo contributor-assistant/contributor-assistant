@@ -8,32 +8,40 @@ const flags = parseFlags(Deno.args, {
   string: [
     "githubToken",
     "personalAccessToken",
-    "CLAPath",
-    "storageRemoteRepo",
-    "storageRemoteOwner",
-    "storageBranch",
-    "storagePath",
+    "signatureRemoteRepo",
+    "signatureRemoteOwner",
+    "signatureBranch",
+    "signaturePath",
+    "reRunBranch",
+    "reRunPath",
+    "formPath",
     "ignoreList",
-    "inputSignature",
-    "inputReTrigger",
+    "reTrigger",
+    "allSignedComment",
+    "commentHeader",
     "signedLabel",
     "unsignedLabel",
     "ignoreLabel",
+    "formLabel",
   ],
   default: {
     githubToken: "",
     personalAccessToken: "",
-    CLAPath: "",
-    storageRemoteRepo: "",
-    storageRemoteOwner: "",
-    storageBranch: "",
-    storagePath: "",
+    signatureRemoteRepo: "",
+    signatureRemoteOwner: "",
+    signatureBranch: "",
+    signaturePath: "",
+    reRunPath: "",
+    reRunBranch: "",
+    formPath: "",
     ignoreList: "",
-    inputSignature: "",
-    inputReTrigger: "",
+    reTrigger: "",
+    allSignedComment: "",
+    commentHeader: "",
     signedLabel: "",
     unsignedLabel: "",
     ignoreLabel: "",
+    formLabel: "",
   },
 });
 
@@ -42,7 +50,6 @@ action.debug("Flags", flags);
 main({
   githubToken: flags.githubToken,
   personalAccessToken: flags.personalAccessToken,
-  documentPath: flags.CLAPath,
   storage: {
     signatures: flags.storageRemoteRepo.length > 0
       ? {
@@ -65,26 +72,16 @@ main({
   },
   ignoreList: flags.ignoreList.split(/\s,\s/),
   message: {
-    input: {
-      signature: flags.inputSignature,
-      reTrigger: flags.inputReTrigger,
+    comment: {
+      allSigned: flags.allSignedComment,
+      header: flags.commentHeader,
     },
+    reTrigger: flags.reTrigger,
   },
   labels: {
     signed: flags.signedLabel,
     unsigned: flags.unsignedLabel,
     ignore: flags.ignoreLabel,
+    form: flags.formLabel,
   },
 });
-
-/** Boolean parser: github actions inputs cannot have a boolean value */
-function _parseBoolean(flag: unknown): boolean | undefined {
-  switch (flag) {
-    case "true":
-      return true;
-    case "false":
-      return false;
-    default:
-      return undefined;
-  }
-}

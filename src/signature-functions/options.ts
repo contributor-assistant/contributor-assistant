@@ -6,15 +6,13 @@ export interface Options {
   githubToken: string;
   /** A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}. */
   personalAccessToken: string;
-  /** The document which shall be signed by the contributor(s). It can be any file e.g. inside the repository or it can be a gist. */
-  documentPath: string;
-  storage?: {
+  storage: {
     /** The storage medium for the file holding the signatures. */
     signatures?: storage.Local | storage.Remote;
     /** A cache for the re-run data */
     reRun?: Omit<storage.Local, "type">;
-    /** The issue form path */
-    form?: string;
+    /** The document which shall be signed by the contributor(s). Must be an issue form (yml file) */
+    form: string;
   };
   /** A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. */
   ignoreList?: string[];
@@ -22,28 +20,44 @@ export interface Options {
     commit?: {
       /** Commit message when creating the storage file. */
       setup?: string;
-      /** Commit message when adding new signatures. */
+      /** Commit message when adding new signatures.
+      #### Variables:
+       - `${signatory}`: signatory's login */
       signed?: string;
+      /** Commit message when creating re-run storage file */
+      reRunCreate?: string;
+      /** Commit message when updating re-run storage file */
+      reRunUpdate?: string;
     };
     /** Content of the bot's comment. */
     comment?: {
+      /** When each committer has signed the document. */
       allSigned?: string;
+      /** Usually a message thanking the committers and asking them to sign the document. */
       header?: string;
+      /** A quick summary about the number of committers who signed.
+      #### Variables:
+       - `${signed}`: the number of committers who signed
+       - `${total}`: the number of known committers */
       summary?: string;
+      /** A warning when some committers do not have associated github accounts. */
       unknownWarning?: string;
+      /** The footer of the message, with help on how to use the bot.
+      #### Variables:
+       - `${re-trigger}`: the re-trigger keyword */
       footer?: string;
     };
-    input?: {
-      /** The signature to be committed in order to sign the CLA. */
-      signature?: string;
-      /** The keyword to re-trigger signature checks. */
-      reTrigger?: string;
-    };
+    /** The keyword to re-trigger signature checks. */
+    reTrigger?: string;
   };
   labels?: {
+    /** Added when each committer has signed the document. */
     signed?: string;
+    /** Removed when each committer has signed the document. */
     unsigned?: string;
+    /** Add this label to disable the bot on this PR. */
     ignore?: string;
+    /** The label used to find the document form. */
     form?: string;
   };
 }
@@ -80,12 +94,11 @@ export function setupOptions(opts: Options) {
       "Missing personal access token (https://github.com/settings/tokens/new). Please provide one as an environment variable.",
     );
   }
-  if (opts.documentPath === "") {
-    action.fail("Missing signature document path.");
+  if (opts.storage.form === "") {
+    action.fail("Missing issue form path.");
   }
   initOctokit(opts.githubToken, opts.personalAccessToken);
 
-  opts.storage ??= {};
   opts.storage.signatures ??= { type: "local" };
   if (opts.storage.signatures.type === "remote") {
     opts.storage.signatures.owner ??= context.repo.owner;
@@ -100,14 +113,15 @@ export function setupOptions(opts: Options) {
     path: ".github/contributor-assistant/signatures-re-run.json",
     ...removeEmpty(opts.storage.reRun),
   };
-  opts.storage.form ??= "cla.yml";
 
   opts.ignoreList ??= [];
 
   opts.message = {
     commit: {
       setup: "Creating file to store signatures",
-      signed: "@${signatory} has signed the CLA",
+      signed: "New signature from @${signatory}",
+      reRunCreate: "Creating re-run storage file",
+      reRunUpdate: "Updating re-run storage",
       ...removeEmpty(opts.message?.commit),
     },
     comment: {
@@ -115,18 +129,14 @@ export function setupOptions(opts: Options) {
       header:
         "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} sign our **Contributor License Agreement** before we can accept your contribution.",
       summary:
-        "**${signed}** out of **${total}** committers have signed the CLA.",
-      footer:
-        "<sub>You can re-trigger this bot by commenting `${re-trigger}` in this Pull Request</sub>",
+        "**${signed}** out of **${total}** committers have signed the document.",
       unknownWarning:
         "⚠ Some commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
+      footer:
+        "<sub>You can re-trigger this bot by commenting `${re-trigger}` in this Pull Request</sub>",
       ...removeEmpty(opts.message?.comment),
     },
-    input: {
-      signature: "I have read the CLA Document and I hereby sign the CLA",
-      reTrigger: "recheck",
-      ...removeEmpty(opts.message?.input),
-    },
+    reTrigger: opts.message?.reTrigger || "recheck",
   };
 
   opts.labels = {

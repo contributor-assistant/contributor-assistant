@@ -19,3 +19,15 @@ export function gql(strings: TemplateStringsArray, ...expr: string[]) {
     expr.reduce((acc, current, i) => `${acc} ${current} ${strings[i + 1]} `, "")
   }`.replace(/\s+/g, " ");
 }
+
+/** Boolean parser: github actions inputs cannot have a boolean value */
+function _parseBoolean(flag: unknown): boolean | undefined {
+  switch (flag) {
+    case "true":
+      return true;
+    case "false":
+      return false;
+    default:
+      return undefined;
+  }
+}

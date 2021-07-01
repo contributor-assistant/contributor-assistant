@@ -29,7 +29,15 @@ export default async function main(rawOptions: Options) {
       await updatePR();
     }
   } catch (error) {
+    action.error("An unexpected error occurred.");
     action.debug(String(error.stack));
-    action.fail(String(error.message));
+    action.error(String(error.message));
+    action.info(
+      "If you think this is a bug, please open a bug report at https://github.com/cla-assistant/contributor-assistant/issues/new/choose",
+    );
+    action.info(
+      "Visit https://github.com/cla-assistant/contributor-assistant/blob/main/actions/signatures/README.md for documentation about this action.",
+    );
+    Deno.exit(1);
   }
 }

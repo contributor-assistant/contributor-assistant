@@ -11,33 +11,38 @@ inputs:
   PERSONAL_ACCESS_TOKEN: 
     description: "A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets."
     required: false
-  cla-path:
-    description: The document which shall be signed by the contributor(s). It can be any file e.g. inside the repository or it can be a gist.
-    required: true
-  storage-path:
+  signature-path:
     description: The path where the signatures will be stored.
     required: false
-  storage-branch:
+  signature-branch:
     description: The branch where the signatures will be stored.
     required: false
-  storage-remote-repo:
+  signature-remote-repo:
     description: The name of another repository to store the signatures.
     required: false
-  storage-remote-owner:
+  signature-remote-owner:
     description: The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.
     required: false
+  re-run-path:
+    description: The path where the re-run cache will be stored.
+    required: false
+  re-run-branch:
+    description: The branch where the re-run cache will be stored.
+    required: false
+  form-path:
+    description: The document which shall be signed by the contributor(s). Must be an issue form (yml file).
+    required: true
   ignore-list:
     description: A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. The separator between the patterns is a comma.
     required: false
-  lock-pr-after-merge:
-    description: Will lock the pull request after the merge so that contributors cannot revoke their signatures after the merge. Setting this parameter to false is not recommended.
-    required: false
-    default: "true"
-  input-signature:
-    description: The signature to be committed in order to sign the CLA.
-    required: false
-  input-re-trigger:
+  re-trigger:
     description: The keyword to re-trigger signature checks.
+    required: false
+  all-signed-comment:
+    description: The posted comment when each committer has signed the document. 
+    required: false
+  comment-header:
+    description: Usually a message thanking the committers and asking them to sign the document.
     required: false
   signed-label:
     description: A label that will be applied once all committers have signed the CLA
@@ -47,6 +52,9 @@ inputs:
     required: false
   ignore-label:
     description: Add this label to skip the CLA checks
+    required: false
+  form-label:
+    description: The label used to find the document form.
     required: false
 
 runs:
@@ -64,15 +72,19 @@ runs:
           --githubToken ${{ inputs.GITHUB_TOKEN }} \
           --personalAccessToken ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
           --CLAPath ${{ inputs.cla-path }} \
-          --storagePath ${{ inputs.storage-path }} \
-          --storageBranch ${{ inputs.storage-branch }} \
-          --storageRemoteRepo ${{ inputs.storage-remote-repo }} \
-          --storageRemoteOwner ${{ inputs.storage-remote-owner }} \
+          --signaturePath ${{ inputs.signature-path }} \
+          --signatureBranch ${{ inputs.signature-branch }} \
+          --signatureRemoteRepo ${{ inputs.signature-remote-repo }} \
+          --signatureRemoteOwner ${{ inputs.signature-remote-owner }} \
+          --reRunBranch ${{ inputs.re-run-branch }} \
+          --reRunPath ${{ inputs.re-run-path }} \
+          --formPath ${{ inputs.form-path }} \
           --ignoreList ${{ inputs.ignore-list }} \
-          --lockPRAfterMerge ${{ inputs.lock-pr-after-merge }} \
-          --inputSignature ${{ inputs.input-signature }} \
-          --inputReTrigger ${{ inputs.input-re-trigger }} \
+          --reTrigger ${{ inputs.re-trigger }} \
+          --allSignedComment ${{ inputs.all-signed-comment }} \
+          --commentHeader ${{ inputs.comment-header }} \
           --signedLabel ${{ inputs.signed-label }} \
           --unsignedLabel ${{ inputs.unsigned-label }} \
-          --ignoreLabel ${{ inputs.ignore-label }}
+          --ignoreLabel ${{ inputs.ignore-label }} \
+          --formLabel ${{ inputs.form-label }}
       shell: bash
