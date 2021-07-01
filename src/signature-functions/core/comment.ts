@@ -46,7 +46,7 @@ async function createBody(
   status: SignatureStatus,
   form: Form,
 ): Promise<string> {
-  let body = `${commentAnchor}\n## Contributor Assistant | CLA\n`;
+  let body = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
   const text = options.message.comment;
   const input = options.message.input;
   if (status.unsigned.length === 0 && status.unknown.length === 0) {
@@ -87,24 +87,25 @@ async function createBody(
   body += `${
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
   }
-  - - -`;
+  `;
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
   if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
-    body += `✍️ Please sign (here)[${unsigned[0].url.href}].
-    - - -`;
+    body += `✍️ Please sign [here](${unsigned[0].url.href}) |
+    --------------------------------------------------------|\n\n`;
   }
   if (committerCount > 1) {
-    body += `${text.summary}\n`
-      .replace("${signed}", status.signed.length.toString())
+    body += `${text.summary} |
+    -------------------------|
+    `.replace("${signed}", status.signed.length.toString())
       .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
       body += `:white_check_mark: @${committer.user!.login}\n`;
     }
     for (const { committer, url } of unsigned) {
       body += `:x: @${committer.user!.login} ${
-        preFilled ? `sign (here)[${url.href}]` : ""
+        preFilled ? `please sign [here](${url.href})` : ""
       } \n`;
     }
   }
@@ -116,5 +117,6 @@ async function createBody(
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return body + text.footer.replace("${re-trigger}", input.reTrigger);
+  return `${body}\n${text.footer.replace("${re-trigger}", input.reTrigger)}`
+    .replace(/\n( |\t)*/g, "\n");
 }

@@ -1,3 +1,5 @@
+import "./globals.ts";
+
 /** Stringify a JSON object. Prettify only in development */
 export function stringify(object: unknown): string {
   return JSON.stringify(object, null, DENO_ENV === "production" ? 0 : 2);

@@ -60,9 +60,9 @@ export async function workflowId(): Promise<number> {
 }
 
 export async function workflowRuns(
-  branch: string,
   workflowId: number,
   event: string,
+  branch?: string,
 ): Promise<
   RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["response"]["data"]
 > {

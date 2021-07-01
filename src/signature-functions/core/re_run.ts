@@ -29,9 +29,9 @@ export async function reRun() {
   const branch = await pr.branch();
   const workflowId = await action.workflowId();
   const runs = await action.workflowRuns(
-    branch,
     workflowId,
     context.payload.issue === undefined ? "pull_request_target" : "issues",
+    branch,
   );
 
   if (runs.total_count > 0) {
@@ -68,6 +68,7 @@ export async function updateReRun(status: SignatureStatus) {
       });
     } else {
       run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
+      run.workflow = await action.workflowId();
     }
   }
 

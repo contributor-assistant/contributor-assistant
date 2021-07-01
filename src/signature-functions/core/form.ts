@@ -26,7 +26,7 @@ export async function readForm(): Promise<github.RawContent> {
   try {
     const content = await github.getFile(octokit, {
       ...context.repo,
-      path: options.storage.form,
+      path: `.github/ISSUE_TEMPLATE/${options.storage.form}`,
     });
     return content;
   } catch (error) {
@@ -114,7 +114,12 @@ export async function processForm() {
   await writeSignature;
   for (const run of reRunContent.data) {
     if (run.unsigned.includes(databaseId)) {
-      reRuns.push(action.reRun(run.workflow));
+      reRuns.push(
+        action.workflowRuns(
+          run.workflow,
+          "pull_request_target",
+        ).then((runs) => action.reRun(runs.workflow_runs[0].id)),
+      );
     }
   }
   await Promise.all([...reRuns]);
