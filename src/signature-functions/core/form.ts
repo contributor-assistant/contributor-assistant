@@ -18,7 +18,7 @@ import type { Form } from "./types.ts";
 
 export function isForm(): boolean {
   const labels: { name: string }[] = context.payload.issue!.labels;
-  return context.payload.action === "opened" &&
+  return context.payload.action === "labeled" &&
     labels.some((label) => label.name === options.labels.form);
 }
 
@@ -129,8 +129,9 @@ export async function processForm() {
 type TextField = string;
 type ItemList = boolean[];
 type Dropdown = number;
+type NoResponse = null;
 
-export type CustomField = TextField | ItemList | Dropdown;
+export type CustomField = TextField | ItemList | Dropdown | NoResponse;
 
 const noResponse = "_No response_";
 
@@ -173,6 +174,8 @@ function parseIssue(
             fields.push(input.attributes.options.indexOf(text));
             break;
         }
+      } else {
+        fields.push(null)
       }
     } else if (token.value.type === "list") {
       if (input.type !== "checkboxes") break;

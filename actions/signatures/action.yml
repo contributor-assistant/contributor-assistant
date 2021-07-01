@@ -53,7 +53,7 @@ runs:
   using: composite
   steps:
     - run: |
-        curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.11.2
+        curl -fsSL https://deno.land/x/install/install.sh | sh -s v1.11.2 2>&1 1>/dev/null
         DENO_INSTALL="$HOME/.deno"
         echo "DENO_INSTALL=$DENO_INSTALL" >> GITHUB_ENV
         echo "$DENO_INSTALL/bin" >> $GITHUB_PATH
