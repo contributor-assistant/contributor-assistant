@@ -13,8 +13,8 @@ export interface Options {
     signatures?: storage.Local | storage.Remote;
     /** A cache for the re-run data */
     reRun?: Omit<storage.Local, "type">;
-    /** The document form */
-    form?: Omit<storage.Local, "type">;
+    /** The issue form path */
+    form?: string;
   };
   /** A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. */
   ignoreList?: string[];
@@ -100,10 +100,7 @@ export function setupOptions(opts: Options) {
     path: ".github/contributor-assistant/signatures-re-run.json",
     ...removeEmpty(opts.storage.reRun),
   };
-  opts.storage.form = {
-    path: ".github/ISSUE_TEMPLATE/cla.yml",
-    ...removeEmpty(opts.storage.form),
-  };
+  opts.storage.form ??= "cla.yml";
 
   opts.ignoreList ??= [];
 
@@ -116,7 +113,7 @@ export function setupOptions(opts: Options) {
     comment: {
       allSigned: "All contributors have signed the CLA  ✍️ ✅",
       header:
-        "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} sign our [Contributor License Agreement](${cla-path}) before we can accept your contribution. You can sign the CLA by just posting a Pull Request comment same as the below format.",
+        "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} sign our **Contributor License Agreement]** before we can accept your contribution.",
       summary:
         "**${signed}** out of **${total}** committers have signed the CLA.",
       footer:

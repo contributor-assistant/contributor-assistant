@@ -1,23 +1,34 @@
 import { SignatureStatus } from "./types.ts";
-import { action, context, generateCommentAnchor, pr } from "../../utils.ts";
+import {
+  action,
+  context,
+  generateCommentAnchor,
+  octokit,
+  pr,
+} from "../../utils.ts";
 import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
+import { parseYaml } from "../../deps.ts";
+import { extractIDs } from "./form.ts";
+import type { Form, GitActor } from "./types.ts";
 
 const commentAnchor = generateCommentAnchor(applicationType);
 
-export async function commentPR(status: SignatureStatus) {
+export async function commentPR(status: SignatureStatus, rawForm: string) {
   const comments = await pr.listComments();
   const botComment = comments.find((comment) =>
     comment.body?.match(commentAnchor)
   );
+  const form = parseYaml(rawForm) as Form;
+
   if (botComment === undefined) {
     if (status.unsigned.length > 0 || status.unknown.length > 0) {
-      await pr.createComment(createBody(status));
+      await pr.createComment(await createBody(status, form));
     } else {
       action.info("Everyone has already signed the CLA.");
     }
   } else {
-    await pr.updateComment(botComment.id, createBody(status));
+    await pr.updateComment(botComment.id, await createBody(status, form));
   }
 }
 
@@ -31,7 +42,10 @@ export async function uncommentPR() {
   }
 }
 
-function createBody(status: SignatureStatus): string {
+async function createBody(
+  status: SignatureStatus,
+  form: Form,
+): Promise<string> {
   let body = `${commentAnchor}\n## Contributor Assistant | CLA\n`;
   const text = options.message.comment;
   const input = options.message.input;
@@ -39,14 +53,48 @@ function createBody(status: SignatureStatus): string {
     return body + text.allSigned;
   }
 
+  const url = new URL(
+    `https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new`,
+  );
+  url.searchParams.append("template", options.storage.form);
+  url.searchParams.append("title", form.title ?? "License Signature");
+  url.searchParams.append("labels", form.labels?.[0] ?? options.labels.form);
+
+  const githubKeys = extractIDs(form);
+  const unsigned: { committer: GitActor; url: URL }[] = status.unsigned
+    .map((committer) => ({ committer, url: new URL(url.href) }));
+
+  if (githubKeys.length > 0) {
+    const userInfo = await Promise.all(
+      unsigned.map(({ committer }) =>
+        octokit.users.getByUsername({
+          username: committer.user!.login,
+        })
+      ),
+    );
+    for (let i = 0; i < unsigned.length; i++) {
+      const { url } = unsigned[i];
+      const info = userInfo[i].data;
+      for (const key of githubKeys) {
+        if (key in info) {
+          url.searchParams.append(key, info[key as keyof typeof info]);
+        }
+      }
+    }
+  }
+
   const committerCount = status.signed.length + status.unsigned.length;
   body += `${
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
-      .replace("${cla-path}", options.documentPath)
   }
-  [Sign here](https://github.com/${context.repo.owner}/${context.repo.repo}/issues/new?template=cla.yml&labels=signature+form&title=License+Signature)
-  `;
+  - - -`;
 
+  const preFilled = githubKeys.length > 0 && committerCount > 1;
+
+  if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
+    body += `✍️ Please sign (here)[${unsigned[0].url.href}].
+    - - -`;
+  }
   if (committerCount > 1) {
     body += `${text.summary}\n`
       .replace("${signed}", status.signed.length.toString())
@@ -54,8 +102,10 @@ function createBody(status: SignatureStatus): string {
     for (const committer of status.signed) {
       body += `:white_check_mark: @${committer.user!.login}\n`;
     }
-    for (const committer of status.unsigned) {
-      body += `:x: @${committer.user!.login}\n`;
+    for (const { committer, url } of unsigned) {
+      body += `:x: @${committer.user!.login} ${
+        preFilled ? `sign (here)[${url.href}]` : ""
+      } \n`;
     }
   }
 

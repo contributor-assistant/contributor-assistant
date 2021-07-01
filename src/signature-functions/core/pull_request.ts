@@ -10,20 +10,26 @@ import { commentPR } from "./comment.ts";
 import { updateLabels } from "./labels.ts";
 import { action, context, storage } from "../../utils.ts";
 import { options } from "../options.ts";
+import { readForm } from "./form.ts";
 
 /** Fetch committers, update signatures, notify the result in a PR comment */
 export async function updatePR() {
-  const [{ content }, committers] = await Promise.all([
-    readSignatureStorage(),
-    getCommitters(),
-  ]);
-  storage.checkContent(content, defaultSignatureContent);
+  const [{ content: signatureContent }, { content: rawForm }, committers] =
+    await Promise.all([
+      readSignatureStorage(),
+      readForm(),
+      getCommitters(),
+    ]);
+  storage.checkContent(signatureContent, defaultSignatureContent);
 
-  const status = getSignatureStatus(filterIgnored(committers), content.data);
+  const status = getSignatureStatus(
+    filterIgnored(committers),
+    signatureContent.data,
+  );
   action.debug("Signature status", status);
 
   await Promise.all([
-    commentPR(status),
+    commentPR(status, rawForm),
     updateLabels(status),
     updateReRun(status),
   ]);

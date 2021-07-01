@@ -2,11 +2,11 @@ import {
   action,
   context,
   github,
+  json,
   normalizeText,
   pr,
   spliceArray,
   storage,
-  json,
 } from "../../utils.ts";
 import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";

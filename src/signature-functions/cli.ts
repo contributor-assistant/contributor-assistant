@@ -61,10 +61,7 @@ main({
       branch: flags.reRunBranch,
       path: flags.reRunPath,
     },
-    form: {
-      branch: flags.formBranch,
-      path: flags.formPath,
-    },
+    form: flags.formPath,
   },
   ignoreList: flags.ignoreList.split(/\s,\s/),
   message: {

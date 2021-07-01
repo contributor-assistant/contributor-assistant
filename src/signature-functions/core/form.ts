@@ -22,13 +22,28 @@ export function isForm(): boolean {
     labels.some((label) => label.name === options.labels.form);
 }
 
+export async function readForm(): Promise<github.RawContent> {
+  try {
+    const content = await github.getFile(octokit, {
+      ...context.repo,
+      path: options.storage.form,
+    });
+    return content;
+  } catch (error) {
+    if (error.status === 404) {
+      action.fail("Issue form doesn't exist. Please create one.");
+    } else {
+      action.fail(
+        `Could not retrieve form content: ${error.message}. Status: ${error
+          .status || "unknown"}`,
+      );
+    }
+  }
+}
+
 export async function processForm() {
   const body = context.payload.issue!.body ?? "";
-  const { content } = await github.getFile(octokit, {
-    ...context.repo,
-    path: options.storage.form.path,
-    ref: options.storage.form.branch,
-  });
+  const { content } = await readForm();
 
   const form = parseYaml(content) as Form;
   const markdown = marked.lexer(body);
@@ -168,4 +183,10 @@ function parseIssue(
 
   if (!token.done) throw new Error("Error while parsing issue form"); // TODO: explicit error
   return { fields, signature };
+}
+
+export function extractIDs(form: Form): string[] {
+  return form.body
+    .map((input) => input.id)
+    .filter((id) => id !== undefined && id !== "signature") as string[];
 }

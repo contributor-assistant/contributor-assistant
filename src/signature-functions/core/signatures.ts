@@ -1,4 +1,4 @@
-import { action, context, github, storage, json } from "../../utils.ts";
+import { action, context, github, json, storage } from "../../utils.ts";
 import { options } from "../options.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
