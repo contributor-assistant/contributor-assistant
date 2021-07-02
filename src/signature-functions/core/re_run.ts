@@ -50,6 +50,12 @@ export const defaultReRunContent: ReRunStorage = {
   data: [],
 };
 
+/** Clear re-run cache */
+export async function clearReRun() {
+  await updateReRun({ signed: [], unsigned: [], unknown: [] });
+}
+
+/** Update re-run cache */
 export async function updateReRun(status: SignatureStatus) {
   const file = await readReRunStorage();
   storage.checkContent(file.content, defaultReRunContent);

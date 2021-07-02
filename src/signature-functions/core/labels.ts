@@ -2,6 +2,7 @@ import { action, context, octokit, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 import type { SignatureStatus } from "./types.ts";
 
+/** Add / remove signed and unsigned labels according to the signature status */
 export async function updateLabels(status: SignatureStatus) {
   const labels = await pr.getLabels();
   const { signed, unsigned } = options.labels;
@@ -35,6 +36,7 @@ export function ignoreLabelEvent(): boolean {
     context.payload.label?.name === options.labels.ignore;
 }
 
+/** Automatically create the signature label (unused) */
 export async function createSignatureLabel() {
   await octokit.issues.createLabel({
     ...context.repo,

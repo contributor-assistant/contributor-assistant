@@ -3,6 +3,8 @@ import type { GitActor, User } from "./graphql.ts";
 
 export type { GitActor, User };
 
+/* --- Signatures --- */
+
 export interface AuthorSignature {
   user: User;
   issue: number;
@@ -34,6 +36,12 @@ export interface SignatureData {
   }[];
 }
 
+export interface SignatureStorage extends storage.Storage {
+  data: SignatureData;
+}
+
+/* --- re-run --- */
+
 export type ReRunData = {
   pullRequest: number;
   workflow: number;
@@ -41,13 +49,11 @@ export type ReRunData = {
   unsigned: number[];
 }[];
 
-export interface SignatureStorage extends storage.Storage {
-  data: SignatureData;
-}
-
 export interface ReRunStorage extends storage.Storage {
   data: ReRunData;
 }
+
+/* --- form --- */
 
 export interface Form {
   name: string;

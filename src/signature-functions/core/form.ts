@@ -14,6 +14,7 @@ import {
   writeSignatureStorage,
 } from "./signatures.ts";
 import { options } from "../options.ts";
+import { head } from "./comment.ts";
 import type { Form } from "./types.ts";
 
 export function isForm(): boolean {
@@ -41,7 +42,10 @@ export async function readForm(): Promise<github.RawContent> {
   }
 }
 
+/** Parse the form, check for signature, save signature and close the associated issue */
 export async function processForm() {
+  action.debug("Processing issue form");
+
   const body = context.payload.issue!.body ?? "";
   const { content } = await readForm();
 
@@ -49,16 +53,21 @@ export async function processForm() {
   const markdown = marked.lexer(body);
   const { fields, signature } = parseIssue(form, markdown);
 
+  action.debug("Form", form);
+  action.debug("Parsed issue", fields);
+
   if (signature === null) {
     action.fail("No signature field found. Can't proceed.");
   }
 
   if (Array.isArray(signature)) {
     if (!signature[0]) {
+      await issue.createComment(`${head}The document has not been signed.`);
       action.fail("The document has not been signed.");
     }
   } else {
     // TODO: accept text signatures
+    await issue.createComment(`${head}Text signatures are not implemented.`);
     action.fail("Unimplemented");
   }
 
@@ -70,6 +79,7 @@ export async function processForm() {
   const currentFormSHA = new Sha256().update(content).toString();
 
   if (currentFormSHA !== signatureStorage.formSHA) {
+    action.debug("Form SHA has changed, updating signature storage");
     if (signatureStorage.formSHA !== "") {
       signatureStorage.invalidated.push({
         form: signatureStorage.form,
@@ -88,6 +98,7 @@ export async function processForm() {
   ) => signature.user.databaseId === databaseId);
 
   if (previousSignatureIndex !== -1) {
+    action.debug("New signature found: supersede the previous one");
     signatureStorage.superseded.push({
       ...signatureStorage.signatures[previousSignatureIndex],
       endDate: Date.now(),
@@ -96,6 +107,7 @@ export async function processForm() {
     signatureStorage.signatures.splice(previousSignatureIndex, 1);
   }
 
+  action.debug("Adding new signature");
   file.content.data.signatures.push({
     user: {
       databaseId,

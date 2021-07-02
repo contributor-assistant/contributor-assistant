@@ -20,6 +20,7 @@ export async function getCommitters(): Promise<GitActor[]> {
   let commitHasNextPage = false;
   // loop through authors
   do {
+    // Personal Access Token is required for the graphql api
     const response: AuthorsResponse = await personalOctokit.graphql(
       authorsQuery,
       { ...variables, commitCursor },
@@ -40,6 +41,7 @@ export async function getCommitters(): Promise<GitActor[]> {
       let authorHasNextPage = false;
       // loop through co-authors
       while (authorHasNextPage) {
+        // Personal Access Token is required for the graphql api
         const response: CoAuthorsResponse = await personalOctokit.graphql(
           coAuthorsQuery,
           { ...variables, commitCursor, authorCursor },

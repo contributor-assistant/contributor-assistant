@@ -52,6 +52,7 @@ export async function readGithub(
   defaultContent: string,
   message: string,
 ): Promise<github.RawContent> {
+  // Personal Access Token is required for remote repositories
   const kit = storage.type === "local" ? octokit : personalOctokit;
   const fileLocation = storage.type === "local"
     ? {
@@ -83,6 +84,7 @@ export async function writeGithub(
   storage: Required<Local | Remote>,
   message: string,
 ) {
+  // Personal Access Token is required for remote repositories
   const kit = storage.type === "local" ? octokit : personalOctokit;
   const fileLocation = storage.type === "local"
     ? {

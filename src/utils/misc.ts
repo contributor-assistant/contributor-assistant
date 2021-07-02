@@ -21,7 +21,7 @@ export function gql(strings: TemplateStringsArray, ...expr: string[]) {
 }
 
 /** Boolean parser: github actions inputs cannot have a boolean value */
-function _parseBoolean(flag: unknown): boolean | undefined {
+export function parseBoolean(flag: unknown): boolean | undefined {
   switch (flag) {
     case "true":
       return true;

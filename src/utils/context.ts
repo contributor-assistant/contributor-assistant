@@ -1,4 +1,8 @@
 // Originally pulled from https://github.com/JasonEtco/actions-toolkit/blob/main/src/context.ts
+
+/* /!\ @actions/core is not available yet under Deno
+https://cdn.skypack.dev/error/node:node:os?from=@actions/core */
+
 import { existsSync } from "../deps.ts";
 import * as json from "./json.ts";
 import { WebhookPayload } from "./ctx_interfaces.ts";

@@ -42,11 +42,13 @@ export async function uncommentPR() {
   }
 }
 
+export const head = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
+
 async function createBody(
   status: SignatureStatus,
   form: Form,
 ): Promise<string> {
-  let body = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
+  let body = head;
   const text = options.message.comment;
   if (status.unsigned.length === 0 && status.unknown.length === 0) {
     return body + text.allSigned;
