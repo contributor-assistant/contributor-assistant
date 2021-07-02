@@ -16,6 +16,7 @@ export interface Options {
   };
   /** A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. */
   ignoreList?: string[];
+  preventSignatureInvalidation?: boolean;
   message?: {
     commit?: {
       /** Commit message when creating the storage file. */
@@ -115,6 +116,7 @@ export function setupOptions(opts: Options) {
   };
 
   opts.ignoreList ??= [];
+  opts.preventSignatureInvalidation ??= false;
 
   opts.message = {
     commit: {

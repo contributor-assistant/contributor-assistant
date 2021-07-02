@@ -35,6 +35,9 @@ inputs:
   ignore-list:
     description: A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. The separator between the patterns is a comma.
     required: false
+  prevent-signature-invalidation:
+    description: Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. Default to false.
+    required: false
   re-trigger:
     description: The keyword to re-trigger signature checks.
     required: false
@@ -79,6 +82,7 @@ runs:
           --reRunPath ${{ inputs.re-run-path }} \
           --formPath ${{ inputs.form-path }} \
           --ignoreList ${{ inputs.ignore-list }} \
+          --preventSignatureInvalidation ${{ inputs.prevent-signature-invalidation }} \
           --reTrigger ${{ inputs.re-trigger }} \
           --allSignedComment ${{ inputs.all-signed-comment }} \
           --commentHeader ${{ inputs.comment-header }} \

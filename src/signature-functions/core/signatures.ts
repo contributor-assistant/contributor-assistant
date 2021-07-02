@@ -21,7 +21,15 @@ export function getSignatureStatus(
     } else {
       const signed = data.signatures.some((signature) =>
         signature.user?.databaseId === author.user!.databaseId
-      );
+      ) ||
+        (options.preventSignatureInvalidation &&
+          // add invalidated signatures
+          data.invalidated.some((group) =>
+            group.signatures.some((signature) =>
+              signature.user?.databaseId === author.user!.databaseId
+            )
+          ));
+
       if (signed) {
         status.signed.push(author);
       } else {

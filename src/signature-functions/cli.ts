@@ -1,5 +1,5 @@
 import { parseFlags } from "../deps.ts";
-import { action } from "../utils.ts";
+import { action, parseBoolean } from "../utils.ts";
 import main from "./mod.ts";
 
 /** This file is the entry point for the action */
@@ -71,6 +71,9 @@ main({
     form: flags.formPath,
   },
   ignoreList: flags.ignoreList.split(/\s,\s/),
+  preventSignatureInvalidation: parseBoolean(
+    flags.preventSignatureInvalidation,
+  ),
   message: {
     comment: {
       allSigned: flags.allSignedComment,
