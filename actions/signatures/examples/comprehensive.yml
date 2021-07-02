@@ -30,6 +30,14 @@ body:
     placeholder: "21"
   validations:
     required: false
+- type: textarea
+  attributes:
+    label: Additional information
+    description: Also tell us, do you have anything to share with us?
+    placeholder: I love open-source software
+    value: "Everything's good"
+  validations:
+    required: true
 - type: checkboxes
   id: signature
   attributes:
