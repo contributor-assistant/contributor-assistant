@@ -1,5 +1,5 @@
-name: Contributor assistant | CLA
-description: An action to handle the Contributor License Agreement (CLA)
+name: Contributor assistant | Signatures
+description: An action to handle the Contributor License Agreement (CLA) or any other document
 author: SAP
 branding:
   icon: feather
@@ -33,7 +33,7 @@ inputs:
     description: The document which shall be signed by the contributor(s). Must be an issue form (yml file).
     required: true
   ignore-list:
-    description: A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. The separator between the patterns is a comma.
+    description: A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. The separator between the patterns is a comma.
     required: false
   re-trigger:
     description: The keyword to re-trigger signature checks.
@@ -45,13 +45,13 @@ inputs:
     description: Usually a message thanking the committers and asking them to sign the document.
     required: false
   signed-label:
-    description: A label that will be applied once all committers have signed the CLA
+    description: A label that will be applied once all committers have signed the document
     required: false
   unsigned-label:
-    description: A label that will be applied until all committers have signed the CLA
+    description: A label that will be applied until all committers have signed the document
     required: false
   ignore-label:
-    description: Add this label to skip the CLA checks
+    description: Add this label to skip the signature checks
     required: false
   form-label:
     description: The label used to find the document form.
@@ -71,7 +71,6 @@ runs:
         deno run -Aq ${{ github.action_path }}/bundle.js \
           --githubToken ${{ inputs.GITHUB_TOKEN }} \
           --personalAccessToken ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
-          --CLAPath ${{ inputs.cla-path }} \
           --signaturePath ${{ inputs.signature-path }} \
           --signatureBranch ${{ inputs.signature-branch }} \
           --signatureRemoteRepo ${{ inputs.signature-remote-repo }} \

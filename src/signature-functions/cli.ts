@@ -51,18 +51,18 @@ main({
   githubToken: flags.githubToken,
   personalAccessToken: flags.personalAccessToken,
   storage: {
-    signatures: flags.storageRemoteRepo.length > 0
+    signatures: flags.signatureRemoteRepo.length > 0
       ? {
         type: "remote",
-        repo: flags.storageRemoteRepo,
-        owner: flags.storageRemoteOwner,
-        branch: flags.storageBranch,
-        path: flags.storagePath,
+        repo: flags.signatureRemoteRepo,
+        owner: flags.signatureRemoteOwner,
+        branch: flags.signatureBranch,
+        path: flags.signaturePath,
       }
       : {
         type: "local",
-        branch: flags.storageBranch,
-        path: flags.storagePath,
+        branch: flags.signatureBranch,
+        path: flags.signaturePath,
       },
     reRun: {
       branch: flags.reRunBranch,

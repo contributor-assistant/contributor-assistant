@@ -175,7 +175,7 @@ function parseIssue(
             break;
         }
       } else {
-        fields.push(null)
+        fields.push(null);
       }
     } else if (token.value.type === "list") {
       if (input.type !== "checkboxes") break;

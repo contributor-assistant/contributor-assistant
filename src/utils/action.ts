@@ -2,6 +2,8 @@ import { octokit, personalOctokit } from "./octokit.ts";
 import { context } from "./context.ts";
 import type { RestEndpointMethodTypes } from "../deps.ts";
 
+export const debugFlag = Deno.env.get("ACTIONS_STEP_DEBUG") === "true";
+
 /* ------ logging ------ */
 
 export function debug(message: string, object?: unknown) {

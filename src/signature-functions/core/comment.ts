@@ -25,7 +25,7 @@ export async function commentPR(status: SignatureStatus, rawForm: string) {
     if (status.unsigned.length > 0 || status.unknown.length > 0) {
       await pr.createComment(await createBody(status, form));
     } else {
-      action.info("Everyone has already signed the CLA.");
+      action.info("Everyone has already signed the document.");
     }
   } else {
     await pr.updateComment(botComment.id, await createBody(status, form));
@@ -48,7 +48,6 @@ async function createBody(
 ): Promise<string> {
   let body = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
   const text = options.message.comment;
-  const input = options.message.input;
   if (status.unsigned.length === 0 && status.unknown.length === 0) {
     return body + text.allSigned;
   }
@@ -117,6 +116,8 @@ async function createBody(
     body += `\n${text.unknownWarning}\n`;
   }
 
-  return `${body}\n${text.footer.replace("${re-trigger}", input.reTrigger)}`
+  return `${body}\n${
+    text.footer.replace("${re-trigger}", options.message.reTrigger)
+  }`
     .replace(/\n( |\t)*/g, "\n");
 }

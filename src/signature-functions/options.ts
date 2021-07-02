@@ -14,7 +14,7 @@ export interface Options {
     /** The document which shall be signed by the contributor(s). Must be an issue form (yml file) */
     form: string;
   };
-  /** A list of users that will be ignored when checking for signatures. They are not required for the CLA checks to pass. */
+  /** A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. */
   ignoreList?: string[];
   message?: {
     commit?: {
@@ -62,11 +62,11 @@ export interface Options {
   };
 }
 
-export type ParsedCLAOptions = Omit<
+export type ParsedOptions = Omit<
   DeepRequired<Options>,
   "githubToken" | "personalAccessToken"
 >;
-export let options: ParsedCLAOptions;
+export let options: ParsedOptions;
 
 function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
   for (const key in obj) {
@@ -147,6 +147,6 @@ export function setupOptions(opts: Options) {
     ...removeEmpty(opts.labels),
   };
 
-  options = opts as ParsedCLAOptions;
+  options = opts as ParsedOptions;
   action.debug("Parsed options", options);
 }

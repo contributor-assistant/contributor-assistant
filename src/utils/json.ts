@@ -1,8 +1,8 @@
-import "./globals.ts";
+import { debugFlag } from "./action.ts";
 
 /** Stringify a JSON object. Prettify only in development */
 export function stringify(object: unknown): string {
-  return JSON.stringify(object, null, DENO_ENV === "production" ? 0 : 2);
+  return JSON.stringify(object, null, debugFlag ? 2 : 0);
 }
 
 /** Reads a JSON file and then parses it into an object */

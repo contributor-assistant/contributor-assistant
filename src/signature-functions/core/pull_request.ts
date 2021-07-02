@@ -41,7 +41,7 @@ export async function updatePR() {
     action.info(options.message.comment.allSigned);
   } else {
     action.fail(
-      `Committers of Pull Request #${context.issue.number} have to sign the CLA 📝`,
+      `Committers of Pull Request #${context.issue.number} have to sign the document 📝`,
     );
   }
 }
