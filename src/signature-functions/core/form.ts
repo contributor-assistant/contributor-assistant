@@ -126,12 +126,7 @@ export async function processForm() {
   await writeSignature;
   for (const run of reRunContent.data) {
     if (run.unsigned.includes(databaseId)) {
-      reRuns.push(
-        action.workflowRuns(
-          run.workflow,
-          "pull_request_target",
-        ).then((runs) => action.reRun(runs.workflow_runs[0].id)),
-      );
+      reRuns.push(action.reRun(run.workflow));
     }
   }
   await Promise.all([...reRuns]);
