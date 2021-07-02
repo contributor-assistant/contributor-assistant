@@ -81,6 +81,14 @@
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
+5. Modify the issue form
+
+6. Create a new PR
+   - `Failing` status
+
+7. Set `prevent-signature-invalidation` to `true`
+   - `Success` status
+
 ## Storage
 
 > Create a new PR at each step and it should work as for the _Basic features_
