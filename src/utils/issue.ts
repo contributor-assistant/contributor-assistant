@@ -10,24 +10,10 @@ export async function lock() {
     issue_number: prNumber,
   }).catch((error) => {
     throw new Error(
-      `Error occurred when locking the pull request #${prNumber}: ${error.message}`,
+      `Error occurred when locking the issue #${prNumber}: ${error.message}`,
     );
   });
-  action.info(`Successfully locked the pull request #${prNumber}`);
-}
-
-export async function branch(): Promise<string> {
-  const prNumber = context.issue.number;
-  const pr = await octokit.pulls.get({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    pull_number: prNumber,
-  }).catch((error) => {
-    throw new Error(
-      `Error occurred when fetching pull request (#${prNumber}) branch: ${error.message}`,
-    );
-  });
-  return pr.data.head.ref;
+  action.debug(`Successfully locked the issue #${prNumber}`);
 }
 
 export async function createComment(body: string) {
@@ -38,11 +24,11 @@ export async function createComment(body: string) {
     body,
   }).catch((error) => {
     throw new Error(
-      `Error occurred when creating a pull request (#${prNumber}) comment: ${error.message}`,
+      `Error occurred when creating an issue (#${prNumber}) comment: ${error.message}`,
     );
   });
   action.debug(
-    `Successfully created a pull request (#${prNumber}) comment: ${body}`,
+    `Successfully created an issue (#${prNumber}) comment: ${body}`,
   );
 }
 
@@ -54,11 +40,11 @@ export async function updateComment(id: number, body: string) {
     body,
   }).catch((error) => {
     throw new Error(
-      `Error occurred when updating the pull request (#${prNumber}) comment #${id}: ${error.message}`,
+      `Error occurred when updating the issue (#${prNumber}) comment #${id}: ${error.message}`,
     );
   });
   action.debug(
-    `Successfully updated the pull request (#${prNumber}) comment #${id}: ${body}`,
+    `Successfully updated the issue (#${prNumber}) comment #${id}: ${body}`,
   );
 }
 
@@ -69,11 +55,11 @@ export async function deleteComment(id: number) {
     comment_id: id,
   }).catch((error) => {
     throw new Error(
-      `Error occurred when deleting the pull request (#${prNumber}) comment #${id}: ${error.message}`,
+      `Error occurred when deleting the issue (#${prNumber}) comment #${id}: ${error.message}`,
     );
   });
   action.debug(
-    `Successfully deleted the pull request (#${prNumber}) comment #${id}`,
+    `Successfully deleted the issue (#${prNumber}) comment #${id}`,
   );
 }
 
@@ -95,10 +81,11 @@ export async function listComments(): Promise<Comments> {
     for await (const response of iterator) {
       comments.push(...response.data);
     }
+    action.debug(`Successfully fetched issue (#${prNumber}) comments`);
     return comments;
   } catch (error) {
     throw new Error(
-      `Error occurred when fetching pull request (#${prNumber}) comments: ${error.message}`,
+      `Error occurred when fetching issue (#${prNumber}) comments: ${error.message}`,
     );
   }
 }
@@ -111,9 +98,10 @@ export async function addLabels(...labels: string[]) {
     labels,
   }).catch((error) => {
     throw new Error(
-      `Error occurred when adding pull request (#${prNumber}) labels: ${error.message}`,
+      `Error occurred when adding issue (#${prNumber}) labels: ${error.message}`,
     );
   });
+  action.debug(`Successfully added issue (#${prNumber}) labels: ${labels}`);
 }
 
 export async function removeLabel(name: string) {
@@ -124,9 +112,10 @@ export async function removeLabel(name: string) {
     name,
   }).catch((error) => {
     throw new Error(
-      `Error occurred when removing pull request (#${prNumber}) label: ${error.message}`,
+      `Error occurred when removing issue (#${prNumber}) label: ${error.message}`,
     );
   });
+  action.debug(`Successfully removed issue (#${prNumber}) label: ${name}`);
 }
 
 export async function getLabels(): Promise<string[]> {
@@ -146,10 +135,11 @@ export async function getLabels(): Promise<string[]> {
         labels.push(label.name);
       }
     }
+    action.debug(`Successfully fetched issue (#${prNumber}) labels`);
     return labels;
   } catch (error) {
     throw new Error(
-      `Error occurred when fetching pull request (#${prNumber}) labels: ${error.message}`,
+      `Error occurred when fetching issue (#${prNumber}) labels: ${error.message}`,
     );
   }
 }

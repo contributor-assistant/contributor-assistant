@@ -3,6 +3,12 @@
 > Delete the signature file on steps with the symbol 🔁 if you don't have more
 > than 2 users to test the action.
 
+## Prerequisites
+
+1. Create `.github/workflows/signatures.yml` action
+2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form
+3. Create `signature form` label
+
 ## Basic features
 
 1. Create a PR with one user
@@ -27,7 +33,7 @@
 
 ## Inputs
 
-1. Remove `GITHUB_TOKEN`, `PERSONAL_ACCESS_TOKEN`, and `cla-path` one after the
+1. Remove `GITHUB_TOKEN`, `PERSONAL_ACCESS_TOKEN`, and `form-path` one after the
    other
 
 2. Create a PR with one user
@@ -51,23 +57,10 @@
 3. Sign the CLA (logged in user)
    - The comment is updated
    - `Success` status
-   - The associated signatures are removed from the storage file
 
-4. Update or delete the signature
-   - The comment is updated
-   - `Failing` status
-
-5. 🔁 Create a PR with an unknown user
+4. 🔁 Create a PR with an unknown user
    - A comment is created, with some warnings
-   - `Success` status
-
-6. 🔁 Create a PR with email notifications enabled
-7. Sign the CLA from email
-   - The comment is updated
-   - `Success` status
-
-8. Merge the PR
-   - The PR is locked
+   - `Failing` status
 
 ## Advanced features
 
@@ -88,8 +81,13 @@
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
-5. Set `lock-pr-after-merge` to false and merge a PR
-   - The PR is not locked
+5. Modify the issue form
+
+6. Create a new PR
+   - `Failing` status
+
+7. Set `prevent-signature-invalidation` to `true`
+   - `Success` status
 
 ## Storage
 
@@ -104,12 +102,23 @@
 
 4. Set `storage-remote-repo` and `storage-remote-owner`
 
+5. Set `re-run-path`
+
+6. Set `re-run-branch`
+
 ## Customization
 
-1. Set `input-signature`
-   - A different text is displayed in the comment
-   - This text successfully signs the CLA
-
-2. Set `input-re-trigger`
+1. Set `re-trigger`
+   - Be sure to update the action conditions accordingly
    - A different text is displayed in the comment
    - This text successfully re-run the action
+
+2. Set `all-signed-comment`
+   - A different text is displayed in the comment
+
+3. Set `comment-header`
+   - A different text is displayed in the comment
+
+4. Set `form-label`
+   - Be sure to update the action conditions accordingly & the issue form
+   - Should work as expected

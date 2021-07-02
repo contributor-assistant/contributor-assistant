@@ -2,6 +2,11 @@ import { octokit, personalOctokit } from "./octokit.ts";
 import { context } from "./context.ts";
 import type { RestEndpointMethodTypes } from "../deps.ts";
 
+/* /!\ @actions/core is not available yet under Deno
+https://cdn.skypack.dev/error/node:node:os?from=@actions/core */
+
+export const debugFlag = Deno.env.get("ACTIONS_STEP_DEBUG") === "true";
+
 /* ------ logging ------ */
 
 export function debug(message: string, object?: unknown) {
@@ -60,9 +65,9 @@ export async function workflowId(): Promise<number> {
 }
 
 export async function workflowRuns(
-  branch: string,
   workflowId: number,
   event: string,
+  branch?: string,
 ): Promise<
   RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["response"]["data"]
 > {
@@ -80,7 +85,7 @@ export async function workflowRuns(
 }
 
 export async function reRun(runId: number) {
-  // Personal Access token with repo scope is required to access this api
+  // Personal Access Token with repo scope is required to access this api
   // https://github.community/t/bug-rerun-workflow-api-not-working/126742
   await personalOctokit.actions.reRunWorkflow({
     ...context.repo,

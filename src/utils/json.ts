@@ -1,6 +1,8 @@
-/** Formats and converts to base-64 */
-export function toBase64(object: unknown) {
-  return btoa(`${JSON.stringify(object, null, 2)}\n`);
+import { debugFlag } from "./action.ts";
+
+/** Stringify a JSON object. Prettify only in development */
+export function stringify(object: unknown): string {
+  return JSON.stringify(object, null, debugFlag ? 2 : 0);
 }
 
 /** Reads a JSON file and then parses it into an object */

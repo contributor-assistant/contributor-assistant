@@ -1,5 +1,5 @@
 import { options } from "../options.ts";
-import { Author } from "./commit.ts";
+import type { GitActor } from "./types.ts";
 
 function escapeRegExp(string: string) {
   const reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
@@ -9,7 +9,7 @@ function escapeRegExp(string: string) {
 }
 
 /** "*" is treated as a wildcard. */
-export function filterIgnored(committers: Author[]): Author[] {
+export function filterIgnored(committers: GitActor[]): GitActor[] {
   // TODO(@oagnexon): refactor & add more patterns
   return committers.filter((committer) =>
     !options.ignoreList.some((pattern) => {
@@ -19,7 +19,7 @@ export function filterIgnored(committers: Author[]): Author[] {
 
         return new RegExp(regex).test(committer.name);
       }
-      return pattern === committer;
+      return pattern === committer.name;
     })
   );
 }
