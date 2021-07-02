@@ -5,19 +5,19 @@ import type { CustomField } from "../core/form.ts";
 import { parseFlags, parseYaml } from "../../deps.ts";
 
 /** Usage
- * 
+ *
  * deno run --allow-read --allow-write lite.ts - < input.json > out.json
- * 
- * deno run -allow-read --allow-write lite.ts -i input.json -o out.json -f .form.yml 
+ *
+ * deno run -allow-read --allow-write lite.ts -i input.json -o out.json -f .form.yml
 */
 
 interface OutdatedSignature {
   name: string;
   id: number;
   pullRequestNo?: number;
-  created_at?: string;
-  updated_at?: string;
-  comment_id?: number;
+  "created_at"?: string;
+  "updated_at"?: string;
+  "comment_id"?: number;
   body?: string;
   repoId?: string;
 }
@@ -60,7 +60,10 @@ if (Deno && import.meta.main) {
   }
 }
 
-export function convert(outdated: OutdatedStorage, form?: Form): SignatureStorage {
+export function convert(
+  outdated: OutdatedStorage,
+  form?: Form,
+): SignatureStorage {
   // deep copy
   const signatures: SignatureStorage = JSON.parse(
     JSON.stringify(defaultSignatureContent),
