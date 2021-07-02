@@ -87,8 +87,8 @@ export async function processForm() {
         endDate: new Date().toJSON(),
         signatures: signatureStorage.signatures,
       });
+      signatureStorage.signatures = [];
     }
-    signatureStorage.signatures = [];
     signatureStorage.form = form;
     signatureStorage.formSHA = currentFormSHA;
   }
