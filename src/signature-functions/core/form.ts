@@ -84,7 +84,7 @@ export async function processForm() {
       signatureStorage.invalidated.push({
         form: signatureStorage.form,
         formSHA: signatureStorage.formSHA,
-        endDate: Date.now(),
+        endDate: new Date().toJSON(),
         signatures: signatureStorage.signatures,
       });
     }
@@ -101,7 +101,7 @@ export async function processForm() {
     action.debug("New signature found: supersede the previous one");
     signatureStorage.superseded.push({
       ...signatureStorage.signatures[previousSignatureIndex],
-      endDate: Date.now(),
+      endDate: new Date().toJSON(),
       formSHA: currentFormSHA,
     });
     signatureStorage.signatures.splice(previousSignatureIndex, 1);
@@ -114,7 +114,7 @@ export async function processForm() {
       login: context.payload.issue!.user.login,
     },
     issue: context.issue.number,
-    date: Date.now(),
+    date: new Date().toJSON(),
     fields,
   });
 

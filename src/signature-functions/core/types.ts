@@ -8,12 +8,12 @@ export type { GitActor, User };
 export interface AuthorSignature {
   user: User;
   issue: number;
-  date: number;
+  date: string;
   fields: unknown[];
 }
 
 export interface SupersededSignature extends AuthorSignature {
-  endDate: number;
+  endDate: string;
   formSHA: string;
 }
 
@@ -31,7 +31,7 @@ export interface SignatureData {
   invalidated: {
     form: Form;
     formSHA: string;
-    endDate: number;
+    endDate: string;
     signatures: AuthorSignature[];
   }[];
 }
