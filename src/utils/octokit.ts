@@ -1,6 +1,6 @@
-import { Core, legacyRestEndpointMethods, paginateRest } from "../deps.ts";
+import { Core, paginateRest, restEndpointMethods } from "../deps.ts";
 
-export const Octokit = Core.plugin(legacyRestEndpointMethods, paginateRest);
+export const Octokit = Core.plugin(restEndpointMethods, paginateRest);
 
 export let octokit = new Octokit();
 export let personalOctokit = new Octokit();

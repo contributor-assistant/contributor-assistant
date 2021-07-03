@@ -48,7 +48,9 @@ function escapeData(s: string): string {
 /* ------ octokit ------ */
 
 export async function workflowId(): Promise<number> {
-  const workflowList = await octokit.actions.listRepoWorkflows(context.repo)
+  const workflowList = await octokit.rest.actions.listRepoWorkflows(
+    context.repo,
+  )
     .catch((error) => {
       throw new Error(
         `Error occurred when fetching action workflow id: ${error.message}`,
@@ -71,7 +73,7 @@ export async function workflowRuns(
 ): Promise<
   RestEndpointMethodTypes["actions"]["listWorkflowRuns"]["response"]["data"]
 > {
-  const runs = await octokit.actions.listWorkflowRuns({
+  const runs = await octokit.rest.actions.listWorkflowRuns({
     ...context.repo,
     branch,
     workflow_id: workflowId,
@@ -87,7 +89,7 @@ export async function workflowRuns(
 export async function reRun(runId: number) {
   // Personal Access Token with repo scope is required to access this api
   // https://github.community/t/bug-rerun-workflow-api-not-working/126742
-  await personalOctokit.actions.reRunWorkflow({
+  await personalOctokit.rest.actions.reRunWorkflow({
     ...context.repo,
     run_id: runId,
   }).catch((error) => {
@@ -102,7 +104,7 @@ export async function getWorkflow(
 ): Promise<
   RestEndpointMethodTypes["actions"]["getWorkflowRun"]["response"]["data"]
 > {
-  const run = await octokit.actions.getWorkflowRun({
+  const run = await octokit.rest.actions.getWorkflowRun({
     ...context.repo,
     run_id: runId,
   }).catch((error) => {

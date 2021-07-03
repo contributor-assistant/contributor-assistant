@@ -19,7 +19,7 @@ export async function getFile<T>(
   kit: typeof octokit,
   location: FileLocation,
 ): Promise<RawContent> {
-  const res = await kit.repos.getContent(location);
+  const res = await kit.rest.repos.getContent(location);
   if (Array.isArray(res.data)) {
     throw new Error(`File path is a directory: ${location.path}`);
   } else if (!("content" in res.data)) {
@@ -43,7 +43,7 @@ export async function createOrUpdateFile(
   params: GithubFileUpdate,
   sha?: string,
 ): Promise<RawContent> {
-  const res = await kit.repos.createOrUpdateFileContents({
+  const res = await kit.rest.repos.createOrUpdateFileContents({
     ...location,
     message: params.message,
     content: btoa(params.content),

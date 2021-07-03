@@ -38,7 +38,7 @@ export function ignoreLabelEvent(): boolean {
 
 /** Automatically create the signature label (unused) */
 export async function createSignatureLabel() {
-  await octokit.issues.createLabel({
+  await octokit.rest.issues.createLabel({
     ...context.repo,
     name: options.labels.form,
     description: "A document signature",

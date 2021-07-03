@@ -11,7 +11,7 @@ export { Sha256 } from "https://x.nest.land/std@0.100.0/hash/sha256.ts";
 
 /* github toolkit */
 export { Octokit as Core } from "https://cdn.skypack.dev/@octokit/core@3.4.0?dts";
-export { legacyRestEndpointMethods } from "https://cdn.skypack.dev/@octokit/plugin-rest-endpoint-methods@5.3.1?dts";
+export { restEndpointMethods } from "https://cdn.skypack.dev/@octokit/plugin-rest-endpoint-methods@5.3.1?dts";
 export { paginateRest } from "https://cdn.skypack.dev/@octokit/plugin-paginate-rest@2.13.3?dts";
 import * as Endpoint from "https://cdn.skypack.dev/@octokit/plugin-rest-endpoint-methods@5.3.1?dts";
 // https://github.com/denoland/vscode_deno/issues/414

@@ -5,7 +5,7 @@ import { RestEndpointMethodTypes } from "../deps.ts";
 
 export async function lock() {
   const prNumber = context.issue.number;
-  await octokit.issues.lock({
+  await octokit.rest.issues.lock({
     ...context.repo,
     issue_number: prNumber,
   }).catch((error) => {
@@ -18,7 +18,7 @@ export async function lock() {
 
 export async function createComment(body: string) {
   const prNumber = context.issue.number;
-  await octokit.issues.createComment({
+  await octokit.rest.issues.createComment({
     ...context.repo,
     issue_number: prNumber,
     body,
@@ -34,7 +34,7 @@ export async function createComment(body: string) {
 
 export async function updateComment(id: number, body: string) {
   const prNumber = context.issue.number;
-  await octokit.issues.updateComment({
+  await octokit.rest.issues.updateComment({
     ...context.repo,
     comment_id: id,
     body,
@@ -50,7 +50,7 @@ export async function updateComment(id: number, body: string) {
 
 export async function deleteComment(id: number) {
   const prNumber = context.issue.number;
-  await octokit.issues.deleteComment({
+  await octokit.rest.issues.deleteComment({
     ...context.repo,
     comment_id: id,
   }).catch((error) => {
@@ -70,7 +70,7 @@ export async function listComments(): Promise<Comments> {
   const comments: Comments = [];
   const prNumber = context.issue.number;
   const iterator = octokit.paginate.iterator(
-    octokit.issues.listComments,
+    octokit.rest.issues.listComments,
     {
       ...context.repo,
       issue_number: prNumber,
@@ -92,7 +92,7 @@ export async function listComments(): Promise<Comments> {
 
 export async function addLabels(...labels: string[]) {
   const prNumber = context.issue.number;
-  await octokit.issues.addLabels({
+  await octokit.rest.issues.addLabels({
     ...context.repo,
     issue_number: prNumber,
     labels,
@@ -106,7 +106,7 @@ export async function addLabels(...labels: string[]) {
 
 export async function removeLabel(name: string) {
   const prNumber = context.issue.number;
-  await octokit.issues.removeLabel({
+  await octokit.rest.issues.removeLabel({
     ...context.repo,
     issue_number: prNumber,
     name,
@@ -122,7 +122,7 @@ export async function getLabels(): Promise<string[]> {
   const prNumber = context.issue.number;
   const labels: string[] = [];
   const iterator = octokit.paginate.iterator(
-    octokit.issues.listLabelsOnIssue,
+    octokit.rest.issues.listLabelsOnIssue,
     {
       ...context.repo,
       issue_number: prNumber,

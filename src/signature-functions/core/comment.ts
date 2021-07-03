@@ -59,7 +59,8 @@ async function createBody(
   );
   url.searchParams.append("template", options.storage.form);
   url.searchParams.append("title", form.title ?? "License Signature");
-  url.searchParams.append("labels", form.labels?.[0] ?? options.labels.form);
+  const labels = typeof form.labels === "string" ? [form.labels] : form.labels;
+  url.searchParams.append("labels", labels?.join(",") ?? options.labels.form);
 
   const githubKeys = extractIDs(form);
   const unsigned: { committer: GitActor; url: URL }[] = status.unsigned
@@ -68,7 +69,7 @@ async function createBody(
   if (githubKeys.length > 0) {
     const userInfo = await Promise.all(
       unsigned.map(({ committer }) =>
-        octokit.users.getByUsername({
+        octokit.rest.users.getByUsername({
           username: committer.user!.login,
         })
       ),
