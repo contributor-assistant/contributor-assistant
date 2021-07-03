@@ -1,4 +1,4 @@
-## CLA Assistant
+## Contributor License Agreements
 
 ```yml
 name: Signature Assistant
