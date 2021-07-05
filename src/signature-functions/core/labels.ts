@@ -42,11 +42,12 @@ export async function createSignatureLabel() {
     ...context.repo,
     name: options.labels.form,
     description: "A document signature",
-  }).catch((error) => {
-    if (error.code !== "already_exists") {
+  }).catch((_error) => {
+    // bug: error.code is deprecated but error.status doesn't exist
+    /* if (error.status !== "already_exists") {
       action.fail(
         `The "${options.labels.form}" label couldn't be added automatically. Please add it manually.`,
       );
-    }
+    } */
   });
 }

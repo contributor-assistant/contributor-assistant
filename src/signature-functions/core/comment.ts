@@ -43,7 +43,7 @@ export async function uncommentPR() {
 }
 
 const title = "## Contributor Assistant | Signatures";
-export const head = `${commentAnchor}\n\n${title}`;
+export const head = `${commentAnchor}\n${title}\n`;
 
 async function createBody(
   status: SignatureStatus,
@@ -131,7 +131,7 @@ export async function missingIssueComment() {
   const body = `${title}
   ⚠ ${
     repo.owner?.login !== undefined ? `@${repo.owner?.login}` : ""
-  } Issue form doesn't exist, I created one for you. I advise you to modify this template to suit your needs. ⚠
+  } Issue form doesn't exist, I created one for you. I advise you to modify [this template](https://github.com/oganexon/CLA-experiments/blob/${repo.default_branch}/.github/ISSUE_TEMPLATE/${options.storage.form}) to suit your needs. ⚠
   `;
   await pr.createComment(body.replace(/\n( |\t)*/g, "\n"));
 }

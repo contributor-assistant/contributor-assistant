@@ -33,8 +33,9 @@ export async function readForm(): Promise<github.RawContent> {
     return content;
   } catch (error) {
     if (error.status === 404) {
+      action.warning("Issue form doesn't exit. Creating one from template...");
       const template = await github.getFile(octokit, {
-        owner: "cla-assitant",
+        owner: "cla-assistant",
         repo: "contributor-assistant",
         path: "actions/signatures/examples/simple.yml",
       });
@@ -47,8 +48,8 @@ export async function readForm(): Promise<github.RawContent> {
           content: template.content,
         }),
         createSignatureLabel(),
-        missingIssueComment(),
       ]);
+      await missingIssueComment();
       return content;
     } else {
       action.fail(
