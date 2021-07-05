@@ -34,7 +34,9 @@ export interface Options {
     comment?: {
       /** When each committer has signed the document. */
       allSigned?: string;
-      /** Usually a message thanking the committers and asking them to sign the document. */
+      /** Usually a message thanking the committers and asking them to sign the document.
+      #### Variables:
+       - `${you}`: "you" when only there's only one committer, "you all" otherwise */
       header?: string;
       /** A quick summary about the number of committers who signed.
       #### Variables:

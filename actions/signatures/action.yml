@@ -45,7 +45,9 @@ inputs:
     description: The posted comment when each committer has signed the document. 
     required: false
   comment-header:
-    description: Usually a message thanking the committers and asking them to sign the document.
+    description: |
+      Usually a message thanking the committers and asking them to sign the document.
+      Variable: `${you}`: "you" when only there's only one committer, "you all" otherwise
     required: false
   signed-label:
     description: A label that will be applied once all committers have signed the document
