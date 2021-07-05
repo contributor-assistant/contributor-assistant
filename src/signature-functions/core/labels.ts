@@ -1,4 +1,4 @@
-import { action, context, octokit, pr } from "../../utils.ts";
+import { context, octokit, pr } from "../../utils.ts";
 import { options } from "../options.ts";
 import type { SignatureStatus } from "./types.ts";
 
