@@ -1,7 +1,12 @@
 ## Contributor License Agreements
+  
+  
+You can copy the following code and add it to a file in your .github/workflows folder ([example](https://github.com/michael-spengler/demo-contributor-assistant/blob/main/.github/workflows/contributor-license-agreement.yml)) in order to ensure contributors sign your Contributor License Agreement.
+  
+  
 
 ```yml
-name: Signature Assistant
+name: Contributor Assistant - Contributor License Agreement Signature
 
 on:
   issues:
