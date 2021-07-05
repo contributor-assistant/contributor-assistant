@@ -14,7 +14,8 @@ import {
   writeSignatureStorage,
 } from "./signatures.ts";
 import { options } from "../options.ts";
-import { head } from "./comment.ts";
+import { head, missingIssueComment } from "./comment.ts";
+import { createSignatureLabel } from "./labels.ts";
 import type { Form } from "./types.ts";
 
 export function isForm(): boolean {
@@ -32,7 +33,23 @@ export async function readForm(): Promise<github.RawContent> {
     return content;
   } catch (error) {
     if (error.status === 404) {
-      action.fail("Issue form doesn't exist. Please create one.");
+      const template = await github.getFile(octokit, {
+        owner: "cla-assitant",
+        repo: "contributor-assistant",
+        path: "actions/signatures/examples/simple.yml",
+      });
+      const [content] = await Promise.all([
+        github.createOrUpdateFile(octokit, {
+          ...context.repo,
+          path: `.github/ISSUE_TEMPLATE/${options.storage.form}`,
+        }, {
+          message: options.message.commit.setup,
+          content: template.content,
+        }),
+        createSignatureLabel(),
+        missingIssueComment(),
+      ]);
+      return content;
     } else {
       action.fail(
         `Could not retrieve form content: ${error.message}. Status: ${error

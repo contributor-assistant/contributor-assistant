@@ -114,3 +114,14 @@ export async function getWorkflow(
   });
   return run.data;
 }
+
+export async function repo(): Promise<
+  RestEndpointMethodTypes["repos"]["get"]["response"]["data"]
+> {
+  const repo = await octokit.rest.repos.get(context.repo).catch((error) => {
+    throw new Error(
+      `Error occurred when fetching repository: ${error.message}`,
+    );
+  });
+  return repo.data;
+}

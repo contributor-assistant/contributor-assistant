@@ -36,7 +36,7 @@ export function ignoreLabelEvent(): boolean {
     context.payload.label?.name === options.labels.ignore;
 }
 
-/** Automatically create the signature label (unused) */
+/** Automatically create the signature label */
 export async function createSignatureLabel() {
   await octokit.rest.issues.createLabel({
     ...context.repo,

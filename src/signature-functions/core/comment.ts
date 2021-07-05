@@ -42,7 +42,8 @@ export async function uncommentPR() {
   }
 }
 
-export const head = `${commentAnchor}\n## Contributor Assistant | Signatures\n`;
+const title = "## Contributor Assistant | Signatures";
+export const head = `${commentAnchor}\n\n${title}`;
 
 async function createBody(
   status: SignatureStatus,
@@ -123,4 +124,14 @@ async function createBody(
     text.footer.replace("${re-trigger}", options.message.reTrigger)
   }`
     .replace(/\n( |\t)*/g, "\n");
+}
+
+export async function missingIssueComment() {
+  const repo = await action.repo();
+  const body = `${title}
+  ⚠ ${
+    repo.owner?.login !== undefined ? `@${repo.owner?.login}` : ""
+  } Issue form doesn't exist, I created one for you. I advise you to modify this template to suit your needs. ⚠
+  `;
+  await pr.createComment(body.replace(/\n( |\t)*/g, "\n"));
 }
