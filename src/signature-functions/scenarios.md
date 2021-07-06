@@ -50,7 +50,7 @@
 1. 🔁 Create a PR with a co-authored commit
    - _Basic features step 3 and 4_
 
-2. 🔁 Create a PR with a co-authored commit (unknown user)
+2. 🔁 Create a PR with a co-authored commit (unknown user: `Co-authored-by: Foo <foo@example.com>`)
    - A comment is created, with some warnings
    - `Failing` status
 
@@ -59,8 +59,18 @@
    - `Success` status
 
 4. 🔁 Create a PR with an unknown user
+   
+   💡 **tip** : change `.git/config`
+```ini
+[user]
+	name = Foo
+	email = foo@example.com
+```
+
    - A comment is created, with some warnings
    - `Failing` status
+
+
 
 ## Advanced features
 
