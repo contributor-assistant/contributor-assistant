@@ -6,7 +6,7 @@ body:
 - type: markdown
   attributes:
     value: |
-      Thank you for your submission, we really appreciate it.
+      Thank you for your submission, we appreciate it.
       Please read our [Contributor License Agreement](https://github.com/cla-assistant/github-action/blob/master/SAPCLA.md).
 - type: input
   id: name

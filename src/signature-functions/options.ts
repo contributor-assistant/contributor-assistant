@@ -131,7 +131,7 @@ export function setupOptions(opts: Options) {
     comment: {
       allSigned: "All contributors have signed the CLA  ✍️ ✅",
       header:
-        "Thank you for your submission, we really appreciate it. Like many open-source projects, we ask that ${you} sign our **Contributor License Agreement** before we can accept your contribution.",
+        "Thank you for your submission, we appreciate it. Like many open-source projects, we ask ${you} to sign our **Contributor License Agreement** before we can accept your contribution.",
       summary:
         "**${signed}** out of **${total}** committers have signed the document.",
       unknownWarning:
