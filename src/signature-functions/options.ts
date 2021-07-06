@@ -94,7 +94,7 @@ export function setupOptions(opts: Options) {
   }
   if (opts.personalAccessToken === "") {
     action.fail(
-      "Missing personal access token (https://github.com/settings/tokens/new). Please provide one as an environment variable.",
+      `Missing personal access token (https://github.com/settings/tokens/new) with "repo" scope. Then add it as a secret named "PERSONAL_ACCESS_TOKEN" (https://github.com/settings/secrets/actions/new).`,
     );
   }
   if (opts.storage.form === "") {
