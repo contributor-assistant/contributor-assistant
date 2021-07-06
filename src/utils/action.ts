@@ -50,12 +50,11 @@ function escapeData(s: string): string {
 export async function workflowId(): Promise<number> {
   const workflowList = await octokit.rest.actions.listRepoWorkflows(
     context.repo,
-  )
-    .catch((error) => {
-      throw new Error(
-        `Error occurred when fetching action workflow id: ${error.message}`,
-      );
-    });
+  ).catch((error) => {
+    throw new Error(
+      `Error occurred when fetching action workflow id: ${error.message}`,
+    );
+  });
 
   const workflow = workflowList.data.workflows
     .find((w) => w.name === context.workflow);
@@ -63,6 +62,7 @@ export async function workflowId(): Promise<number> {
   if (workflow === undefined) {
     throw new Error("Unable to locate this workflow's ID in this repository");
   }
+  debug(`Successfully fetched action workflow id: ${workflow.id}`);
   return workflow.id;
 }
 
@@ -83,6 +83,7 @@ export async function workflowRuns(
       `Error occurred when fetching action workflow runs: ${error.message}`,
     );
   });
+  debug("Successfully fetched action workflow runs");
   return runs.data;
 }
 
@@ -97,6 +98,7 @@ export async function reRun(runId: number) {
       `Error occurred while re-running run ${runId}: ${error.message}`,
     );
   });
+  debug(`Successfully re-ran run ${runId}`);
 }
 
 export async function getWorkflow(
@@ -112,6 +114,7 @@ export async function getWorkflow(
       `Error occurred when fetching workflow run ${runId}: ${error.message}`,
     );
   });
+  debug(`Successfully fetched workflow run ${runId}`);
   return run.data;
 }
 
@@ -123,5 +126,6 @@ export async function repo(): Promise<
       `Error occurred when fetching repository: ${error.message}`,
     );
   });
+  debug("Successfully fetched action workflow repo");
   return repo.data;
 }
