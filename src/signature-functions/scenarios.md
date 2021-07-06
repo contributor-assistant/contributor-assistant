@@ -6,7 +6,7 @@
 ## Prerequisites
 
 1. Create `.github/workflows/signatures.yml` action
-2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form
+2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form (simple template)
 3. Create `signature form` label
 
 ## Basic features
