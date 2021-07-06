@@ -91,13 +91,17 @@
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
-5. Modify the issue form
+5. Modify the issue form (comprehensive template)
 
 6. Create a new PR
    - `Failing` status
 
 7. Set `prevent-signature-invalidation` to `true`
    - `Success` status
+
+8. Set `prevent-signature-invalidation` to `false`
+9. Sign the CLA
+   - Fields should be pre-filled
 
 ## Storage
 
