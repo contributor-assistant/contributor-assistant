@@ -73,12 +73,12 @@ export async function updateReRun(status: SignatureStatus) {
     if (run === undefined) {
       file.content.data.push({
         pullRequest: context.issue.number,
-        workflow: context.runId,
+        runId: context.runId,
         unsigned: status.unsigned.map((author) => author.user!.databaseId),
       });
     } else {
       run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
-      run.workflow = await action.workflowId();
+      run.runId = context.runId;
     }
   }
 

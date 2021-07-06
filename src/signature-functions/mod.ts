@@ -26,6 +26,8 @@ export default async function main(rawOptions: Options) {
       await Promise.all([uncommentPR(), clearReRun()]);
     } else if (reRunRequired()) {
       await reRun();
+    } else if (context.payload.action === "closed") {
+      await clearReRun();
     } else {
       await updatePR();
     }

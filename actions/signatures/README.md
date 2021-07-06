@@ -14,7 +14,7 @@ on:
   issue_comment:
     types: [created]
   pull_request_target:
-    types: [opened,synchronize,labeled,unlabeled]
+    types: [opened,synchronize,closed,reopened,labeled,unlabeled]
 
 jobs:
   signature_assistant:

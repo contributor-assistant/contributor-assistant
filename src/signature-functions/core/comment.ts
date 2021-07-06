@@ -89,19 +89,20 @@ async function createBody(
   const committerCount = status.signed.length + status.unsigned.length;
   body += `${
     text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
-  }
-  `;
+  }\n\n`;
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 
-  if (committerCount === 1 && status.unsigned.length === 1 || !preFilled) {
-    body += `✍️ Please sign [here](${unsigned[0].url.href}) @${
-      status
-        .unsigned[0].user!.login
+  if (
+    status.unsigned.length > 0 &&
+    (committerCount === 1 && status.unsigned.length === 1 || !preFilled)
+  ) {
+    body += `✍️ Please sign [here](${unsigned[0].url.href}) ${
+      committerCount === 1 ? `@${status.unsigned[0].user!.login}` : ""
     } |
     --------------------------------------------------------|\n\n`;
   }
-  if (committerCount > 1) {
+  if (committerCount > 1 || status.unknown.length > 0) {
     body += `${text.summary} |
     -------------------------|
     `.replace("${signed}", status.signed.length.toString())
@@ -114,12 +115,12 @@ async function createBody(
         preFilled ? `please sign [here](${url.href})` : ""
       } \n`;
     }
-  }
-
-  if (status.unknown.length > 0) {
     for (const committer of status.unknown) {
       body += `:grey_question: ${committer.name} (${committer.email}) \n`;
     }
+  }
+
+  if (status.unknown.length > 0) {
     body += `\n${text.unknownWarning}\n`;
   }
 
