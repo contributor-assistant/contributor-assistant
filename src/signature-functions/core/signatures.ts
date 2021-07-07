@@ -19,7 +19,7 @@ export function getSignatureStatus(
     if (author.user === null) {
       status.unknown.push(author);
     } else {
-      const signed = data.signatures.some((signature) =>
+      const signed = data.current.signatures.some((signature) =>
         signature.user?.databaseId === author.user!.databaseId
       ) ||
         (options.preventSignatureInvalidation &&
@@ -44,10 +44,12 @@ export const defaultSignatureContent: SignatureStorage = {
   type: applicationType,
   version: storageVersion,
   data: {
-    formSHA: "",
-    form: { name: "", description: "", body: [] },
-    signatures: [],
-    superseded: [],
+    current: {
+      formSHA: "",
+      form: { name: "", description: "", body: [] },
+      signatures: [],
+    },
+    previous: [],
     invalidated: [],
   },
 };

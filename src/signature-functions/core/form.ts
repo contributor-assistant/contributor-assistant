@@ -95,40 +95,38 @@ export async function processForm() {
   storage.checkContent(file.content, defaultSignatureContent);
   const databaseId: number = context.payload.issue!.user.id;
 
-  const signatureStorage = file.content.data;
+  const { current, previous, invalidated } = file.content.data;
   const currentFormSHA = new Sha256().update(content).toString();
 
-  if (currentFormSHA !== signatureStorage.formSHA) {
+  if (currentFormSHA !== current.formSHA) {
     action.debug("Form SHA has changed, updating signature storage");
-    if (signatureStorage.formSHA !== "") {
-      signatureStorage.invalidated.push({
-        form: signatureStorage.form,
-        formSHA: signatureStorage.formSHA,
+    if (current.formSHA !== "") {
+      invalidated.push({
+        ...current,
         endDate: new Date().toJSON(),
-        signatures: signatureStorage.signatures,
       });
-      signatureStorage.signatures = [];
+      current.signatures = [];
     }
-    signatureStorage.form = form;
-    signatureStorage.formSHA = currentFormSHA;
+    current.form = form;
+    current.formSHA = currentFormSHA;
   }
 
-  const previousSignatureIndex = signatureStorage.signatures.findIndex((
+  const previousSignatureIndex = current.signatures.findIndex((
     signature,
   ) => signature.user.databaseId === databaseId);
 
   if (previousSignatureIndex !== -1) {
     action.debug("New signature found: supersede the previous one");
-    signatureStorage.superseded.push({
-      ...signatureStorage.signatures[previousSignatureIndex],
+    previous.push({
+      ...current.signatures[previousSignatureIndex],
       endDate: new Date().toJSON(),
       formSHA: currentFormSHA,
     });
-    signatureStorage.signatures.splice(previousSignatureIndex, 1);
+    current.signatures.splice(previousSignatureIndex, 1);
   }
 
   action.debug("Adding new signature");
-  file.content.data.signatures.push({
+  current.signatures.push({
     user: {
       databaseId,
       login: context.payload.issue!.user.login,

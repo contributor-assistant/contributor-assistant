@@ -113,7 +113,7 @@ export function setupOptions(opts: Options) {
   opts.storage.signatures.branch ||= undefined;
 
   opts.storage.reRun = {
-    path: ".github/contributor-assistant/signatures-re-run.json",
+    path: ".github/contributor-assistant/signatures-re-run-cache.json",
     ...removeEmpty(opts.storage.reRun),
   };
 
