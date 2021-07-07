@@ -36,7 +36,7 @@ export async function removeLabels() {
 }
 
 export async function hasIgnoreLabel(): Promise<boolean> {
-  if (options.labels.ignore === "" || ignoreLabelEvent()) return false;
+  if (options.labels.ignore === "") return false;
   const labels = await pr.getLabels();
   return labels.includes(options.labels.ignore);
 }

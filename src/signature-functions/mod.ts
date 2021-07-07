@@ -1,11 +1,15 @@
 import { reRun, reRunRequired } from "./core/re_run.ts";
 import { uncommentPR } from "./core/comment.ts";
-import { hasIgnoreLabel, removeLabels } from "./core/labels.ts";
 import { action, context } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
 import { isForm, processForm } from "./core/form.ts";
 import { updatePR } from "./core/pull_request.ts";
 import { clearReRun } from "./core/re_run.ts";
+import {
+  hasIgnoreLabel,
+  ignoreLabelEvent,
+  removeLabels,
+} from "./core/labels.ts";
 import type { Options } from "./options.ts";
 
 /** The entry point for the Signature Assistant */
@@ -20,10 +24,12 @@ export default async function main(rawOptions: Options) {
         await processForm();
       }
     } else if (await hasIgnoreLabel()) {
+      if (ignoreLabelEvent()) {
+        await Promise.all([uncommentPR(), clearReRun(), removeLabels()]);
+      }
       action.info(
         `Signature process skipped due to the "${options.labels.ignore}" label`,
       );
-      await Promise.all([uncommentPR(), clearReRun(), removeLabels()]);
     } else if (reRunRequired()) {
       await reRun();
     } else if (context.payload.action === "closed") {
