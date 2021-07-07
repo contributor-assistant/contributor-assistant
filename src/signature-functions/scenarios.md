@@ -11,8 +11,8 @@ Set `ACTIONS_STEP_DEBUG` to `true`
 
 > File names won't matter. If you decide to change them then they must also be reflected in the inputs of the action.
 
-1. Create `.github/workflows/signatures.yml` action
-2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form (simple template)
+1. Create `.github/workflows/request-signatures-from-contributors.yml` action
+2. Create `.github/ISSUE_TEMPLATE/signatures-form.yml` issue form (simple template)
 3. Create `signature form` label
 
 ## Basic features
