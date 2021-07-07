@@ -1,8 +1,8 @@
-import { debugFlag } from "./action.ts";
+import "./const.ts";
 
 /** Stringify a JSON object. Prettify only in development */
 export function stringify(object: unknown): string {
-  return JSON.stringify(object, null, debugFlag ? 2 : 0);
+  return JSON.stringify(object, null, bundled ? 0 : 2);
 }
 
 /** Reads a JSON file and then parses it into an object */
