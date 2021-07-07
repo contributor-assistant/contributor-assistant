@@ -1,6 +1,6 @@
 import { reRun, reRunRequired } from "./core/re_run.ts";
 import { uncommentPR } from "./core/comment.ts";
-import { hasIgnoreLabel } from "./core/labels.ts";
+import { hasIgnoreLabel, removeLabels } from "./core/labels.ts";
 import { action, context } from "../utils.ts";
 import { options, setupOptions } from "./options.ts";
 import { isForm, processForm } from "./core/form.ts";
@@ -23,7 +23,7 @@ export default async function main(rawOptions: Options) {
       action.info(
         `Signature process skipped due to the "${options.labels.ignore}" label`,
       );
-      await Promise.all([uncommentPR(), clearReRun()]);
+      await Promise.all([uncommentPR(), clearReRun(), removeLabels()]);
     } else if (reRunRequired()) {
       await reRun();
     } else if (context.payload.action === "closed") {

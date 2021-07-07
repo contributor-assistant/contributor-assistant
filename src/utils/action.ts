@@ -5,8 +5,6 @@ import type { RestEndpointMethodTypes } from "../deps.ts";
 /* /!\ @actions/core is not available yet under Deno
 https://cdn.skypack.dev/error/node:node:os?from=@actions/core */
 
-export const debugFlag = Deno.env.get("ACTIONS_STEP_DEBUG") === "true";
-
 /* ------ logging ------ */
 
 export function debug(message: string, object?: unknown) {
@@ -94,9 +92,13 @@ export async function reRun(runId: number) {
     ...context.repo,
     run_id: runId,
   }).catch((error) => {
-    throw new Error(
-      `Error occurred while re-running run ${runId}: ${error.message}`,
-    );
+    if (
+      !error?.message.match(/This workflow is already re-running/)
+    ) {
+      throw new Error(
+        `Error occurred while re-running run ${runId}: ${error.message}`,
+      );
+    }
   });
   debug(`Successfully re-ran run ${runId}`);
 }

@@ -24,6 +24,17 @@ export async function updateLabels(status: SignatureStatus) {
   }
 }
 
+export async function removeLabels() {
+  const labels = await pr.getLabels();
+  const { signed, unsigned } = options.labels;
+  if (labels.includes(unsigned)) {
+    await pr.removeLabel(unsigned);
+  }
+  if (labels.includes(signed)) {
+    await pr.removeLabel(signed);
+  }
+}
+
 export async function hasIgnoreLabel(): Promise<boolean> {
   if (options.labels.ignore === "" || ignoreLabelEvent()) return false;
   const labels = await pr.getLabels();

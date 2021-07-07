@@ -17,8 +17,7 @@ export type { Comments } from "./issue.ts";
 export async function branch(): Promise<string> {
   const prNumber = context.issue.number;
   const pr = await octokit.rest.pulls.get({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
+    ...context.repo,
     pull_number: prNumber,
   }).catch((error) => {
     throw new Error(

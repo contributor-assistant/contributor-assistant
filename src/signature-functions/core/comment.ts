@@ -108,7 +108,7 @@ async function createBody(
     `.replace("${signed}", status.signed.length.toString())
       .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
-      body += `:white_check_mark: @${committer.user!.login}\n`;
+      body += `:white_check_mark: **${committer.user!.login}**\n`;
     }
     for (const { committer, url } of unsigned) {
       body += `:x: @${committer.user!.login} ${
