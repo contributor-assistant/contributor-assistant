@@ -9,6 +9,8 @@ Set `ACTIONS_STEP_DEBUG` to `true`
 
 ## Prerequisites
 
+> File names won't matter. If you decide to change them then they must also be reflected in the inputs of the action.
+
 1. Create `.github/workflows/signatures.yml` action
 2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form (simple template)
 3. Create `signature form` label
@@ -79,7 +81,7 @@ Set `ACTIONS_STEP_DEBUG` to `true`
 
 ## Advanced features
 
-1. 🔁 Add a user to the ignore list and create a new PR with this user
+1. 🔁 Add a user to the `ignore-list` and create a new PR with this user
    - No comment is created
    - `Success` status
 
@@ -96,19 +98,25 @@ Set `ACTIONS_STEP_DEBUG` to `true`
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
-5. Modify the issue form (comprehensive template)
-
-6. Create a new PR
-   - `Failing` status
-
-7. Set `prevent-signature-invalidation` to `true`
+5. Set `ignore-label` & label a PR
+   - The comment is removed
+   - CLA labels are removed
    - `Success` status
 
-8. Set `prevent-signature-invalidation` to `false`
-9. Sign the CLA
-   - Fields should be pre-filled
+6. Modify the issue form (comprehensive template)
 
-10. Re-sign the CLA
+7. Create a new PR
+   - `Failing` status
+
+8. Set `prevent-signature-invalidation` to `true`
+   - `Success` status
+
+9. Set `prevent-signature-invalidation` to `false`
+10. Sign the CLA
+
+- Fields should be pre-filled
+
+12. Re-sign the CLA
 
 - Should supersede the previous signature
 
