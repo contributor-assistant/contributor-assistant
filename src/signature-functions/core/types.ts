@@ -44,7 +44,7 @@ export interface SignatureStorage extends storage.Storage {
 
 export type ReRunData = {
   pullRequest: number;
-  workflow: number;
+  runId: number;
   /** author IDs */
   unsigned: number[];
 }[];

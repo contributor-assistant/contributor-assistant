@@ -14,12 +14,12 @@ import { readForm } from "./form.ts";
 
 /** Fetch committers, update signatures, notify the result in a PR comment */
 export async function updatePR() {
-  const [{ content: signatureContent }, { content: rawForm }, committers] =
-    await Promise.all([
-      readSignatureStorage(),
-      readForm(),
-      getCommitters(),
-    ]);
+  const [{ content: signatureContent }, committers] = await Promise.all([
+    readSignatureStorage(),
+    getCommitters(),
+  ]);
+  // Error when fetching signature file and form at the same time
+  const { content: rawForm } = await readForm();
   storage.checkContent(signatureContent, defaultSignatureContent);
 
   const status = getSignatureStatus(
@@ -36,7 +36,7 @@ export async function updatePR() {
 
   if (
     status.unsigned.length === 0 &&
-    (status.signed.length > 1 || status.unknown.length === 0)
+    (status.signed.length > 0 || status.unknown.length === 0)
   ) {
     action.info(options.message.comment.allSigned);
   } else {

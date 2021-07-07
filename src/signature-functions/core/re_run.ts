@@ -8,16 +8,13 @@ import {
   spliceArray,
   storage,
 } from "../../utils.ts";
-import { ignoreLabelEvent } from "./labels.ts";
 import { options } from "../options.ts";
 import type { ReRunData, ReRunStorage, SignatureStatus } from "./types.ts";
 import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
- * - "recheck" is in comments
- * - ignore label has been updated */
+ * - "recheck" is in comments */
 export function reRunRequired(): boolean {
-  if (ignoreLabelEvent()) return true;
   if (context.eventName !== "issue_comment") return false;
   const body = normalizeText(context.payload.comment?.body ?? "");
   return body === normalizeText(options.message.reTrigger);
@@ -26,11 +23,15 @@ export function reRunRequired(): boolean {
 /** A re-run is needed to change the status of the workflow triggered by "pull_request_target" or "issues"
  * https://github.com/cla-assistant/github-action/issues/39 */
 export async function reRun() {
-  const branch = await pr.branch();
-  const workflowId = await action.workflowId();
+  const isIssue = context.payload.issue !== undefined &&
+    context.payload.issue?.pull_request === undefined;
+  const [branch, workflowId] = await Promise.all([
+    isIssue ? undefined : pr.branch(),
+    action.workflowId(),
+  ]);
   const runs = await action.workflowRuns(
     workflowId,
-    context.payload.issue === undefined ? "pull_request_target" : "issues",
+    isIssue ? "issues" : "pull_request_target",
     branch,
   );
 
@@ -69,12 +70,12 @@ export async function updateReRun(status: SignatureStatus) {
     if (run === undefined) {
       file.content.data.push({
         pullRequest: context.issue.number,
-        workflow: context.runId,
+        runId: context.runId,
         unsigned: status.unsigned.map((author) => author.user!.databaseId),
       });
     } else {
       run.unsigned = status.unsigned.map((author) => author.user!.databaseId);
-      run.workflow = await action.workflowId();
+      run.runId = context.runId;
     }
   }
 

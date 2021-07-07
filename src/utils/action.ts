@@ -5,8 +5,6 @@ import type { RestEndpointMethodTypes } from "../deps.ts";
 /* /!\ @actions/core is not available yet under Deno
 https://cdn.skypack.dev/error/node:node:os?from=@actions/core */
 
-export const debugFlag = Deno.env.get("ACTIONS_STEP_DEBUG") === "true";
-
 /* ------ logging ------ */
 
 export function debug(message: string, object?: unknown) {
@@ -50,12 +48,11 @@ function escapeData(s: string): string {
 export async function workflowId(): Promise<number> {
   const workflowList = await octokit.rest.actions.listRepoWorkflows(
     context.repo,
-  )
-    .catch((error) => {
-      throw new Error(
-        `Error occurred when fetching action workflow id: ${error.message}`,
-      );
-    });
+  ).catch((error) => {
+    throw new Error(
+      `Error occurred when fetching action workflow id: ${error.message}`,
+    );
+  });
 
   const workflow = workflowList.data.workflows
     .find((w) => w.name === context.workflow);
@@ -63,6 +60,7 @@ export async function workflowId(): Promise<number> {
   if (workflow === undefined) {
     throw new Error("Unable to locate this workflow's ID in this repository");
   }
+  debug(`Successfully fetched action workflow id: ${workflow.id}`);
   return workflow.id;
 }
 
@@ -83,6 +81,7 @@ export async function workflowRuns(
       `Error occurred when fetching action workflow runs: ${error.message}`,
     );
   });
+  debug("Successfully fetched action workflow runs");
   return runs.data;
 }
 
@@ -93,10 +92,15 @@ export async function reRun(runId: number) {
     ...context.repo,
     run_id: runId,
   }).catch((error) => {
-    throw new Error(
-      `Error occurred while re-running run ${runId}: ${error.message}`,
-    );
+    if (
+      !error?.message.match(/This workflow is already re-running/)
+    ) {
+      throw new Error(
+        `Error occurred while re-running run ${runId}: ${error.message}`,
+      );
+    }
   });
+  debug(`Successfully re-ran run ${runId}`);
 }
 
 export async function getWorkflow(
@@ -112,6 +116,7 @@ export async function getWorkflow(
       `Error occurred when fetching workflow run ${runId}: ${error.message}`,
     );
   });
+  debug(`Successfully fetched workflow run ${runId}`);
   return run.data;
 }
 
@@ -123,5 +128,6 @@ export async function repo(): Promise<
       `Error occurred when fetching repository: ${error.message}`,
     );
   });
+  debug("Successfully fetched action workflow repo");
   return repo.data;
 }

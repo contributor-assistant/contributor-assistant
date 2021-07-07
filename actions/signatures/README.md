@@ -1,8 +1,11 @@
-## Contributor License Agreements
-  
-  
-You can copy the following code and add it to a file in your .github/workflows folder ([example](https://github.com/michael-spengler/demo-contributor-assistant/blob/main/.github/workflows/contributor-license-agreement.yml)) in order to ensure contributors sign your Contributor License Agreement.
-  
+## Request Signatures from Contributors
+
+### Manual
+
+1. Create `.github/workflows/request-signatures-from-contributors.yml` action and paste the code from below
+2. Create `.github/ISSUE_TEMPLATE/signatures-form.yml` issue form (simple template)
+3. Create `signature form` issue label 
+ 
   
 
 ```yml
@@ -14,7 +17,7 @@ on:
   issue_comment:
     types: [created]
   pull_request_target:
-    types: [opened,synchronize,labeled,unlabeled]
+    types: [opened,synchronize,closed,reopened,labeled,unlabeled]
 
 jobs:
   signature_assistant:

@@ -3,11 +3,9 @@
 > Delete the signature file on steps with the symbol 🔁 if you don't have more
 > than 2 users to test the action.
 
-## Prerequisites
+## Tips
 
-1. Create `.github/workflows/signatures.yml` action
-2. Create `.github/ISSUE_TEMPLATE/signatures.yml` issue form
-3. Create `signature form` label
+Set `ACTIONS_STEP_DEBUG` to `true`
 
 ## Basic features
 
@@ -48,9 +46,11 @@
 ## Edge cases
 
 1. 🔁 Create a PR with a co-authored commit
+   (`Co-authored-by: Username <Username@users.noreply.github.com>`)
    - _Basic features step 3 and 4_
 
-2. 🔁 Create a PR with a co-authored commit (unknown user)
+2. 🔁 Create a PR with a co-authored commit (unknown user:
+   `Co-authored-by: Foo <foo@example.com>`)
    - A comment is created, with some warnings
    - `Failing` status
 
@@ -59,12 +59,21 @@
    - `Success` status
 
 4. 🔁 Create a PR with an unknown user
-   - A comment is created, with some warnings
-   - `Failing` status
+
+   💡 **tip** : change `.git/config`
+
+```ini
+[user]
+	name = Foo
+	email = foo@example.com
+```
+
+- A comment is created, with some warnings
+- `Failing` status
 
 ## Advanced features
 
-1. 🔁 Add a user to the ignore list and create a new PR with this user
+1. 🔁 Add a user to the `ignore-list` and create a new PR with this user
    - No comment is created
    - `Success` status
 
@@ -81,13 +90,27 @@
      - Everyone has signed the CLA
      - Someone has withdrawn their signature
 
-5. Modify the issue form
+5. Set `ignore-label` & label a PR
+   - The comment is removed
+   - CLA labels are removed
+   - `Success` status
 
-6. Create a new PR
+6. Modify the issue form (comprehensive template)
+
+7. Create a new PR
    - `Failing` status
 
-7. Set `prevent-signature-invalidation` to `true`
+8. Set `prevent-signature-invalidation` to `true`
    - `Success` status
+
+9. Set `prevent-signature-invalidation` to `false`
+10. Sign the CLA
+
+- Fields should be pre-filled
+
+12. Re-sign the CLA
+
+- Should supersede the previous signature
 
 ## Storage
 

@@ -33,7 +33,9 @@ export async function readForm(): Promise<github.RawContent> {
     return content;
   } catch (error) {
     if (error.status === 404) {
-      action.warning("Issue form doesn't exist. Creating a form from template...");
+      action.warning(
+        "Issue form doesn't exist. Creating a form from template...",
+      );
       const template = await github.getFile(octokit, {
         owner: "cla-assistant",
         repo: "contributor-assistant",
@@ -142,9 +144,9 @@ export async function processForm() {
   const reRuns: Promise<void>[] = [];
 
   await writeSignature;
-  for (const run of reRunContent.data) {
-    if (run.unsigned.includes(databaseId)) {
-      reRuns.push(action.reRun(run.workflow));
+  for (const { unsigned, runId } of reRunContent.data) {
+    if (unsigned.includes(databaseId)) {
+      reRuns.push(action.reRun(runId));
     }
   }
   await Promise.all([...reRuns]);
