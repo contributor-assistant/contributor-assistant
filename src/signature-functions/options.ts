@@ -135,7 +135,7 @@ export function setupOptions(opts: Options) {
       summary:
         "**${signed}** out of **${total}** committers have signed the document.",
       unknownWarning:
-        "⚠ Some commits do not have associated github accounts. If you have already a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
+        "⚠ Some commits include work from users which have no associated github account. If those already have a GitHub account, please [add the email address used for this commit to your account](https://help.github.com/articles/why-are-my-commits-linked-to-the-wrong-user/#commits-are-not-linked-to-any-user).",
       footer:
         "<sub>You can re-trigger this bot by commenting `${re-trigger}` in this Pull Request</sub>",
       ...removeEmpty(opts.message?.comment),
