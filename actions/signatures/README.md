@@ -1,58 +1,191 @@
-## Request Signatures from Contributors
+<p align="center">
+  <a href="https://github.com/marketplace/actions/contributor-assistant">
+    <img alt="" width="200px" src="./assets/logo.svg">
+  </a>
+</p>
 
-### Manual
+<h1 align="center">
+  Signature Assistant Action ✍️
+</h1>
 
-1. Create `.github/workflows/request-signatures-from-contributors.yml` action and paste the code from below
-2. Create `.github/ISSUE_TEMPLATE/signatures-form.yml` issue form (simple template)
-3. Create `signature form` issue label 
- 
+<p align="center">
+  <a href="https://github.com/cla-assistant/contributor-assistant/actions">
+    <img src="https://github.com/cla-assistant/contributor-assistant/workflows/tests/badge.svg" alt="Unit test status badge">
+  </a>
+
+  <a href="https://github.com/cla-assistant/contributor-assistant/releases">
+    <img src="https://img.shields.io/github/v/release/cla-assistant/contributor-assistant.svg?logo=github" alt="Release version badge">
+  </a>
   
+  <a href="https://github.com/marketplace/actions/contributor-assistant">
+    <img src="https://img.shields.io/badge/action-marketplace-blue.svg?logo=github&color=orange" alt="Github marketplace badge">
+  </a>
+</p>
+
+<p align="center">
+  This <a href="https://github.com/features/actions">GitHub Action</a> will automatically check for committer signatures when submitting a <a href="https://docs.github.com/en/github/collaborating-with-pull-requests">Pull Request</a>. It can be configured to use any document you'd like, including <b>CLA</b> and <b>DCO</b>. It can also handle cross repository signatures and works with <a href="https://github.com/enterprise">GitHub Enterprise</a> too.
+</p>
+
+<p align="center">
+  <img src="./assets/cla_signature.png">
+</p>
+
+## Getting Started 🚀
+
+### Workflow
+
+We recommend to create a dedicated workflow for this action. Indeed, there are many [events](https://help.github.com/en/articles/events-that-trigger-workflows) that trigger it and you should keep all of them.
+
+Add the following file to your repository in the workflows directory, for example `.github/workflows/request-signatures.yml`
 
 ```yml
-name: Contributor Assistant - Contributor License Agreement Signature
+name: Contributor Assistant - Signature Assistant
 
 on:
-  issues:
-    types: [labeled]
-  issue_comment:
-    types: [created]
-  pull_request_target:
-    types: [opened,synchronize,closed,reopened,labeled,unlabeled]
+  issues: # Signature tracking
+    types: [labeled] 
+  issue_comment: # Re-trigger the action
+    types: [created] 
+  pull_request_target: # Pull Request updates
+    types: [opened,synchronize,closed,reopened,labeled,unlabeled] 
 
 jobs:
   signature_assistant:
     runs-on: ubuntu-latest
     steps:
-      - name: "Signature Assistant"
-        if : github.event.label.name == 'signature form' || github.event.comment.body == 'recheck' || github.event.issue.pull_request || github.event_name == 'pull_request_target'
-        uses: oganexon/CLA-experiments/actions/signatures@main
+      - name: Signature Assistant ✍️
+        if : github.event.label.name == 'signature form' || github.event.comment.body == 'recheck' || github.event.issue.pull_request || github.event_name == 'pull_request_target' # various conditions to limit the triggering of the action
+        uses: cla-assistant/contributor-assistant/actions/signatures@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details below.
         with:
-          form-path: 'signatures.yml'
+          form-path: 'signature-form.yml' # The document committers will see when they sign.
 ```
 
-| input                            | description                                                                                                                                                                                             | default value                                                                                                                                                                                     |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `signature-path`                 | The path where the signatures will be stored.                                                                                                                                                           | `".github/contributor-assistant/signatures.json"`                                                                                                                                                 |
-| `signature-branch`               | The branch where the signatures will be stored.                                                                                                                                                         | *default branch*                                                                                                                                                                                  |
-| `signature-remote-repo`          | The name of another repository to store the signatures.                                                                                                                                                 | *none*                                                                                                                                                                                            |
-| `signature-remote-owner`         | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.                                                                                            | *none*                                                                                                                                                                                            |
-| `re-run-path`                    | The path where the re-run cache will be stored.                                                                                                                                                         | `".github/contributor-assistant/signatures-re-run.json"`                                                                                                                                          |
-| `re-run-branch`                  | The branch where the re-run cache will be stored.                                                                                                                                                       | *default branch*                                                                                                                                                                                  |
-| `form-path`                      | The document which shall be signed by the contributor(s). Must be an issue form (yml file).                                                                                                             | **required**                                                                                                                                                                                      |
-| `ignore-list`                    | A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. The separator between the patterns is a comma.                               | `""`                                                                                                                                                                                              |
-| `prevent-signature-invalidation` | Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. Default to false. | `false`                                                                                                                                                                                           |
-| `re-trigger`                     | The keyword to re-trigger signature checks.                                                                                                                                                             | `"recheck"`                                                                                                                                                                                       |
-| `all-signed-comment`             | The posted comment when each committer has signed the document.                                                                                                                                         | `"All contributors have signed the CLA  ✍️ ✅"`                                                                                                                                                     |
-| `comment-header`                 | Usually a message thanking the committers and asking them to sign the document. Variable: `${you}`: "you" when only there's only one committer, "you all" otherwise                                     | `"Thank you for your submission, we appreciate it. Like many open-source projects, we ask that ${you} sign our **Contributor License Agreement** before we can accept your contribution."` |
-| `signed-label`                   | A label that will be applied once all committers have signed the document                                                                                                                               | *none*                                                                                                                                                                                            |
-| `unsigned-label`                 | A label that will be applied until all committers have signed the document                                                                                                                              | *none*                                                                                                                                                                                            |
-| `ignore-label`                   | Add this label to skip the signature checks                                                                                                                                                             | *none*                                                                                                                                                                                            |
-| `form-label`                     | The label used to find the document form.                                                                                                                                                               | `"signature form"`                                                                                                                                                                                |
+If you would like to change the triggering conditions, please refer to the customization section.
 
-More customization available in the config file.
+It's recommended that you use [Dependabot](https://dependabot.com/github-actions/) to keep your workflow up-to-date. You can find the latest tagged version on the [GitHub Marketplace](https://github.com/marketplace/actions/contributor-assistant) or on the [releases page](https://github.com/cla-assistant/contributor-assistant/releases).
+
+### Signature form
+
+If you do not add a form to your repository, a new one will be generated automatically from a [template](./examples/template.yml). But it is advisable to create one manually, because you will probably want to [modify it]() to suit your needs.
+
+<details><summary>You can view a full example of this here.</summary>
+<p>
+
+```yml
+name: Contributor Document
+description: Sign the Contributor Document
+title: "Document Signature"
+labels: ["signature form"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      # Contributor Document
+
+      This document defines the basics on how people can cooperate with me in general.
+
+      ## Open Source
+
+      I'm a fan of Open Source Software as it accelerates the overall progress in my opinion.  
+      If you contribute to one of my repositories this means that you do not have any monetary / licensing or whatever claims out of those contributions. 
+      I claim the right to use whatever license I want for my repositories (e.g. GNU AGPL...).
+
+      ## Freedom
+
+      I claim the right to change my repositories in whatever way I like as time goes by. If a contributor wants to develop things into a different direction than I, the corresponding contributor can do this in his own repository. 
+
+      ## Fairness
+
+      Each contributor should have the best of intentions when it comes to fairness and mutual support.
+- type: checkboxes
+  id: signature
+  attributes:
+    label: Signature
+    options:
+    - label: I have read the Contributor Document and I hereby sign this document.
+      required: true
+  validations:
+    required: true
+```
+
+</p>
+</details>
+
+❗ [Creating a label](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels#creating-a-label) for this form is also very important. It will be used to detect new signatures, by default this label is `signature form`. You can change it in the inputs.
+
+## Use as a Deno Module 📦
+
+If you'd like to use the functionality provided by this action in your own action you can import it from github.
+
+```ts
+import signatureCheck from "https://raw.githubusercontent.com/cla-assistant/contributor-assistant/main/src/signature-functions/mod.ts";
+// Or
+import signatureCheck from "https://denopkg.com/cla-assistant/contributor-assistant/src/signature-functions/mod.ts";
+```
+
+Calling the functions directly will require you to pass in an object containing the variables found in the configuration section.
+
+```ts
+await signatureCheck({
+  storage: {
+    form: "signature-form.yml",
+  },
+  ignoreList: ["bot*"],
+  labels: {
+    form: "signature form",
+  },
+});
+```
+
+For more information regarding the [action interface please click here](https://github.com/cla-assistant/contributor-assistant/blob/main/src/signature-functions/options.ts).
+
+## Configuration 📁
+
+The `with` portion of the workflow **must** be configured before the action will work. You can add these in the `with` section found in the examples above. Any `secrets` must be referenced using the bracket syntax and stored in the GitHub repository's `Settings/Secrets` menu. You can learn more about setting environment variables with GitHub actions [here](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets).
+
+#### Required Setup
+
+The following options must be configured in order to check for signatures.
+
+| Key                     | Value Information                                                                                                                                                                                                                                                                                                                      | Type            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| `GITHUB_TOKEN`          | GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}.                                                                                                                                                                | `env` or `with` |
+| `PERSONAL_ACCESS_TOKEN` | A token you have generated that will be used to access the GitHub API (re-run endpoint and remote repositories). You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}. | `env` or `with` | `with` | **Yes** |
+| `form-path`             | The document which shall be signed by the contributor(s). Must be an issue form (yml file)                                                                                                                                                                                                                                             | `with`          |
+
+#### Optional Setup
+
+All of these parameters go into the `with` part.
+
+| Key                              | Value Information                                                                                                                                                                                       | Default value                                                                                                                                                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `signature-path`                 | The path where the signatures will be stored.                                                                                                                                                           | `".github/contributor-assistant/signatures.json"`                                                                                                                                       |
+| `signature-branch`               | The branch where the signatures will be stored.                                                                                                                                                         | *default branch*                                                                                                                                                                        |
+| `signature-remote-repo`          | The name of another repository to store the signatures.                                                                                                                                                 | *none*                                                                                                                                                                                  |
+| `signature-remote-owner`         | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.                                                                                            | *none*                                                                                                                                                                                  |
+| `re-run-path`                    | The path where the re-run cache will be stored.                                                                                                                                                         | `".github/contributor-assistant/signatures-re-run.json"`                                                                                                                                |
+| `re-run-branch`                  | The branch where the re-run cache will be stored.                                                                                                                                                       | *default branch*                                                                                                                                                                        |
+| `ignore-list`                    | A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. The separator between the patterns is a comma.                               | `""`                                                                                                                                                                                    |
+| `prevent-signature-invalidation` | Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. Default to false. | `false`                                                                                                                                                                                 |
+| `re-trigger`                     | The keyword to re-trigger signature checks.                                                                                                                                                             | `"recheck"`                                                                                                                                                                             |
+| `all-signed-comment`             | The posted comment when each committer has signed the document.                                                                                                                                         | `"All contributors have signed the CLA  ✍️ ✅"`                                                                                                                                           |
+| `comment-header`                 | Usually a message thanking the committers and asking them to sign the document.                                                                                                                         | `"Thank you for your submission, we appreciate it. Like many open-source projects, we ask that you sign our **Contributor License Agreement** before we can accept your contribution."` |
+| `signed-label`                   | A label that will be applied once all committers have signed the document                                                                                                                               | *none*                                                                                                                                                                                  |
+| `unsigned-label`                 | A label that will be applied until all committers have signed the document                                                                                                                              | *none*                                                                                                                                                                                  |
+| `ignore-label`                   | Add this label to skip the signature checks                                                                                                                                                             | *none*                                                                                                                                                                                  |
+| `form-label`                     | The label used to find the document form.                                                                                                                                                               |
+
+---
+
+## Upcoming features ✨
+
+ - Enhanced ignore list patterns
+ - Repository role pattern: ADMIN, CONTRIBUTOR, etc.
+ - Config file
+ - Signature status (env export) in the action
 
 ## License
 
@@ -72,9 +205,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-
-Credits
-=======
+## Credits
 
 <p align="center">
     <img src="../../assets/sap.png" title="SAP" />
