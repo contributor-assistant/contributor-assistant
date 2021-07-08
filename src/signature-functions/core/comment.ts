@@ -44,7 +44,8 @@ export async function uncommentPR() {
 
 const title = "## Contributor Assistant | Signatures";
 // const logo = '<div><img src="https://raw.githubusercontent.com/cla-assistant/contributor-assistant/main/actions/signatures/assets/logo.svg" align="right" alt="Signatures logo" width="64"></div>'
-const logo = '<div><img src="https://raw.githubusercontent.com/oganexon/CLA-experiments/main/actions/signatures/assets/logo.svg" align="right" alt="Signatures logo" width="64"></div>'
+const logo =
+  '<div><img src="https://raw.githubusercontent.com/oganexon/CLA-experiments/main/actions/signatures/assets/logo.svg" align="right" alt="Signatures logo" width="64"></div>';
 export const head = `${commentAnchor}\n\n${logo}\n\n${title}\n`;
 
 async function createBody(
