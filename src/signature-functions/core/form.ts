@@ -39,7 +39,7 @@ export async function readForm(): Promise<github.RawContent> {
       const template = await github.getFile(octokit, {
         owner: "cla-assistant",
         repo: "contributor-assistant",
-        path: "actions/signatures/examples/simple.yml",
+        path: "actions/signatures/examples/template.yml",
       });
       const [content] = await Promise.all([
         github.createOrUpdateFile(octokit, {

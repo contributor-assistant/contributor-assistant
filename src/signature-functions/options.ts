@@ -34,9 +34,7 @@ export interface Options {
     comment?: {
       /** When each committer has signed the document. */
       allSigned?: string;
-      /** Usually a message thanking the committers and asking them to sign the document.
-      #### Variables:
-       - `${you}`: "you" when only there's only one committer, "you all" otherwise */
+      /** Usually a message thanking the committers and asking them to sign the document. */
       header?: string;
       /** A quick summary about the number of committers who signed.
       #### Variables:
@@ -94,7 +92,7 @@ export function setupOptions(opts: Options) {
   }
   if (opts.personalAccessToken === "") {
     action.fail(
-      `Missing personal access token (https://github.com/settings/tokens/new) with "repo" scope. Then add it as a secret named "PERSONAL_ACCESS_TOKEN" (https://github.com/settings/secrets/actions/new).`,
+      `Missing personal access token (https://github.com/settings/tokens/new) with "repo" scope. Add it as a secret named "PERSONAL_ACCESS_TOKEN" (https://github.com/settings/secrets/actions/new).`,
     );
   }
   if (opts.storage.form === "") {
@@ -131,7 +129,7 @@ export function setupOptions(opts: Options) {
     comment: {
       allSigned: "All contributors have signed the CLA  ✍️ ✅",
       header:
-        "Thank you for your submission, we appreciate it. Like many open-source projects, we ask ${you} to sign our **Contributor License Agreement** before we can accept your contribution.",
+        "Thank you for your submission, we appreciate it. Like many open-source projects, we ask you to sign our **Contributor License Agreement** before we can accept your contribution.",
       summary:
         "**${signed}** out of **${total}** committers have signed the document.",
       unknownWarning:

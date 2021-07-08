@@ -89,9 +89,7 @@ async function createBody(
   }
 
   const committerCount = status.signed.length + status.unsigned.length;
-  body += `${
-    text.header.replace("${you}", committerCount > 1 ? "you all" : "you")
-  }\n\n`;
+  body += `${text.header}\n\n`;
 
   const preFilled = githubKeys.length > 0 && committerCount > 1;
 

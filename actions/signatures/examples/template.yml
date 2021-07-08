@@ -1,0 +1,34 @@
+name: Contributor Document
+description: Sign the Contributor Document
+title: "Document Signature"
+labels: ["signature form"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      # Contributor Document
+
+      This document defines the basics on how people can cooperate with me in general.
+
+      ## Open Source
+
+      I'm a fan of Open Source Software as it accelerates the overall progress in my opinion.  
+      If you contribute to one of my repositories this means that you do not have any monetary / licensing or whatever claims out of those contributions. 
+      I claim the right to use whatever license I want for my repositories (e.g. GNU AGPL...).
+
+      ## Freedom
+
+      I claim the right to change my repositories in whatever way I like as time goes by. If a contributor wants to develop things into a different direction than I, the corresponding contributor can do this in his own repository. 
+
+      ## Fairness
+
+      Each contributor should have the best of intentions when it comes to fairness and mutual support.
+- type: checkboxes
+  id: signature
+  attributes:
+    label: Signature
+    options:
+    - label: I have read the Contributor Document and I hereby sign this document.
+      required: true
+  validations:
+    required: true

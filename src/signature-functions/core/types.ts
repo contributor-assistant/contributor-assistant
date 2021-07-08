@@ -13,7 +13,9 @@ export interface SignatureStatus {
 
 export interface AuthorSignature {
   user: User;
-  issue: number;
+  // "owner/repo/issue"
+  issue: string;
+  // JSON format
   date: string;
   fields: unknown[];
 }
