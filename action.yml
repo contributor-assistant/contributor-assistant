@@ -1,0 +1,14 @@
+name: Contributor assistant
+description: A collection of tools to improve contribution in the opensource world
+author: SAP
+branding:
+  icon: users
+  color: blue
+
+runs:
+  using: composite
+  steps:
+    - run: |
+        >&2 echo 'This action should not be used as it is, please include a subfolder like "cla-assistant/contributor-assistant/actions/signatures" instead of "cla-assistant/contributor-assistant".'
+        false
+      shell: bash
