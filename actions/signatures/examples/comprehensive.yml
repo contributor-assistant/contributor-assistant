@@ -39,7 +39,7 @@ body:
   validations:
     required: true
 - type: checkboxes
-  id: signature
+  id: signature # required
   attributes:
     label: Signature
     description: Like many open-source projects, we ask that you to sign our Contributor License Agreement before we can accept your contribution.

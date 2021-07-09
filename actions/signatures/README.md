@@ -27,7 +27,7 @@
 </p>
 
 <p align="center">
-  <img src="./assets/cla_signature.png">
+  <img src="./assets/cla_signature.png" alt="Signature checkbox">
 </p>
 
 ## Getting Started 🚀
@@ -101,7 +101,7 @@ body:
 
       Each contributor should have the best of intentions when it comes to fairness and mutual support.
 - type: checkboxes
-  id: signature
+  id: signature # required
   attributes:
     label: Signature
     options:
@@ -175,15 +175,146 @@ All of these parameters go into the `with` part.
 | `comment-header`                 | Usually a message thanking the committers and asking them to sign the document.                                                                                                                         | `"Thank you for your submission, we appreciate it. Like many open-source projects, we ask that you sign our **Contributor License Agreement** before we can accept your contribution."` |
 | `signed-label`                   | A label that will be applied once all committers have signed the document                                                                                                                               | *none*                                                                                                                                                                                  |
 | `unsigned-label`                 | A label that will be applied until all committers have signed the document                                                                                                                              | *none*                                                                                                                                                                                  |
-| `ignore-label`                   | Add this label to skip the signature checks                                                                                                                                                             | *none*                                                                                                                                                                                  |
-| `form-label`                     | The label used to find the document form.                                                                                                                                                               |
+| `ignore-label`                   | Add this label to skip the signature checks.                                                                                                                                                            | *none*                                                                                                                                                                                  |
+| `form-label`                     | The label used to find the document form.                                                                                                                                                               | `"signature form"`                                                                                                                                                                      |
 
----
+### Custom Fields
+
+<p align="center">
+  <img src="./assets/custom_fields.png" alt="Comprehensive form">
+</p>
+
+If you need to collect detailed information about your contributors you can add so called "custom fields" to your form. You can use any input type defined by [GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema): markdown, textarea, input, dropdown, checkboxes.
+
+<details><summary>You can view a full example of this here.</summary>
+<p>
+
+```yml
+name: Contributor License Agreement
+description: Sign the Contributor License Agreement
+title: "CLA Signature"
+labels: ["signature form"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      Thank you for your submission, we appreciate it.
+      Please read our [Contributor License Agreement](https://github.com/cla-assistant/github-action/blob/master/SAPCLA.md).
+- type: input
+  id: name
+  attributes:
+    label: Full Name
+    placeholder: ex. John Doe
+  validations:
+    required: false
+- type: input
+  id: email
+  attributes:
+    label: Email
+    description: How can we get in touch with you if we need more info?
+    placeholder: ex. email@example.com
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: Age
+    description: Age in years
+    placeholder: "ex. 21"
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Additional information
+    description: Also tell us, do you have anything to share with us?
+    placeholder: I love open-source software
+    value: "Everything's good"
+  validations:
+    required: true
+- type: checkboxes
+  id: signature # required
+  attributes:
+    label: Signature
+    description: Like many open-source projects, we ask that you to sign our Contributor License Agreement before we can accept your contribution.
+    options:
+    - label: I have read the CLA Document and I hereby sign the CLA
+      required: true
+- type: dropdown
+  attributes:
+    label: How do you sign ?
+    description: On whose behalf do you sign?
+    options:
+    - I am signing on behalf of myself.
+    - I am signing on behalf of my employer.
+  validations:
+    required: true
+```
+
+</p>
+</details>
+
+
+The `signature` id field is mandatory in order to validate the signature. Currently only the `checkbox` type is supported, with a single box.
+
+```yml
+- type: checkboxes
+  id: signature # required
+  attributes:
+    label: Signature
+    options:
+    - label: I have read the Contributor Document and I hereby sign this document.
+      required: true
+```
+
+You can also define which of required information can be taken from user's GitHub account. In that case Signature Assistant pre-fills the form with GitHub data (**Note**: only works with generated links in a PR). The possible values for the `id` fields can be found in the [GitHub-Api description](https://github.com/github/rest-api-description/blob/main/descriptions/api.github.com/api.github.com.json) (`"public-user" key`).
+
+Example:
+
+```yml
+- type: input
+  id: email # Automatically pre-fills with user's email
+  attributes:
+    label: Email
+    description: How can we get in touch with you if we need more info?
+    placeholder: ex. email@example.com
+  validations:
+    required: true
+```
+
+## FAQ ❓
+
+### What should my Contributor License Agreement say?
+
+We're no lawyers, but we can suggest using http://contributoragreements.org/ for a fill-in-the-blank approach to creating a CLA tailored to your needs.
+
+### I need to request more information from the signer
+
+You can [add more fields in your form](#custom-fields).
+
+### I have entered incorrect information when I signed / I need to update my signature
+
+You just have to re-sign by opening a new issue. Your old signature will be preserved, as it is still associated with your previous contributions. The new signature is now valid.
+
+### My signature has not been taken into account
+
+It is likely that you signed at the same time as someone else, and a conflict may have arisen. In this case, comment `recheck` in the Pull Request or the related issue. If that doesn't solve the problem, please report the issue.
+
+### How can I share signatures between several repositories ?
+
+Using the inputs `signature-remote-repo` and `signature-remote-owner`, you can choose where to store your signatures. If several repositories point to the same file then their signatures will be shared.
+
+### What happens if I change the form ?
+
+By default the signatures are invalidated. If this is not the behavior you are looking for, you can set `prevent-signature-invalidation` to `true`.
+
+
+<!-- ### How can I contribute?
+
+You want to contribute to Contributor Assistant? Welcome! Please read [here](./CONTRIBUTING.md). -->
 
 ## Upcoming features ✨
 
  - Enhanced ignore list patterns
- - Repository role pattern: ADMIN, CONTRIBUTOR, etc.
+ - Repository role pattern: ADMIN, CONTRIBUTOR, BOT, etc.
  - Config file
  - Signature status (env export) in the action
 
@@ -209,4 +340,4 @@ limitations under the License.
 
 <p align="center">
     <img src="../../assets/sap.png" title="SAP" />
-<p align="center">
+</p>
