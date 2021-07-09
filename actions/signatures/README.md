@@ -306,6 +306,11 @@ Using the inputs `signature-remote-repo` and `signature-remote-owner`, you can c
 
 By default the signatures are invalidated. If this is not the behavior you are looking for, you can set `prevent-signature-invalidation` to `true`.
 
+### How do I migrate old signatures from the [CLA Assistant Lite](https://github.com/cla-assistant/github-action) or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?
+
+The easiest way is to go to the conversion web page and drag'n'drop your json files. (⚠ Work in Progress)
+
+We also provide you with [scripts](../../src/signature-functions/compatibility) to convert json files into the new format.
 
 <!-- ### How can I contribute?
 

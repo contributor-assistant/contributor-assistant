@@ -22,9 +22,9 @@
 
 ## Features ✨
 
-### [Signatures](./actions/signatures/README.md)
+### [Signatures](./actions/signatures)
 
-This <a href="./actions/signatures/README.md">GitHub Action</a> will automatically check for committer signatures when submitting a <a href="https://docs.github.com/en/github/collaborating-with-pull-requests">Pull Request</a>. It can be configured to use any document you'd like, including <b>CLA</b> and <b>DCO</b>. It can also handle cross repository signatures and works with <a href="https://github.com/enterprise">GitHub Enterprise</a> too.
+This <a href="./actions/signatures">GitHub Action</a> will automatically check for committer signatures when submitting a <a href="https://docs.github.com/en/github/collaborating-with-pull-requests">Pull Request</a>. It can be configured to use any document you'd like, including <b>CLA</b> and <b>DCO</b>. It can also handle cross repository signatures and works with <a href="https://github.com/enterprise">GitHub Enterprise</a> too.
 
 ### Rewards
 
