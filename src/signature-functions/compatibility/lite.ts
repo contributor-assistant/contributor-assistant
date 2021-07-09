@@ -55,13 +55,19 @@ if (Deno && import.meta.main) {
     const form = flags.form
       ? parseYaml(await Deno.readTextFile(flags.form)) as Form
       : undefined;
-    const output = convert(input, form);
+    const output = convert(input, undefined, form);
     await Deno.writeTextFile(flags.output, JSON.stringify(output));
   }
 }
 
+export interface Repository {
+  owner: string;
+  repo: string;
+}
+
 export function convert(
   outdated: OutdatedStorage,
+  repository: Repository = { owner: "", repo: "" },
   form?: Form,
 ): SignatureStorage {
   // deep copy
@@ -80,11 +86,12 @@ export function convert(
   }
 
   for (const signature of outdated.signedContributors) {
-    signatures.data.signatures.push({
+    signatures.data.current.signatures.push({
       user: {
         databaseId: signature.id,
         login: signature.name,
       },
+      ...repository,
       issue: 0,
       date: signature.created_at ?? new Date().toJSON(),
       fields,
