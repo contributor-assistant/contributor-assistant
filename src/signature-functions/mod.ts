@@ -39,8 +39,8 @@ export default async function main(rawOptions: Options) {
     }
   } catch (error) {
     action.error("An unexpected error occurred.");
-    action.debug(String(error.stack));
-    action.error(String(error.message));
+    action.debug(`${error.stack}`);
+    action.error(`${error.message}`);
     action.info(
       "If you think this is a bug, please open a bug report at https://github.com/cla-assistant/contributor-assistant/issues/new/choose",
     );

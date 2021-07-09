@@ -13,8 +13,10 @@ export interface SignatureStatus {
 
 export interface AuthorSignature {
   user: User;
-  // "owner/repo/issue"
-  issue: string;
+  // Helpful to find the origin of the signature when they are shared with other repos
+  owner: string;
+  repo: string;
+  issue: number;
   // JSON format
   date: string;
   fields: unknown[];

@@ -131,7 +131,9 @@ export async function processForm() {
       databaseId,
       login: context.payload.issue!.user.login,
     },
-    issue: `${context.repo.owner}/${context.repo.repo}/${context.issue.number}`,
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    issue: context.issue.number,
     date: new Date().toJSON(),
     fields,
   });
