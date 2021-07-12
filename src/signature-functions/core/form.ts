@@ -8,11 +8,8 @@ import {
 } from "../../utils.ts";
 import { marked, parseYaml, Sha256 } from "../../deps.ts";
 import { readReRunStorage } from "./re_run.ts";
-import {
-  defaultSignatureContent,
-  readSignatureStorage,
-  writeSignatureStorage,
-} from "./signatures.ts";
+import { readSignatureStorage, writeSignatureStorage } from "./signatures.ts";
+import { defaultSignatureContent } from "./default.ts";
 import { options } from "../options.ts";
 import { head, missingIssueComment } from "./comment.ts";
 import { createSignatureLabel } from "./labels.ts";

@@ -1,6 +1,6 @@
 import { action, context, github, json, storage } from "../../utils.ts";
 import { options } from "../options.ts";
-import { applicationType, storageVersion } from "../meta.ts";
+import { defaultSignatureContent } from "./default.ts";
 
 import type { SignatureStorage } from "./types.ts";
 import type { GitActor, SignatureData, SignatureStatus } from "./types.ts";
@@ -39,20 +39,6 @@ export function getSignatureStatus(
   }
   return status;
 }
-
-export const defaultSignatureContent: SignatureStorage = {
-  type: applicationType,
-  version: storageVersion,
-  data: {
-    current: {
-      formSHA: "",
-      form: { name: "", description: "", body: [] },
-      signatures: [],
-    },
-    previous: [],
-    invalidated: [],
-  },
-};
 
 export type SignatureContent = github.Content<SignatureStorage>;
 

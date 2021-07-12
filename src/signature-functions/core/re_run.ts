@@ -9,8 +9,8 @@ import {
   storage,
 } from "../../utils.ts";
 import { options } from "../options.ts";
+import { defaultReRunContent } from "./default.ts";
 import type { ReRunData, ReRunStorage, SignatureStatus } from "./types.ts";
-import { applicationType, storageVersion } from "../meta.ts";
 
 /** re-run only if
  * - "recheck" is in comments */
@@ -44,12 +44,6 @@ export async function reRun() {
     );
   }
 }
-
-export const defaultReRunContent: ReRunStorage = {
-  type: `${applicationType}/re-run`,
-  version: storageVersion,
-  data: [],
-};
 
 /** Clear re-run cache */
 export async function clearReRun() {

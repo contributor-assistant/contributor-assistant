@@ -63,7 +63,7 @@ jobs:
           form-path: 'signature-form.yml' # The document committers will see when they sign.
 ```
 
-If you would like to change the triggering conditions, please refer to the customization section.
+If you would like to change the triggering conditions, please refer to the [configuration section](#configuration-).
 
 It's recommended that you use [Dependabot](https://dependabot.com/github-actions/) to keep your workflow up-to-date. You can find the latest tagged version on the [GitHub Marketplace](https://github.com/marketplace/actions/contributor-assistant) or on the [releases page](https://github.com/cla-assistant/contributor-assistant/releases).
 
@@ -308,9 +308,9 @@ By default the signatures are invalidated. If this is not the behavior you are l
 
 ### How do I migrate old signatures from the [CLA Assistant Lite](https://github.com/cla-assistant/github-action) or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?
 
-The easiest way is to go to the conversion web page and drag'n'drop your json files. (⚠ Work in Progress)
+The easiest way is to go to the conversion web page and upload your signatures. (⚠ Work in Progress)
 
-We also provide you with [scripts](../../src/signature-functions/compatibility) to convert json files into the new format.
+We also provide you with [scripts](../../src/signature-functions/compatibility) to convert signatures into the new format.
 
 <!-- ### How can I contribute?
 

@@ -89,7 +89,7 @@ if (Deno && import.meta.main) {
   }
 }
 
-export async function convert(
+export default async function convert(
   outdated: OutdatedStorage,
   gistDocument?: string,
   gistMetadata?: OutdatedCustomFields,

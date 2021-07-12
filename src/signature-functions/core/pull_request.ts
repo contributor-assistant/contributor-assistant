@@ -1,8 +1,4 @@
-import {
-  defaultSignatureContent,
-  getSignatureStatus,
-  readSignatureStorage,
-} from "./signatures.ts";
+import { getSignatureStatus, readSignatureStorage } from "./signatures.ts";
 import { updateReRun } from "./re_run.ts";
 import { filterIgnored } from "./ignore_list.ts";
 import { getCommitters } from "./committers.ts";
@@ -10,6 +6,7 @@ import { commentPR } from "./comment.ts";
 import { updateLabels } from "./labels.ts";
 import { action, context, storage } from "../../utils.ts";
 import { options } from "../options.ts";
+import { defaultSignatureContent } from "./default.ts";
 import { readForm } from "./form.ts";
 
 /** Fetch committers, update signatures, notify the result in a PR comment */
