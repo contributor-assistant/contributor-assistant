@@ -16,14 +16,8 @@
                 />
             </a>
             <h1 class="navbar-item"><strong>Migration</strong></h1>
-        </div>
-
-        <div class="navbar-menu">
-            <div class="navbar-start">
-                <a class="navbar-item" href={'#'} on:click={() => mode = "lite"}> Lite </a>
-
-                <a class="navbar-item" href={'#'} on:click={() => mode = "classic"}> Classic </a>
-            </div>
+            <a class="navbar-item" href={'#'} on:click={() => mode = "lite"}> Lite </a>
+            <a class="navbar-item" href={'#'} on:click={() => mode = "classic"}> Classic </a>
         </div>
     </nav>
 </div>

@@ -19,8 +19,8 @@
   let signatureOutput: string;
 
   let errors = {
-    signatureInput: false,
-    formInput: false,
+    signature: false,
+    form: false,
   };
 
   async function startConversion() {
@@ -30,8 +30,8 @@
   }
 
   async function convert() {
-    errors.signatureInput = false;
-    errors.formInput = false;
+    errors.signature = false;
+    errors.form = false;
     const rawSignatures = await readTextFile(signatureInput);
 
     let signatures: OutdatedStorage;
@@ -40,7 +40,7 @@
     try {
       signatures = JSON.parse(rawSignatures);
     } catch {
-      errors.signatureInput = true;
+      errors.signature = true;
       return;
     }
 
@@ -49,7 +49,7 @@
       try {
         form = parseYaml(rawForm);
       } catch {
-        errors.formInput = true;
+        errors.form = true;
         return;
       }
     }
@@ -115,7 +115,7 @@
           accept="application/json"
         />
       </div>
-      {#if errors.signatureInput}
+      {#if errors.signature}
         <p class="help is-danger">This file does not contain valid JSON</p>
       {/if}
     </div>
@@ -133,7 +133,7 @@
       <div class="control">
         <Upload bind:file={formInput} control="form-input" accept=".yml,.yaml" />
       </div>
-      {#if errors.formInput}
+      {#if errors.form}
         <p class="help is-danger">This file does not contain valid YAML</p>
       {/if}
     </div>

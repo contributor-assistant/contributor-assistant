@@ -19,10 +19,11 @@
 <script lang="ts">
   export let download: string;
   export let content: string;
+  export let type = "text/plain";
 
   let href: string;
 
-  $: href = URL.createObjectURL(new Blob([content], { type: "text/plain" }));
+  $: href = URL.createObjectURL(new Blob([content], { type }));
 </script>
 
 <a {download} {href}>

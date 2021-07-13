@@ -1,18 +1,9 @@
-import { StringWriter } from "https://x.nest.land/std@0.100.0/io/writers.ts";
-import { defaultSignatureContent } from "../core/signatures.ts";
-import type { Form, SignatureStorage } from "../core/types.ts";
-import type { CustomField } from "../core/form.ts";
-import { octokit } from "../../utils.ts";
-import { parseFlags } from "../../deps.ts";
+import { defaultSignatureContent } from "../../core/default.ts";
+import type { Form, SignatureStorage } from "../../core/types.ts";
+import type { CustomField } from "../../core/form.ts";
+import type { OctokitConstructor } from "../../../utils/octokit.ts";
 
-/** Usage
- *
- * deno run --allow-read --allow-write classic.ts - < input.json > out.json
- *
- * deno run -allow-read --allow-write classic.ts -i input.json -c cla.md -m metadata.json -o signatures.json -f .form.yml
-*/
-
-interface OutdatedSignature {
+export interface OutdatedSignature {
   "user_name": string;
   "repo_owner": string;
   "repo_name": string;
@@ -23,9 +14,9 @@ interface OutdatedSignature {
   "org_cla": boolean;
   [key: string]: unknown;
 }
-type OutdatedStorage = OutdatedSignature[];
+export type OutdatedStorage = OutdatedSignature[];
 
-interface OutdatedCustomField {
+export interface OutdatedCustomField {
   title?: string;
   type: "hidden" | "string" | "textarea" | "number" | "boolean" | {
     enum: string[];
@@ -36,64 +27,26 @@ interface OutdatedCustomField {
   minimum?: number;
   githubKey?: string;
 }
-type OutdatedCustomFields = Record<string, OutdatedCustomField>;
+export type OutdatedCustomFields = Record<string, OutdatedCustomField>;
 
-interface FetchError {
+export interface FetchError {
   username: string;
   // deno-lint-ignore no-explicit-any
   reason: any;
 }
 
-if (Deno && import.meta.main) {
-  const flags = parseFlags(Deno.args, {
-    alias: {
-      input: "i",
-      cla: "c",
-      metadata: "m",
-      form: "f",
-      output: "o",
-    },
-    string: [
-      "input",
-      "output",
-      "cla",
-      "form",
-      "metadata",
-    ],
-  });
-  // stdin
-  if (flags._.includes("-")) {
-    const buffer = new StringWriter();
-    await Deno.copy(Deno.stdin, buffer);
-    const outdated: OutdatedStorage = JSON.parse(buffer.toString());
-    const output = await convert(outdated);
-    console.log(JSON.stringify(output.signatures));
-  } else {
-    if (!flags.input || !flags.output) {
-      console.error("no --input or --output");
-      Deno.exit(1);
-    }
-    const input = JSON.parse(await Deno.readTextFile(flags.input));
-    const metadata = flags.metadata
-      ? JSON.parse(await Deno.readTextFile(flags.input))
-      : undefined;
-    const cla = flags.cla ? await Deno.readTextFile(flags.cla) : undefined;
-    const output = await convert(input, cla, metadata);
-    await Deno.writeTextFile(flags.output, JSON.stringify(output.signatures));
-    if (flags.form) {
-      await Deno.writeTextFile(flags.form, JSON.stringify(output.form));
-    }
-    if (output.errors.length > 0) {
-      console.error(`Errors: ${output.errors}`);
-    }
-  }
+export interface Output {
+  signatures: SignatureStorage;
+  form: Form;
+  errors: FetchError[];
 }
 
 export default async function convert(
+  octokit: OctokitConstructor,
   outdated: OutdatedStorage,
   gistDocument?: string,
   gistMetadata?: OutdatedCustomFields,
-): Promise<{ signatures: SignatureStorage; form: Form; errors: FetchError[] }> {
+): Promise<Output> {
   // deep copy
   const signatures: SignatureStorage = JSON.parse(
     JSON.stringify(defaultSignatureContent),
@@ -111,7 +64,7 @@ export default async function convert(
     type: "markdown",
     attributes: {
       value: gistDocument ??
-        "Thank you for your submission, we appreciate it.\n Please read our Contributor License Agreement.",
+        "Thank you for your submission, we appreciate it.\nPlease read our Contributor License Agreement.",
     },
   });
 

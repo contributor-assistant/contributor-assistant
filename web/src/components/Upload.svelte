@@ -1,6 +1,6 @@
 <script lang="ts">
   let files: FileList;
-  export let file: File;
+  export let file: File = undefined;
   export let control: string
   export let accept: string
 
