@@ -1,15 +1,29 @@
-import { action, context, github, json, storage } from "../../utils.ts";
+import {
+  action,
+  context,
+  github,
+  json,
+  personalOctokit,
+  storage,
+} from "../../utils.ts";
 import { options } from "../options.ts";
 import { defaultSignatureContent } from "./default.ts";
+import { filterUsersQuery } from "./graphql.ts";
 
+import type { FilterUsersResponse } from "./graphql.ts";
 import type { SignatureStorage } from "./types.ts";
-import type { GitActor, SignatureData, SignatureStatus } from "./types.ts";
+import type {
+  GitActor,
+  SignatureData,
+  SignatureStatus,
+  User,
+} from "./types.ts";
 
 /** Filter committers with their signature status */
-export function getSignatureStatus(
+export async function getSignatureStatus(
   authors: GitActor[],
   data: SignatureData,
-): SignatureStatus {
+): Promise<SignatureStatus> {
   const status: SignatureStatus = {
     signed: [],
     unsigned: [],
@@ -31,12 +45,21 @@ export function getSignatureStatus(
           ));
 
       if (signed) {
-        status.signed.push(author);
+        status.signed.push(author.user);
       } else {
-        status.unsigned.push(author);
+        status.unsigned.push(author.user);
       }
     }
   }
+
+  // Remove bots
+  const users: FilterUsersResponse = await personalOctokit.graphql(
+    filterUsersQuery,
+    { ids: status.unsigned.map((user) => user.id) },
+  );
+
+  status.unsigned = users.nodes.filter((actor) => "id" in actor) as User[];
+
   return status;
 }
 

@@ -3,7 +3,15 @@ import { gql } from "../../utils.ts";
 export interface User {
   databaseId: number;
   login: string;
+  id: string;
 }
+
+const userFragment = gql`
+fragment user on User {
+  databaseId
+  login
+  id
+}`;
 
 export interface GitActor {
   name: string;
@@ -28,8 +36,7 @@ fragment authors on Commit {
       name
       email
       user {
-        databaseId
-        login
+      ...user
       }
     }
     pageInfo {
@@ -37,7 +44,8 @@ fragment authors on Commit {
       hasNextPage
     }
   }
-}`;
+}
+${userFragment}`;
 
 export interface AuthorsResponse {
   repository: {
@@ -113,3 +121,20 @@ query getCoAuthors($owner: String!, $name: String!, $number: Int!, $commitCursor
   }
 }
 ${authorsFragment}`;
+
+export interface FilterUsersResponse {
+  // https://github.com/denoland/deno_lint/issues/774
+  nodes: (User | { _: unknown })[];
+}
+
+/** Need to perform another query to distinguish between bots and users
+  https://github.community/t/gitactor-user-should-be-type-actor-not-user-cannot-distinguish-between-bots-users-otherwise/14559/2 */
+export const filterUsersQuery = gql`
+query filterUsers($ids: [ID!]!) {
+  nodes(ids: $ids) {
+    ... on User {
+      ...user
+    }
+  }
+}
+${userFragment}`;

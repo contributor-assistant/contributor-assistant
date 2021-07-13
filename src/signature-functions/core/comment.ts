@@ -10,7 +10,7 @@ import { applicationType } from "../meta.ts";
 import { options } from "../options.ts";
 import { parseYaml } from "../../deps.ts";
 import { extractIDs } from "./form.ts";
-import type { Form, GitActor } from "./types.ts";
+import type { Form, User } from "./types.ts";
 
 const commentAnchor = generateCommentAnchor(applicationType);
 
@@ -67,14 +67,14 @@ async function createBody(
   url.searchParams.append("labels", labels?.join(",") ?? options.labels.form);
 
   const githubKeys = extractIDs(form);
-  const unsigned: { committer: GitActor; url: URL }[] = status.unsigned
+  const unsigned: { committer: User; url: URL }[] = status.unsigned
     .map((committer) => ({ committer, url: new URL(url.href) }));
 
   if (githubKeys.length > 0) {
     const userInfo = await Promise.all(
       unsigned.map(({ committer }) =>
         octokit.rest.users.getByUsername({
-          username: committer.user!.login,
+          username: committer.login,
         })
       ),
     );
@@ -99,7 +99,7 @@ async function createBody(
     (committerCount === 1 && status.unsigned.length === 1 || !preFilled)
   ) {
     body += `✍️ Please sign [here](${unsigned[0].url.href}) ${
-      committerCount === 1 ? `@${status.unsigned[0].user!.login}` : ""
+      committerCount === 1 ? `@${status.unsigned[0].login}` : ""
     } |
     --------------------------------------------------------|\n\n`;
   }
@@ -109,10 +109,10 @@ async function createBody(
     `.replace("${signed}", status.signed.length.toString())
       .replace("${total}", committerCount.toString());
     for (const committer of status.signed) {
-      body += `:white_check_mark: **${committer.user!.login}**\n`;
+      body += `:white_check_mark: **${committer.login}**\n`;
     }
     for (const { committer, url } of unsigned) {
-      body += `:x: @${committer.user!.login} ${
+      body += `:x: @${committer.login} ${
         preFilled ? `please sign [here](${url.href})` : ""
       } \n`;
     }

@@ -6,8 +6,8 @@ export type { GitActor, User };
 /* --- Signatures --- */
 
 export interface SignatureStatus {
-  signed: GitActor[];
-  unsigned: GitActor[];
+  signed: User[];
+  unsigned: User[];
   unknown: GitActor[];
 }
 
