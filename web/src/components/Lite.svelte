@@ -131,7 +131,11 @@
   <div class="field-body">
     <div class="field">
       <div class="control">
-        <Upload bind:file={formInput} control="form-input" accept=".yml,.yaml" />
+        <Upload
+          bind:file={formInput}
+          control="form-input"
+          accept=".yml,.yaml"
+        />
       </div>
       {#if errors.form}
         <p class="help is-danger">This file does not contain valid YAML</p>

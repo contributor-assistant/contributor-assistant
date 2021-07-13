@@ -3,6 +3,7 @@
   import Upload from "./Upload.svelte";
   import Save, { readTextFile } from "./File.svelte";
   import convertClassic from "../../../src/signature-functions/compatibility/classic/mod";
+  // https://github.com/octokit/octokit.js/issues/2126
   import { Octokit as Core } from "https://cdn.skypack.dev/@octokit/core@3.4.0";
   import { restEndpointMethods } from "https://cdn.skypack.dev/@octokit/plugin-rest-endpoint-methods@5.3.1";
   import { paginateRest } from "https://cdn.skypack.dev/@octokit/plugin-paginate-rest@2.13.3";
@@ -80,45 +81,11 @@
 
 <h1 class="title">CLA Assistant Classic</h1>
 <h2 class="subtitle">
-  If you have added <a
-    href="https://github.com/cla-assistant/contributor-assistant/tree/main/actions/signatures#custom-fields"
-    >custom fields</a
-  >
-  to your form, it is <strong>recommended</strong> that you upload it as well to
-  properly format the signatures.
+  You can download your signatures on
+  <a href="https://cla-assistant.io/">cla-assistant.io</a>
+  by clicking on the number of contributors, then select
+  <strong>Export as JSON</strong>.
 </h2>
-
-<!-- <div class="field is-horizontal">
-  <div class="field-label is-normal" />
-  <div class="field-body">
-    <div class="field is-narrow">
-      <p class="control has-icons-left">
-        <input
-          class="input"
-          type="text"
-          placeholder="Owner"
-          bind:value={owner}
-        />
-        <span class="icon is-small is-left">
-          <i class="fas fa-user" />
-        </span>
-      </p>
-    </div>
-    <div class="field is-narrow">
-      <p class="control has-icons-left has-icons-right">
-        <input
-          class="input"
-          type="text"
-          placeholder="Repository"
-          bind:value={repo}
-        />
-        <span class="icon is-small is-left">
-          <i class="fas fa-bookmark" />
-        </span>
-      </p>
-    </div>
-  </div>
-</div> -->
 
 <div class="field is-horizontal">
   <div class="field-label is-normal">
@@ -142,8 +109,8 @@
 
 <div class="field is-horizontal">
   <div class="field-label is-normal">
-    <label class="label" for="form-input"
-      >Gist Document <span class="tag is-info is-light">Optional</span></label
+    <label class="label" for="document-input"
+      >Gist CLA <span class="tag is-info is-light">Optional</span></label
     >
   </div>
   <div class="field-body">
@@ -151,7 +118,7 @@
       <div class="control">
         <Upload
           bind:file={documentInput}
-          control="form-input"
+          control="document-input"
           accept=".yml,.yaml"
         />
       </div>
@@ -161,7 +128,7 @@
 
 <div class="field is-horizontal">
   <div class="field-label is-normal">
-    <label class="label" for="form-input"
+    <label class="label" for="metadata-input"
       >Gist Metadata <span class="tag is-info is-light">Optional</span></label
     >
   </div>
@@ -170,7 +137,7 @@
       <div class="control">
         <Upload
           bind:file={metadataInput}
-          control="form-input"
+          control="metadata-input"
           accept=".yml,.yaml"
         />
       </div>
@@ -220,5 +187,17 @@
         {/if}
       </div>
     </div>
+  </div>
+</div>
+
+<div class="field is-horizontal">
+  <div class="field-label" />
+  <div class="field-body">
+    {#each errors.output as { username, reason }}
+      <div class="notification is-danger is-light">
+        <strong>Error</strong> with user <strong>{username}</strong><br />
+        {reason}
+      </div>
+    {/each}
   </div>
 </div>
