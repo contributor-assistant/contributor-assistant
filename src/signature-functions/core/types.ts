@@ -12,7 +12,7 @@ export interface SignatureStatus {
 }
 
 export interface AuthorSignature {
-  user: User;
+  user: Omit<User, "id">;
   // Helpful to find the origin of the signature when they are shared with other repos
   owner: string;
   repo: string;

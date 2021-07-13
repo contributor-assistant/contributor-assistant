@@ -19,7 +19,7 @@ export async function updatePR() {
   const { content: rawForm } = await readForm();
   storage.checkContent(signatureContent, defaultSignatureContent);
 
-  const status = getSignatureStatus(
+  const status = await getSignatureStatus(
     filterIgnored(committers),
     signatureContent.data,
   );
