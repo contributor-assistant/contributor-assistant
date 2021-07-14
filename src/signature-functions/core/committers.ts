@@ -11,8 +11,7 @@ export async function getCommitters(): Promise<GitActor[]> {
   const committers: GitActor[] = [];
 
   const variables = {
-    owner: context.repo.owner,
-    name: context.repo.repo,
+    ...context.repo,
     number: context.issue.number,
   };
 

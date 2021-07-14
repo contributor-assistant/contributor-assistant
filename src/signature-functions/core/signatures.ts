@@ -1,6 +1,7 @@
 import {
   action,
   context,
+  escapeRegExp,
   github,
   json,
   personalOctokit,
@@ -8,22 +9,22 @@ import {
 } from "../../utils.ts";
 import { options } from "../options.ts";
 import { defaultSignatureContent } from "./default.ts";
-import { filterUsersQuery } from "./graphql.ts";
+import { filterUsersQuery, permissionQuery } from "./graphql.ts";
 
-import type { FilterUsersResponse } from "./graphql.ts";
-import type { SignatureStorage } from "./types.ts";
+import type { FilterUsersResponse, PermissionResponse } from "./graphql.ts";
 import type {
   GitActor,
   SignatureData,
   SignatureStatus,
+  SignatureStorage,
   User,
 } from "./types.ts";
 
 /** Filter committers with their signature status */
-export async function getSignatureStatus(
+export function getSignatureStatus(
   authors: GitActor[],
   data: SignatureData,
-): Promise<SignatureStatus> {
+): SignatureStatus {
   const status: SignatureStatus = {
     signed: [],
     unsigned: [],
@@ -52,15 +53,97 @@ export async function getSignatureStatus(
     }
   }
 
+  return status;
+}
+
+/** "*" is treated as a wildcard. */
+export function filterIgnored(committers: GitActor[]): GitActor[] {
+  return committers.filter((committer) =>
+    !options.ignoreList.some((pattern) => {
+      pattern = pattern.trim();
+      if (pattern.includes("*")) {
+        const regex = escapeRegExp(pattern).split("\\*").join(".*");
+
+        return new RegExp(regex).test(committer.name);
+      }
+      return pattern === committer.name;
+    })
+  );
+}
+
+enum AccessLevel {
+  UNSET,
+  ADMIN,
+  MAINTAINER,
+  CONTRIBUTOR,
+}
+
+/** Remove bots & apply ignore list */
+export async function filterSignatures(status: SignatureStatus) {
+  const patterns: RegExp[] = [];
+  let accessLevel: AccessLevel = AccessLevel.UNSET;
+
+  for (let pattern of options.ignoreList) {
+    pattern = pattern.trim();
+    if (pattern.startsWith("@")) {
+      pattern = pattern.substring(1);
+      if (pattern in AccessLevel && isNaN(parseInt(pattern))) {
+        accessLevel = Math.max(
+          accessLevel,
+          AccessLevel[pattern as keyof typeof AccessLevel],
+        );
+      } else {
+        action.fail(
+          `Incorrect access level pattern: ${pattern}. Accepted patterns`,
+        );
+      }
+    } else {
+      patterns.push(
+        new RegExp(
+          pattern.match(/^\/.*\/$/)
+            ? // treat the pattern as a regex
+              pattern.slice(1, -1)
+            : // otherwise, escape everything
+              `^${escapeRegExp(pattern)}$`,
+        ),
+      );
+    }
+  }
+
   // Remove bots
   const users: FilterUsersResponse = await personalOctokit.graphql(
     filterUsersQuery,
     { ids: status.unsigned.map((user) => user.id) },
   );
 
-  status.unsigned = users.nodes.filter((actor) => "id" in actor) as User[];
+  status.unsigned = (users.nodes
+    .filter((actor) => "id" in actor) as User[])
+    .filter((actor) => !patterns.some((pattern) => pattern.test(actor.login)));
 
-  return status;
+  // remove authorized actors
+  if (accessLevel !== AccessLevel.UNSET) {
+    const permissions = await Promise.all(
+      status.unsigned.map((actor) =>
+        personalOctokit.graphql(
+          permissionQuery,
+          { ...context.repo, query: actor.login },
+        ) as Promise<PermissionResponse>
+      ),
+    );
+    status.unsigned = status.unsigned.filter((actor, i) => {
+      const response = permissions[i].repository.collaborators.edges[0];
+      if (response.node.login !== actor.login) return true;
+      return !(accessLevel >= AccessLevel.ADMIN &&
+          response.permission === "ADMIN" ||
+        accessLevel >= AccessLevel.MAINTAINER &&
+          response.permission === "MAINTAIN" ||
+        accessLevel >= AccessLevel.CONTRIBUTOR &&
+          response.permission === "WRITE");
+    });
+  }
+
+  status.unknown = status.unknown
+    .filter((actor) => !patterns.some((pattern) => pattern.test(actor.name)));
 }
 
 export type SignatureContent = github.Content<SignatureStorage>;

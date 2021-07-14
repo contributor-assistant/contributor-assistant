@@ -31,3 +31,7 @@ export function parseBoolean(flag: unknown): boolean | undefined {
       return undefined;
   }
 }
+
+export function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
+}

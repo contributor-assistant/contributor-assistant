@@ -3,3 +3,5 @@ export type DeepRequired<T> = {
 };
 
 export type UnpackConstructor<T> = T extends (new () => infer U) ? U : T;
+export type UnpackArray<T> = T extends (infer U)[] ? U
+  : (T extends readonly (infer U)[] ? U : T);

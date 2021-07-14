@@ -1,6 +1,9 @@
-import { getSignatureStatus, readSignatureStorage } from "./signatures.ts";
+import {
+  filterSignatures,
+  getSignatureStatus,
+  readSignatureStorage,
+} from "./signatures.ts";
 import { updateReRun } from "./re_run.ts";
-import { filterIgnored } from "./ignore_list.ts";
 import { getCommitters } from "./committers.ts";
 import { commentPR } from "./comment.ts";
 import { updateLabels } from "./labels.ts";
@@ -19,10 +22,8 @@ export async function updatePR() {
   const { content: rawForm } = await readForm();
   storage.checkContent(signatureContent, defaultSignatureContent);
 
-  const status = await getSignatureStatus(
-    filterIgnored(committers),
-    signatureContent.data,
-  );
+  const status = getSignatureStatus(committers, signatureContent.data);
+  await filterSignatures(status);
   action.debug("Signature status", status);
 
   await Promise.all([
