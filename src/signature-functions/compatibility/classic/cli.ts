@@ -1,4 +1,5 @@
-import { StringWriter } from "https://x.nest.land/std@0.100.0/io/writers.ts";
+import { StringWriter } from "https://x.nest.land/std@0.101.0/io/writers.ts";
+import { copy } from "https://x.nest.land/std@0.101.0/io/util.ts";
 import { octokit } from "../../../utils.ts";
 import { parseFlags } from "../../../deps.ts";
 import convert from "./mod.ts";
@@ -31,7 +32,7 @@ const flags = parseFlags(Deno.args, {
 // stdin
 if (flags._.includes("-")) {
   const buffer = new StringWriter();
-  await Deno.copy(Deno.stdin, buffer);
+  await copy(Deno.stdin, buffer);
   const outdated: OutdatedStorage = JSON.parse(buffer.toString());
   const output = await convert(octokit, outdated);
   console.log(JSON.stringify(output.signatures));

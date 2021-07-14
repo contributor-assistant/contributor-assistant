@@ -1,4 +1,5 @@
-import { StringWriter } from "https://x.nest.land/std@0.100.0/io/writers.ts";
+import { StringWriter } from "https://x.nest.land/std@0.101.0/io/writers.ts";
+import { copy } from "https://x.nest.land/std@0.101.0/io/util.ts";
 import { parseFlags, parseYaml } from "../../../deps.ts";
 import convert, { OutdatedStorage } from "./mod.ts";
 import type { Form } from "../../core/types.ts";
@@ -25,7 +26,7 @@ const flags = parseFlags(Deno.args, {
 // stdin
 if (flags._.includes("-")) {
   const buffer = new StringWriter();
-  await Deno.copy(Deno.stdin, buffer);
+  await copy(Deno.stdin, buffer);
   const outdated: OutdatedStorage = JSON.parse(buffer.toString());
   const signatures = convert(outdated);
   console.log(JSON.stringify(signatures));
