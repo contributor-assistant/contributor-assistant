@@ -6,7 +6,10 @@ export {
   existsSync,
 } from "https://x.nest.land/std@0.101.0/fs/exists.ts";
 export { parse as parseFlags } from "https://x.nest.land/std@0.101.0/flags/mod.ts";
-export { parse as parseYaml } from "https://x.nest.land/std@0.101.0/encoding/yaml.ts";
+export {
+  parse as parseYaml,
+  stringify as stringifyYaml,
+} from "https://x.nest.land/std@0.101.0/encoding/yaml.ts";
 export { Sha256 } from "https://x.nest.land/std@0.101.0/hash/sha256.ts";
 
 /* github toolkit */

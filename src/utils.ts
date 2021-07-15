@@ -4,6 +4,7 @@ export * as github from "./utils/github.ts";
 export * as issue from "./utils/issue.ts";
 export * as json from "./utils/json.ts";
 export * as pr from "./utils/pull_request.ts";
+export * from "./utils/config.ts";
 export * from "./utils/context.ts";
 export * from "./utils/octokit.ts";
 export * from "./utils/const.ts";

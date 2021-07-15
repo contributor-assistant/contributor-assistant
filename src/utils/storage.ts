@@ -19,7 +19,7 @@ export function checkContent<T extends Storage>(
   content: T,
   defaultContent: T,
   convert: Converter<T> = defaultConverter,
-): void {
+): boolean {
   if (content.type !== defaultContent.type) {
     action.fail("The given storage content type is invalid.");
   }
@@ -28,7 +28,11 @@ export function checkContent<T extends Storage>(
       "Unsupported storage content version. Please update your github action.",
     );
   }
-  if (content.version < defaultContent.version) convert(content);
+  if (content.version < defaultContent.version) {
+    convert(content);
+    return true;
+  }
+  return false;
 }
 
 export interface Local {
@@ -49,8 +53,8 @@ export interface Remote extends Omit<Local, "type"> {
 
 export async function readGithub(
   storage: Required<Local | Remote>,
-  defaultContent: string,
-  message: string,
+  defaultContent?: string,
+  message = `Update ${storage.path}`,
 ): Promise<github.RawContent> {
   // Personal Access Token is required for remote repositories
   const kit = storage.type === "local" ? octokit : personalOctokit;
@@ -66,13 +70,15 @@ export async function readGithub(
     return content;
   } catch (error) {
     if (error.status === 404) {
-      return github.createOrUpdateFile(kit, fileLocation, {
-        message,
-        content: defaultContent,
-      });
+      if (defaultContent) {
+        return github.createOrUpdateFile(kit, fileLocation, {
+          message,
+          content: defaultContent,
+        });
+      } else throw error;
     } else {
       action.fail(
-        `Could not retrieve repository contents: ${error.message}. Status: ${error
+        `Could not retrieve repository file content: ${error.message}. Status: ${error
           .status || "unknown"}`,
       );
     }

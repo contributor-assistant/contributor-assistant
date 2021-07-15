@@ -1,11 +1,11 @@
-import { action, context, initOctokit } from "../utils.ts";
+import { action, context, setupOctokit } from "../utils.ts";
 import type { DeepRequired, storage } from "../utils.ts";
 
 export interface Options {
   /** GitHub automatically creates a GITHUB_TOKEN secret to use in your workflow. Paste it by using the standard syntax for referencing secrets: ${{ secrets.GITHUB_TOKEN }}. */
-  githubToken: string;
+  githubToken?: string;
   /** A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets: ${{ secrets.PERSONAL_ACCESS_TOKEN }}. */
-  personalAccessToken: string;
+  personalAccessToken?: string;
   storage: {
     /** The storage medium for the file holding the signatures. */
     signatures?: storage.Local | storage.Remote;
@@ -80,25 +80,13 @@ function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
 }
 
 export function setupOptions(opts: Options) {
-  opts.githubToken ||= Deno.env.get("GITHUB_TOKEN") ?? "";
-  opts.personalAccessToken ||= Deno.env.get("PERSONAL_ACCESS_TOKEN") ?? "";
-
   action.debug("Raw options", opts);
 
-  if (opts.githubToken === "") {
-    action.fail(
-      "Missing github token. Please provide one as an environment variable.",
-    );
-  }
-  if (opts.personalAccessToken === "") {
-    action.fail(
-      `Missing personal access token (https://github.com/settings/tokens/new) with "repo" scope. Add it as a secret named "PERSONAL_ACCESS_TOKEN" (https://github.com/settings/secrets/actions/new).`,
-    );
-  }
+  setupOctokit(opts.githubToken, opts.personalAccessToken);
+
   if (opts.storage.form === "") {
     action.fail("Missing issue form path.");
   }
-  initOctokit(opts.githubToken, opts.personalAccessToken);
 
   opts.storage.signatures ??= { type: "local" };
   if (opts.storage.signatures.type === "remote") {

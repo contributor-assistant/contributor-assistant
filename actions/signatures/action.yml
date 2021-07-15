@@ -11,6 +11,18 @@ inputs:
   PERSONAL_ACCESS_TOKEN: 
     description: "A token you have generated that will be used to access the GitHub API. You have to create it with repo scope and store in the repository's secrets with the name PERSONAL_ACCESS_TOKEN. Paste it by using the standard syntax for referencing secrets."
     required: false
+  config-path:
+    description: The path of the config file.
+    required: false
+  config-branch:
+    description: The branch of the config file.
+    required: false
+  config-remote-repo:
+    description: The name of another repository to fetch the config file from.
+    required: false
+  config-remote-owner:
+    description: The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.
+    required: false
   signature-path:
     description: The path where the signatures will be stored.
     required: false
@@ -76,6 +88,10 @@ runs:
         deno run -Aq ${{ github.action_path }}/bundle.js \
           --githubToken ${{ inputs.GITHUB_TOKEN }} \
           --personalAccessToken ${{ inputs.PERSONAL_ACCESS_TOKEN }} \
+          --configPath ${{ inputs.config-path }} \
+          --configBranch ${{ inputs.config-branch }} \
+          --configRemoteRepo ${{ inputs.config-remote-repo }} \
+          --configRemoteOwner ${{ inputs.config-remote-owner }} \
           --signaturePath ${{ inputs.signature-path }} \
           --signatureBranch ${{ inputs.signature-branch }} \
           --signatureRemoteRepo ${{ inputs.signature-remote-repo }} \
