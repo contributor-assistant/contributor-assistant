@@ -47,7 +47,7 @@
   - [My signature has not been taken into account](#my-signature-has-not-been-taken-into-account)
   - [How can I share signatures between several repositories ?](#how-can-i-share-signatures-between-several-repositories-)
   - [What happens if I change the form ?](#what-happens-if-i-change-the-form-)
-  - [How do I migrate old signatures from the CLA Assistant Lite or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?](#how-do-i-migrate-old-signatures-from-the-cla-assistant-lite-or-the-cla-assistant-classic)
+  - [How do I migrate old signatures from the CLA Assistant Lite or the CLA Assistant Classic?](#how-do-i-migrate-old-signatures-from-the-cla-assistant-lite-or-the-cla-assistant-classic)
 - [Upcoming features ✨](#upcoming-features-)
 - [License](#license)
 - [Credits](#credits)
@@ -406,7 +406,9 @@ Using the inputs `signature-remote-repo` and `signature-remote-owner`, you can c
 
 By default the signatures are invalidated. If this is not the behavior you are looking for, you can set `prevent-signature-invalidation` to `true`.
 
-### How do I migrate old signatures from the [CLA Assistant Lite](https://github.com/cla-assistant/github-action) or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?
+### How do I migrate old signatures from the CLA Assistant Lite or the CLA Assistant Classic?
+
+ℹ [CLA Assistant Lite repository](https://github.com/cla-assistant/github-action), [CLA Assistant Classic repository](https://github.com/cla-assistant/cla-assistant)
 
 The easiest way is to go to the [migration web interface](https://cla-assistant.github.io/contributor-assistant/) and upload your signatures.
 
