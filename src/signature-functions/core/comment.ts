@@ -83,7 +83,8 @@ async function createBody(
       const info = userInfo[i].data;
       for (const key of githubKeys) {
         if (key in info) {
-          url.searchParams.append(key, info[key as keyof typeof info]);
+          // @ts-ignore `key as keyof typeof info` causes issues here
+          url.searchParams.append(key, info[key]);
         }
       }
     }

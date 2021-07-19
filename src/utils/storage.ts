@@ -3,19 +3,19 @@ import { context } from "./context.ts";
 import * as action from "./action.ts";
 import * as github from "./github.ts";
 
-export interface Storage {
+export interface Content {
   type: string;
   version: number;
   data: unknown;
 }
 
-export type Converter<T extends Storage> = (content: T) => void;
+export type Converter<T extends Content> = (content: T) => void;
 
-function defaultConverter<T extends Storage>(_content: T): never {
+function defaultConverter<T extends Content>(_content: T): never {
   action.fail("Data conversion not implemented.");
 }
 
-export function checkContent<T extends Storage>(
+export function checkContent<T extends Content>(
   content: T,
   defaultContent: T,
   convert: Converter<T> = defaultConverter,

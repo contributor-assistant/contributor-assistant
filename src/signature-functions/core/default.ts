@@ -23,7 +23,7 @@ export const defaultReRunContent: ReRunStorage = {
   data: [],
 };
 
-export interface ConfigStorage extends storage.Storage {
+export interface ConfigStorage extends storage.Content {
   data: Omit<Options, "githubToken" | "personalAccessToken">;
 }
 

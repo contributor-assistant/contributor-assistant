@@ -1,4 +1,4 @@
-import { action, context, setupOctokit } from "../utils.ts";
+import { action, context, removeEmpty, setupOctokit } from "../utils.ts";
 import type { DeepRequired, storage } from "../utils.ts";
 
 export interface Options {
@@ -68,16 +68,6 @@ export type ParsedOptions = Omit<
   "githubToken" | "personalAccessToken"
 >;
 export let options: ParsedOptions;
-
-function removeEmpty<T extends Record<string, unknown> | undefined>(obj: T): T {
-  for (const key in obj) {
-    // @ts-ignore: deno type bug with the string comparaison
-    if (obj[key] === undefined || obj[key] === "") {
-      delete obj[key];
-    }
-  }
-  return obj;
-}
 
 export function setupOptions(opts: Options) {
   action.debug("Raw options", opts);

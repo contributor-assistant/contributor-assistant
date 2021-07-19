@@ -126,7 +126,7 @@ export async function filterSignatures(status: SignatureStatus) {
       status.unsigned.map((actor) =>
         personalOctokit.graphql(
           permissionQuery,
-          { ...context.repo, query: actor.login },
+          { ...context.repo, login: actor.login },
         ) as Promise<PermissionResponse>
       ),
     );

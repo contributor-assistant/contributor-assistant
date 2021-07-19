@@ -43,7 +43,7 @@ export interface SignatureData {
   invalidated: InvalidatedSignatures[];
 }
 
-export interface SignatureStorage extends storage.Storage {
+export interface SignatureStorage extends storage.Content {
   data: SignatureData;
 }
 
@@ -56,7 +56,7 @@ export type ReRunData = {
   unsigned: number[];
 }[];
 
-export interface ReRunStorage extends storage.Storage {
+export interface ReRunStorage extends storage.Content {
   data: ReRunData;
 }
 
