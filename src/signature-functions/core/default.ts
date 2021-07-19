@@ -29,7 +29,7 @@ export interface ConfigStorage extends storage.Content {
 
 // TODO: clear version rules
 export const defaultConfigContent: ConfigStorage = {
-  type: `${applicationType}/settings`,
+  type: `${applicationType}/config`,
   version: storageVersion,
   data: {
     storage: {

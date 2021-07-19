@@ -30,6 +30,28 @@
   <img src="./assets/cla_signature.png" alt="Signature checkbox">
 </p>
 
+- [Getting Started 🚀](#getting-started-)
+  - [Workflow](#workflow)
+  - [Signature form](#signature-form)
+- [Use as a Deno Module 📦](#use-as-a-deno-module-)
+- [Configuration 📁](#configuration-)
+  - [Required Setup](#required-setup)
+  - [Optional Setup](#optional-setup)
+    - [Ignore list](#ignore-list)
+  - [Custom Fields](#custom-fields)
+  - [Config file](#config-file)
+- [FAQ ❓](#faq-)
+  - [What should my Contributor License Agreement say?](#what-should-my-contributor-license-agreement-say)
+  - [I need to request more information from the signer](#i-need-to-request-more-information-from-the-signer)
+  - [I have entered incorrect information when I signed / I need to update my signature](#i-have-entered-incorrect-information-when-i-signed--i-need-to-update-my-signature)
+  - [My signature has not been taken into account](#my-signature-has-not-been-taken-into-account)
+  - [How can I share signatures between several repositories ?](#how-can-i-share-signatures-between-several-repositories-)
+  - [What happens if I change the form ?](#what-happens-if-i-change-the-form-)
+  - [How do I migrate old signatures from the CLA Assistant Lite or the [CLA Assistant Classic](https://github.com/cla-assistant/cla-assistant)?](#how-do-i-migrate-old-signatures-from-the-cla-assistant-lite-or-the-cla-assistant-classic)
+- [Upcoming features ✨](#upcoming-features-)
+- [License](#license)
+- [Credits](#credits)
+
 ## Getting Started 🚀
 
 ### Workflow
@@ -60,7 +82,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details below.
         with:
-          form-path: 'signature-form.yml' # The document committers will see when they sign.
+          form-path: 'signature-form.yml' # The document committers will see when they sign (required)
           ignore-list: '@MAINTAINER'
 ```
 
@@ -169,7 +191,7 @@ All of these parameters go into the `with` part.
 | `signature-remote-owner`         | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner.                                                                          | *none*                                                                                                                                                                                  |
 | `re-run-path`                    | The path where the re-run cache will be stored.                                                                                                                                       | `".github/contributor-assistant/signatures-re-run.json"`                                                                                                                                |
 | `re-run-branch`                  | The branch where the re-run cache will be stored.                                                                                                                                     | *default branch*                                                                                                                                                                        |
-| `ignore-list`                    | A list of users that will be ignored when checking for signatures, more details [below](#ignore-list). **Bots** are ignored by default.                                                               | `""`                                                                                                                                                                                    |
+| `ignore-list`                    | A list of users that will be ignored when checking for signatures, more details [below](#ignore-list). **Bots** are ignored by default.                                               | `""`                                                                                                                                                                                    |
 | `prevent-signature-invalidation` | Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. | `false`                                                                                                                                                                                 |
 | `re-trigger`                     | The keyword to re-trigger signature checks.                                                                                                                                           | `"recheck"`                                                                                                                                                                             |
 | `all-signed-comment`             | The posted comment when each committer has signed the document.                                                                                                                       | `"All contributors have signed the CLA  ✍️ ✅"`                                                                                                                                           |
@@ -298,6 +320,64 @@ Example:
     placeholder: ex. email@example.com
   validations:
     required: true
+```
+
+### Config file
+
+If you need more control over the behavior of the action, you can define all the above options and some other options in a yaml file. You can find the options interface [here](../../src/signature-functions/options.ts).
+
+This can also be useful if you want to share the configuration of the action over several depots, to support corporate-level contributors for example.
+
+There are additional parameters to specify where your configuration file is located.
+
+| Key                   | Value Information                                                                                            | Default value    |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------- |
+| `config-path`         | The path of the config file.                                                                                 | *none*           |
+| `config-branch`       | The branch of the config file.                                                                               | *default branch* |
+| `config-remote-repo`  | The name of another repository to fetch the config file from.                                                | *none*           |
+| `config-remote-owner` | The owner of the remote repository, can be an organization. Leave empty to default to this repository owner. | *none*           |
+
+**Example**
+
+```yml
+name: Contributor Assistant - Signature Assistant
+# [...]
+        uses: cla-assistant/contributor-assistant/actions/signatures@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          config-path: ".github/contributor-assistant/config.yml"
+```
+
+```yml
+# .github/contributor-assistant/config.yml
+type: contributor-assistant/signatures/config
+version: 1
+data:
+  storage:
+    form: signature-form.yml # required
+    signatures:
+      type: "local"
+      branch: "cla"
+      path: "signatures.yml"
+  comment:
+    summary: |
+      **${signed}** out of **${total}** committers have signed the document.
+  ignoreList: ["@CONTRIBUTOR", "user1"]
+```
+
+You can also create a global configuration file covering all the services of the contributor assistant.
+
+```yml
+type: contributor-assistant/config
+version: 1
+data:
+  - type: contributor-assistant/signatures/config
+    version: 1
+    data:
+      storage:
+        form: signature-form.yml
 ```
 
 ## FAQ ❓

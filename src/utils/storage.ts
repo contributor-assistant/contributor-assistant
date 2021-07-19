@@ -21,7 +21,9 @@ export function checkContent<T extends Content>(
   convert: Converter<T> = defaultConverter,
 ): boolean {
   if (content.type !== defaultContent.type) {
-    action.fail("The given storage content type is invalid.");
+    action.fail(
+      `The given storage content type is invalid.\nActual: ${content.type}\nExpected: ${defaultContent.type}`,
+    );
   }
   if (content.version > defaultContent.version) {
     action.fail(
