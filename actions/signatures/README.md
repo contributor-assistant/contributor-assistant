@@ -49,7 +49,7 @@
   - [What happens if I change the form ?](#what-happens-if-i-change-the-form-)
   - [How do I migrate old signatures from the CLA Assistant Lite or the CLA Assistant Classic?](#how-do-i-migrate-old-signatures-from-the-cla-assistant-lite-or-the-cla-assistant-classic)
 - [Upcoming features ✨](#upcoming-features-)
-- [License](#license)
+- [License 📜](#license-)
 - [Credits](#credits)
 
 ## Getting Started 🚀
@@ -94,9 +94,6 @@ It's recommended that you use [Dependabot](https://dependabot.com/github-actions
 
 If you do not add a form to your repository, a new one will be generated automatically from a [template](./examples/template.yml). But it is advisable to create one manually, because you will probably want to [modify it]() to suit your needs.
 
-<details><summary>You can view a full example of this here.</summary>
-<p>
-
 ```yml
 name: Contributor Document
 description: Sign the Contributor Document
@@ -133,9 +130,6 @@ body:
   validations:
     required: true
 ```
-
-</p>
-</details>
 
 ❗ [Creating a label](https://docs.github.com/en/issues/using-labels-and-milestones-to-track-work/managing-labels#creating-a-label) for this form is also very important. It will be used to detect new signatures, by default this label is `signature form`. You can change it in the inputs.
 
@@ -228,9 +222,6 @@ The separator between the patterns is a comma.
 
 If you need to collect detailed information about your contributors you can add so called "custom fields" to your form. You can use any input type defined by [GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema): markdown, textarea, input, dropdown, checkboxes.
 
-<details><summary>You can view a full example of this here.</summary>
-<p>
-
 ```yml
 name: Contributor License Agreement
 description: Sign the Contributor License Agreement
@@ -290,10 +281,6 @@ body:
   validations:
     required: true
 ```
-
-</p>
-</details>
-
 
 The `signature` id field is mandatory in order to validate the signature. Currently only the `checkbox` type is supported, with a single box.
 
@@ -420,12 +407,9 @@ You want to contribute to Contributor Assistant? Welcome! Please read [here](./C
 
 ## Upcoming features ✨
 
- - Enhanced ignore list patterns
- - Repository role pattern: ADMIN, CONTRIBUTOR, BOT, etc.
- - Config file
  - Signature status (env export) in the action
 
-## License
+## License 📜
 
 Contributor License Agreement assistant
 
