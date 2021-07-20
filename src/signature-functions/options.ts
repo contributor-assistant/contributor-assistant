@@ -16,6 +16,7 @@ export interface Options {
   };
   /** A list of users that will be ignored when checking for signatures. They are not required for the signature checks to pass. */
   ignoreList?: string[];
+  /** Prevent signature invalidation if the form has been modified. Signatures will still be marked as invalidated in the signature file but committers won't need to re-sign the document. */
   preventSignatureInvalidation?: boolean;
   message?: {
     commit?: {
