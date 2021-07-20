@@ -1,5 +1,6 @@
 import type { storage } from "../../utils.ts";
 import type { GitActor, User } from "./graphql.ts";
+import type { Options } from "../options.ts";
 
 export type { GitActor, User };
 
@@ -58,6 +59,12 @@ export type ReRunData = {
 
 export interface ReRunStorage extends storage.Content {
   data: ReRunData;
+}
+
+/* --- config --- */
+
+export interface ConfigStorage extends storage.Content {
+  data: Omit<Options, "githubToken" | "personalAccessToken">;
 }
 
 /* --- form --- */

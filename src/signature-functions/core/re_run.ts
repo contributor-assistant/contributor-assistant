@@ -76,7 +76,7 @@ export async function updateReRun(status: SignatureStatus) {
   await writeReRunStorage(file);
 }
 
-export type ReRunContent = github.Content<ReRunStorage>;
+export type ReRunContent = github.GhContent<ReRunStorage>;
 
 export async function readReRunStorage(): Promise<ReRunContent> {
   const { content, sha } = await storage.readGithub(

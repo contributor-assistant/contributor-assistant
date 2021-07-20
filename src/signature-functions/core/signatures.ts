@@ -146,7 +146,7 @@ export async function filterSignatures(status: SignatureStatus) {
     .filter((actor) => !patterns.some((pattern) => pattern.test(actor.name)));
 }
 
-export type SignatureContent = github.Content<SignatureStorage>;
+export type SignatureContent = github.GhContent<SignatureStorage>;
 
 export async function readSignatureStorage(): Promise<SignatureContent> {
   switch (options.storage.signatures.type) {

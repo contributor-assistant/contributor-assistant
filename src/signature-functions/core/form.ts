@@ -21,7 +21,7 @@ export function isForm(): boolean {
     labels.some((label) => label.name === options.labels.form);
 }
 
-export async function readForm(): Promise<github.RawContent> {
+export async function readForm(): Promise<github.RawGhContent> {
   try {
     const content = await github.getFile(octokit, {
       ...context.repo,

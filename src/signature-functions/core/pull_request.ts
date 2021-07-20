@@ -2,6 +2,7 @@ import {
   filterSignatures,
   getSignatureStatus,
   readSignatureStorage,
+  writeSignatureStorage,
 } from "./signatures.ts";
 import { updateReRun } from "./re_run.ts";
 import { getCommitters } from "./committers.ts";
@@ -14,13 +15,16 @@ import { readForm } from "./form.ts";
 
 /** Fetch committers, update signatures, notify the result in a PR comment */
 export async function updatePR() {
-  const [{ content: signatureContent }, committers] = await Promise.all([
+  const [{ content: signatureContent, sha }, committers] = await Promise.all([
     readSignatureStorage(),
     getCommitters(),
   ]);
   // Error when fetching signature file and form at the same time
   const { content: rawForm } = await readForm();
-  storage.checkContent(signatureContent, defaultSignatureContent);
+  const update = storage.checkContent(
+    signatureContent,
+    defaultSignatureContent,
+  );
 
   const status = getSignatureStatus(committers, signatureContent.data);
   await filterSignatures(status);
@@ -30,6 +34,12 @@ export async function updatePR() {
     commentPR(status, rawForm),
     updateLabels(status),
     updateReRun(status),
+    update
+      ? writeSignatureStorage({
+        content: signatureContent,
+        sha,
+      })
+      : undefined,
   ]);
 
   if (

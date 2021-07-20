@@ -8,17 +8,17 @@ export type FileLocation = {
   ref?: string;
 };
 
-export interface Content<T> {
+export interface GhContent<T> {
   content: T;
   sha: string;
 }
 
-export type RawContent = Content<string>;
+export type RawGhContent = GhContent<string>;
 
 export async function getFile<T>(
   kit: typeof octokit,
   location: FileLocation,
-): Promise<RawContent> {
+): Promise<RawGhContent> {
   const res = await kit.rest.repos.getContent(location);
   if (Array.isArray(res.data)) {
     throw new Error(`File path is a directory: ${location.path}`);
@@ -42,7 +42,7 @@ export async function createOrUpdateFile(
   location: FileLocation,
   params: GithubFileUpdate,
   sha?: string,
-): Promise<RawContent> {
+): Promise<RawGhContent> {
   const res = await kit.rest.repos.createOrUpdateFileContents({
     ...location,
     message: params.message,

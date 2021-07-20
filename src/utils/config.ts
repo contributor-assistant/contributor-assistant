@@ -4,17 +4,15 @@ import * as action from "./action.ts";
 import * as github from "./github.ts";
 import { setupOctokit } from "./octokit.ts";
 import { removeEmpty } from "./misc.ts";
+import { applicationType } from "../meta.ts";
 import type { Content } from "./storage.ts";
 
-const applicationType = "contributor-assistant/config";
-
 export interface ConfigContent<T = Content> extends Content {
-  type: typeof applicationType;
   data: T[];
 }
 
 export const defaultConfigContent: ConfigContent = {
-  type: applicationType,
+  type: `${applicationType}/config`,
   version: 1,
   data: [],
 };
@@ -42,7 +40,7 @@ export async function pipeConfig<T extends Content>(
       } as const,
   );
 
-  let configContent: github.Content<ConfigContent<T> | T>;
+  let configContent: github.GhContent<ConfigContent<T> | T>;
   try {
     const { content, sha } = await storage.readGithub(fileLocation);
     try {

@@ -5,6 +5,7 @@ import * as github from "./github.ts";
 
 export interface Content {
   type: string;
+  /** Content version: used during data conversion to reduce incompatibilities. */
   version: number;
   data: unknown;
 }
@@ -27,7 +28,7 @@ export function checkContent<T extends Content>(
   }
   if (content.version > defaultContent.version) {
     action.fail(
-      "Unsupported storage content version. Please update your github action.",
+      `Unsupported storage content version (${content.version}). Please update your github action.`,
     );
   }
   if (content.version < defaultContent.version) {
@@ -57,7 +58,7 @@ export async function readGithub(
   storage: Required<Local | Remote>,
   defaultContent?: string,
   message = `Update ${storage.path}`,
-): Promise<github.RawContent> {
+): Promise<github.RawGhContent> {
   // Personal Access Token is required for remote repositories
   const kit = storage.type === "local" ? octokit : personalOctokit;
   const fileLocation = storage.type === "local"
@@ -88,7 +89,7 @@ export async function readGithub(
 }
 
 export async function writeGithub(
-  file: github.RawContent,
+  file: github.RawGhContent,
   storage: Required<Local | Remote>,
   message: string,
 ) {

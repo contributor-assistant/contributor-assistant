@@ -1,11 +1,9 @@
-import { applicationType, storageVersion } from "../meta.ts";
-import type { ReRunStorage, SignatureStorage } from "./types.ts";
-import type { storage } from "../../utils.ts";
-import type { Options } from "../options.ts";
+import { applicationType } from "../meta.ts";
+import type { ConfigStorage, ReRunStorage, SignatureStorage } from "./types.ts";
 
 export const defaultSignatureContent: SignatureStorage = {
   type: applicationType,
-  version: storageVersion,
+  version: 1,
   data: {
     current: {
       formSHA: "",
@@ -19,18 +17,13 @@ export const defaultSignatureContent: SignatureStorage = {
 
 export const defaultReRunContent: ReRunStorage = {
   type: `${applicationType}/re-run`,
-  version: storageVersion,
+  version: 1,
   data: [],
 };
 
-export interface ConfigStorage extends storage.Content {
-  data: Omit<Options, "githubToken" | "personalAccessToken">;
-}
-
-// TODO: clear version rules
 export const defaultConfigContent: ConfigStorage = {
   type: `${applicationType}/config`,
-  version: storageVersion,
+  version: 1,
   data: {
     storage: {
       form: "",
