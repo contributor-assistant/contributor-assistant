@@ -150,7 +150,7 @@ await signatureCheck({
   storage: {
     form: "signature-form.yml",
   },
-  ignoreList: ["bot*"],
+  ignoreList: ["user1"],
   labels: {
     form: "signature form",
   },
