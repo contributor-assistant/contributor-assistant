@@ -405,10 +405,6 @@ We also provide you with [scripts](../../src/signature-functions/compatibility) 
 
 You want to contribute to Contributor Assistant? Welcome! Please read [here](./CONTRIBUTING.md). -->
 
-## Upcoming features ✨
-
- - Signature status (env export) in the action
-
 ## License 📜
 
 Contributor License Agreement assistant
