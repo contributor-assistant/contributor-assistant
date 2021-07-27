@@ -132,13 +132,14 @@ export async function filterSignatures(status: SignatureStatus) {
     );
     status.unsigned = status.unsigned.filter((actor, i) => {
       const response = permissions[i].repository.collaborators.edges[0];
-      if (response.node.login !== actor.login) return true;
-      return !(accessLevel >= AccessLevel.ADMIN &&
-          response.permission === "ADMIN" ||
-        accessLevel >= AccessLevel.MAINTAINER &&
-          response.permission === "MAINTAIN" ||
-        accessLevel >= AccessLevel.CONTRIBUTOR &&
-          response.permission === "WRITE");
+      return response === undefined ||
+        response.node.login !== actor.login ||
+        !(accessLevel >= AccessLevel.ADMIN &&
+            response.permission === "ADMIN" ||
+          accessLevel >= AccessLevel.MAINTAINER &&
+            response.permission === "MAINTAIN" ||
+          accessLevel >= AccessLevel.CONTRIBUTOR &&
+            response.permission === "WRITE");
     });
   }
 

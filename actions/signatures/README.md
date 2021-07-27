@@ -48,7 +48,6 @@
   - [How can I share signatures between several repositories ?](#how-can-i-share-signatures-between-several-repositories-)
   - [What happens if I change the form ?](#what-happens-if-i-change-the-form-)
   - [How do I migrate old signatures from the CLA Assistant Lite or the CLA Assistant Classic?](#how-do-i-migrate-old-signatures-from-the-cla-assistant-lite-or-the-cla-assistant-classic)
-- [Upcoming features ✨](#upcoming-features-)
 - [License 📜](#license-)
 - [Credits](#credits)
 
@@ -80,7 +79,7 @@ jobs:
         uses: cla-assistant/contributor-assistant/actions/signatures@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details below.
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN }} # This token is required for consuming the Actions re-run API to automatically re-run the last failed workflow and also for storing the signatures in a remote repository if required. More details in the configuration section.
         with:
           form-path: 'signature-form.yml' # The document committers will see when they sign (required)
           ignore-list: '@MAINTAINER'
